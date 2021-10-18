@@ -1,0 +1,76 @@
+<?php
+
+/** @var \Laravel\Lumen\Routing\Router $router */
+
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Storage;
+use Firebase\JWT\JWT;
+/*
+|--------------------------------------------------------------------------
+| Application Routes
+|--------------------------------------------------------------------------
+|
+| Here is where you can register all of the routes for an application.
+| It is a breeze. Simply tell Lumen the URIs it should respond to
+| and give it the Closure to call when that URI is requested.
+|
+*/
+
+$router->group(['prefix' => 'api/v1/store'], function () use ($router) {
+    $router->post('', 'AuthStoreController@authStore');
+    $router->post('/register', 'AuthStoreController@register');
+    $router->get('/phone/{phone}', 'AuthStoreController@checkPhone');
+    $router->post('/login/{phone}', 'AuthStoreController@login');
+    $router->post('/updated', 'AuthStoreController@updateStore');
+    $router->post('/withdraw', 'AuthStoreController@withdraw');
+    $router->post('/deposit', 'AuthStoreController@deposit');
+    $router->get('/products', 'AuthStoreController@getListProduct');
+    $router->get('/statusopen/{status}', 'AuthStoreController@statusOpen');
+    $router->post('/confirmorder/{idTransaction}', 'AuthStoreController@confirmOrder');
+});
+
+$router->group(['prefix' => 'api/v1/product'], function () use ($router) {
+    $router->post('', 'AuthStoreController@inserProduct');
+    $router->post('/updated/{idProduct}', 'AuthStoreController@updateProduct');
+    $router->get('', 'AuthCustomerController@getListProduct');
+    $router->get('/store/{id}', 'AuthCustomerController@getListProductStore');
+    // $router->post('/register','AuthStoreController@register');
+    // $router->get('/phone/{phone}','AuthStoreController@checkPhone');
+    // $router->post('/login/{phone}','AuthStoreController@login');
+});
+
+$router->group(['prefix' => 'api/v1/driver'], function () use ($router) {
+    $router->post('', 'AuthDriverController@authDriver');
+    $router->post('/register', 'AuthDriverController@register');
+    $router->get('/phone/{phone}', 'AuthDriverController@checkPhone');
+    $router->post('/login/{phone}', 'AuthDriverController@login');
+    $router->post('/withdraw', 'AuthDriverController@withdraw');
+    $router->post('/deposit', 'AuthDriverController@deposit');
+    $router->get('/status/{status}', 'AuthDriverController@statusDriver');
+    $router->post('/confirmorder/{idTransaction}', 'AuthDriverController@confirmOrder');
+    $router->get('/transaction/{idTransaction}/{code}', 'AuthDriverController@validationCode');
+    $router->get('/transaction/{idTransaction}', 'AuthDriverController@finishTransaction ');
+    $router->post('/email', 'AuthDriverController@sendEmail');
+});
+
+$router->group(['prefix' => 'api/v1/customer'], function () use ($router) {
+    $router->post('', 'AuthCustomerController@authCustomer');
+    $router->post('/register', 'AuthCustomerController@register');
+    $router->get('/phone/{phone}', 'AuthCustomerController@checkPhone');
+    $router->post('/login/{phone}', 'AuthCustomerController@login');
+    $router->post('/order', 'AuthCustomerController@order');
+});
+
+$router->group(['prefix' => 'api/v1/admin'], function () use ($router) {
+    $router->post('', 'AuthAdminController@register');
+    $router->post('/login', 'AuthAdminController@login');
+    // $router->post('/register','AuthCustomerController@register');
+    // $router->get('/phone/{phone}','AuthCustomerController@checkPhone');
+    // $router->post('/login/{phone}','AuthCustomerController@login');
+    // $router->post('/order','AuthCustomerController@order');
+});
+
+
+$router->get('/', function () use ($router) {
+    return $router->app->version();
+});

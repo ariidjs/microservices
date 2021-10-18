@@ -1,0 +1,20 @@
+{
+	"folders": [
+		{
+			"path": "..\\driver"
+		},
+		{
+			"path": "..\\authservice"
+		},
+		{
+			"path": "."
+		},
+		{
+			"path": "..\\transaksi"
+		},
+		{
+			"path": "..\\detail_transaksi"
+		}
+	],
+	"settings": {}
+}

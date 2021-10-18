@@ -1,0 +1,243 @@
+version: '3.3'
+services:
+
+  webserver:
+    image: nginx:alpine
+    restart: unless-stopped
+    tty: true
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./gateway/:/var/www/gateway
+      - ./services/:/var/www/services
+      - ./docker/nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./docker/nginx/sites/:/etc/nginx/conf.d/
+    networks:
+      app-network:
+        aliases:
+          - gateway.test
+          - drivers.service
+          - auth.service
+          - store.service
+          - customer.service
+          - admin.service
+          - product.service
+          - transaksi.service
+          - detailtrans.service
+          - saldo.service
+          - driversaldo.service
+
+  gateway:
+    build:
+      context: gateway
+      dockerfile: Dockerfile
+    image: php:7.4-fpm
+    restart: unless-stopped
+    working_dir: /var/www/gateway
+    env_file: './gateway/.env.example'
+    tty: true
+    volumes:
+      - ./gateway/:/var/www/gateway
+      - ./docker/php/local.ini:/usr/local/etc/php/conf.d/local.ini
+    networks:
+      - app-network
+#Services
+  driver:
+    build:
+      context: services/driver
+      dockerfile: Dockerfile
+    image: php:7.4-fpm
+    restart: unless-stopped
+    env_file: './services/driver/.env.example'
+    working_dir: /var/www/services/driver
+    depends_on:
+      - mysqldb
+    tty: true
+    volumes:
+      - ./services/driver/:/var/www/services/driver
+      - ./docker/php/local.ini:/usr/local/etc/php/conf.d/local.ini
+    networks:
+      - app-network
+
+  store:
+    build:
+      context: services/store
+      dockerfile: Dockerfile
+    image: php:7.4-fpm
+    restart: unless-stopped
+    env_file: './services/store/.env.example'
+    working_dir: /var/www/services/store
+    depends_on:
+      - mysqldb
+    tty: true
+    volumes:
+      - ./services/store/:/var/www/services/store
+      - ./docker/php/local.ini:/usr/local/etc/php/conf.d/local.ini
+    networks:
+      - app-network
+
+  customer:
+    build:
+      context: services/customer
+      dockerfile: Dockerfile
+    image: php:7.4-fpm
+    restart: unless-stopped
+    env_file: './services/customer/.env.example'
+    working_dir: /var/www/services/customer
+    depends_on:
+      - mysqldb
+    tty: true
+    volumes:
+      - ./services/customer/:/var/www/services/customer
+      - ./docker/php/local.ini:/usr/local/etc/php/conf.d/local.ini
+    networks:
+      - app-network
+  admin:
+    build:
+      context: services/admin
+      dockerfile: Dockerfile
+    image: php:7.4-fpm
+    restart: unless-stopped
+    env_file: './services/admin/.env.example'
+    working_dir: /var/www/services/admin
+    depends_on:
+      - mysqldb
+    tty: true
+    volumes:
+      - ./services/admin/:/var/www/services/admin
+      - ./docker/php/local.ini:/usr/local/etc/php/conf.d/local.ini
+    networks:
+      - app-network
+
+  product:
+    build:
+      context: services/product
+      dockerfile: Dockerfile
+    image: php:7.4-fpm
+    restart: unless-stopped
+    env_file: './services/product/.env.example'
+    working_dir: /var/www/services/product
+    depends_on:
+      - mysqldb
+    tty: true
+    volumes:
+      - ./services/product/:/var/www/services/product
+      - ./docker/php/local.ini:/usr/local/etc/php/conf.d/local.ini
+    networks:
+      - app-network
+
+  transaksi:
+    build:
+      context: services/transaksi
+      dockerfile: Dockerfile
+    image: php:7.4-fpm
+    restart: unless-stopped
+    env_file: './services/transaksi/.env.example'
+    working_dir: /var/www/services/transaksi
+    depends_on:
+      - mysqldb
+    tty: true
+    volumes:
+      - ./services/transaksi/:/var/www/services/transaksi
+      - ./docker/php/local.ini:/usr/local/etc/php/conf.d/local.ini
+    networks:
+      - app-network
+
+  detail_transaksi:
+    build:
+      context: services/detail_transaksi
+      dockerfile: Dockerfile
+    image: php:7.4-fpm
+    restart: unless-stopped
+    env_file: './services/detail_transaksi/.env.example'
+    working_dir: /var/www/services/detail_transaksi
+    depends_on:
+      - mysqldb
+    tty: true
+    volumes:
+      - ./services/detail_transaksi/:/var/www/services/detail_transaksi
+      - ./docker/php/local.ini:/usr/local/etc/php/conf.d/local.ini
+    networks:
+      - app-network
+
+  saldo:
+    build:
+      context: services/saldo
+      dockerfile: Dockerfile
+    image: php:7.4-fpm
+    restart: unless-stopped
+    env_file: './services/saldo/.env.example'
+    working_dir: /var/www/services/saldo
+    depends_on:
+      - mysqldb
+    tty: true
+    volumes:
+      - ./services/saldo/:/var/www/services/saldo
+      - ./docker/php/local.ini:/usr/local/etc/php/conf.d/local.ini
+    networks:
+      - app-network
+
+  saldo_driver:
+    build:
+      context: services/saldo_driver
+      dockerfile: Dockerfile
+    image: php:7.4-fpm
+    restart: unless-stopped
+    env_file: './services/saldo_driver/.env.example'
+    working_dir: /var/www/services/saldo_driver
+    depends_on:
+      - mysqldb
+    tty: true
+    volumes:
+      - ./services/saldo_driver/:/var/www/services/saldo_driver
+      - ./docker/php/local.ini:/usr/local/etc/php/conf.d/local.ini
+    networks:
+      - app-network
+  auth:
+    build:
+      context: services/authservice
+      dockerfile: Dockerfile
+    image: php:7.4-fpm
+    restart: unless-stopped
+    env_file: './services/authservice/.env.example'
+    working_dir: /var/www/services/authservice
+    depends_on:
+      - driver
+      - store
+    tty: true
+    volumes:
+      - ./services/authservice/:/var/www/services/authservice
+      - ./docker/php/local.ini:/usr/local/etc/php/conf.d/local.ini
+    networks:
+      - app-network
+
+#DB
+  mysqldb:
+    image: mysql:5.7
+    restart: unless-stopped
+    tty: true
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_USER: user
+      MYSQL_PASSWORD: user
+    ports:
+      - 3306:3306
+    volumes:
+      - ./docker/mysql/init:/docker-entrypoint-initdb.d
+      - dbdata:/var/lib/mysql
+
+    networks:
+      - app-network
+
+#Network
+networks:
+  app-network:
+    driver: bridge
+
+#Volume
+volumes:
+  dbdata:
+    driver: local
+  data_store:
+    driver: local
