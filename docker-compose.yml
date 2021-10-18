@@ -36,7 +36,6 @@ services:
     restart: unless-stopped
     working_dir: /var/www/gateway
     env_file: './gateway/.env.example'
-    command: sh -c "composer install"
     tty: true
     volumes:
       - ./gateway/:/var/www/gateway
