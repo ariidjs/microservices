@@ -25,5 +25,5 @@ RUN chown -R www-data:www-data /var/www/gateway
 
 # Expose port 9000 and start php-fpm server
 EXPOSE 9000
-CMD bash -c "composer install && php artisan migrate"
+CMD bash -c "composer install"
 CMD ["php-fpm"]
