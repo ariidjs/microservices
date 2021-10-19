@@ -23,9 +23,9 @@ COPY . /var/www/services/store
 
 # Copy existing application directory permissions
 RUN chown -R www-data:www-data /var/www/services/store
-
+RUN php artisan migrate --force
 
 # Expose port 9000 and start php-fpm server
 EXPOSE 9000
 CMD ["php-fpm"]
-RUN php artisan migrate --force
+
