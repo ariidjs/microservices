@@ -17,13 +17,16 @@ WORKDIR /var/www/services/admin
 # Install composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
+
+
 # Copy existing application directory contents
 COPY . /var/www/services/admin
+
 
 # Copy existing application directory permissions
 RUN chown -R www-data:www-data /var/www/services/admin
 
-
+RUN composer install
 
 # Expose port 9000 and start php-fpm server
 EXPOSE 9000

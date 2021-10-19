@@ -22,8 +22,7 @@ COPY . /var/www/services/customer
 # Copy existing application directory permissions
 RUN chown -R www-data:www-data /var/www/services/customer
 
-
+RUN composer install
 # Expose port 9000 and start php-fpm server
 EXPOSE 9000
-CMD bash -c "composer install && php artisan migrate"
 CMD ["php-fpm"]
