@@ -16,14 +16,15 @@ WORKDIR /var/www/services/store
 # Install composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
+RUN composer install
+
 # Copy existing application directory contents
 COPY . /var/www/services/store
 
 # Copy existing application directory permissions
 RUN chown -R www-data:www-data /var/www/services/store
 
-
+RUN php artisan migrate
 # Expose port 9000 and start php-fpm server
 EXPOSE 9000
-CMD bash -c "composer install && php artisan migrate"
 CMD ["php-fpm"]
