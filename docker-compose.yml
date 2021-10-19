@@ -67,7 +67,6 @@ services:
     image: php:7.4-fpm
     restart: unless-stopped
     env_file: './services/store/.env.example'
-    command: php artisan migrate
     working_dir: /var/www/services/store
     depends_on:
       - mysqldb
