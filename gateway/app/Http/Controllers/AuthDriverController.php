@@ -58,10 +58,9 @@ class AuthDriverController extends BaseController
         $photo_profile = $request->file("photo_profile");
         $photo_stnk = $request->file("photo_stnk");
         $photo_ktp = $request->file("photo_ktp");
-        $saldo = $request->input("saldo");
-        $status = $request->input("status");
         $nomorstnk = $request->input("nomor_stnk");
         $nik = $request->input("nik");
+        $j_kelamin = $request->input("j_kelamin");
 
 
         if ($photo_ktp) {
@@ -95,8 +94,7 @@ class AuthDriverController extends BaseController
             "photo_profile" => $avatar,
             "photo_stnk" => $stnk,
             "photo_ktp" => $ktp,
-            "saldo" => $saldo,
-            "status" => $status
+            "j_kelamin" => $j_kelamin
         ];
 
 //        return $this->successResponse($this
