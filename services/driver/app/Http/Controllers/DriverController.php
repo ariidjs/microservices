@@ -95,9 +95,7 @@ class DriverController extends BaseController
             "photo_profile" => $photo_profile,
             "photo_stnk" => $photo_stnk,
             "photo_ktp" => $photo_ktp,
-            "j_kelamin" => $jkelamin,
-            "saldo" => 0,
-            "status" => 0
+            "j_kelamin" => $jkelamin
         ]);
 
         if ($insert) {
