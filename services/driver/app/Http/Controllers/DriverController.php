@@ -24,8 +24,7 @@ class DriverController extends BaseController
         $photo_profile = $request->input("photo_profile");
         $photo_stnk = $request->input("photo_stnk");
         $photo_ktp = $request->input("photo_ktp");
-        $saldo = $request->input("saldo");
-        $status = $request->input("status");
+        $jkelamin = $request->input("j_kelamin");
         $stnk = $request->input("nomor_stnk");
         $nik = $request->input("nik");
 
@@ -96,8 +95,9 @@ class DriverController extends BaseController
             "photo_profile" => $photo_profile,
             "photo_stnk" => $photo_stnk,
             "photo_ktp" => $photo_ktp,
-            "saldo" => $saldo,
-            "status" => $status
+            "j_kelamin" => $jkelamin,
+            "saldo" => 0,
+            "status" => 0
         ]);
 
         if ($insert) {

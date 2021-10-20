@@ -24,6 +24,7 @@ class CreateDriversTable extends Migration
             $table->string("photo_profile");
             $table->string("photo_stnk");
             $table->string("photo_ktp");
+            $table->smallInteger("j_kelamin");
             $table->double("rating")->default(5.0);
             $table->double("saldo")->defaul(0);
             $table->integer("status")->default(0);
