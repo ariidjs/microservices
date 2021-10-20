@@ -6,12 +6,14 @@ use App\Services\AuthServiceDriver;
 use App\Services\ServiceDriver;
 use App\Services\ServiceSaldoDriver;
 use App\Services\ServiceTransaction;
+use GuzzleHttp\Exception\ClientException;
 use Illuminate\Http\Request;
 use Laravel\Lumen\Routing\Controller as BaseController;
 use \App\Traits\ApiResponser;
 use Firebase\JWT\ExpiredException;
 use Firebase\JWT\JWT;
 use Illuminate\Support\Facades\Mail;
+use function PHPUnit\Framework\isInstanceOf;
 
 class AuthDriverController extends BaseController
 {
@@ -107,12 +109,32 @@ class AuthDriverController extends BaseController
     }
 
 
-    public function checkPhone($phone)
+    public function checkPhone(Request $request,$phone)
     {
-        return json_decode($this->successResponse($this
+        $response = json_decode($this->successResponse($this
             ->authServiceDriver
             ->checkPhone($phone))
             ->original, true);
+        if ($response['success']) {
+            $body = [
+                'fcm' => $request->header('fcm')
+            ];
+            $data = json_decode($this->successResponse($this
+                ->authServiceDriver
+                ->login($phone, $body))
+                ->original, true);
+
+            if ($data['success']) {
+                $payload = array(
+                    "id" => $data['data']['id'],
+                    "email" => $data['data']['email'],
+                    "exp" => (round(microtime(true) * 1000) + ($this->TIME_EXPIRE * 60000))
+                );
+                $jwt = JWT::encode($payload, $this->key);
+                $data['jwt'] = $jwt;
+                return $data;
+            }
+        }
     }
 
 
