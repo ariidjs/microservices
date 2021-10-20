@@ -21,7 +21,6 @@ COPY . /var/www/services/driver
 
 # Copy existing application directory permissions
 RUN chown -R www-data:www-data /var/www/services/driver
-RUN composer install
 
 # Expose port 9000 and start php-fpm server
 EXPOSE 9000

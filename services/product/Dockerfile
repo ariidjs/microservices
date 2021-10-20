@@ -22,7 +22,6 @@ COPY . /var/www/services/product
 # Copy existing application directory permissions
 RUN chown -R www-data:www-data /var/www/services/product
 
-RUN composer install
 # Expose port 9000 and start php-fpm server
 EXPOSE 9000
 CMD ["php-fpm"]
