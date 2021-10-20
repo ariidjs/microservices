@@ -96,10 +96,10 @@ class AuthDriverController extends BaseController
             "photo_ktp" => $ktp,
             "j_kelamin" => $j_kelamin
         ];
-
-        return $this->successResponse($this
-            ->serviceDriver
-            ->register($body));
+        return $j_kelamin;
+//        return $this->successResponse($this
+//            ->serviceDriver
+//            ->register($body));
 //        return json_decode($this->successResponse($this
 //            ->serviceDriver
 //            ->register($body))
