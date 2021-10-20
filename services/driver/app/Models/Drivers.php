@@ -20,7 +20,7 @@ class Drivers extends Model implements AuthenticatableContract, AuthorizableCont
      */
     protected $fillable = [
         'name_driver', 'email', 'phone',
-        'nomor_stnk', 'plat_kendaraan', 'nik', 'photo_profile', 'photo_stnk', 'photo_ktp', 'rating', 'saldo', 'status', 'fcm'
+        'nomor_stnk', 'plat_kendaraan', 'nik', 'photo_profile', 'photo_stnk', 'photo_ktp', 'rating', 'saldo', 'status', 'fcm','j_kelamin'
     ];
 
     /**

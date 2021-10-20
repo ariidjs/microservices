@@ -97,13 +97,13 @@ class AuthDriverController extends BaseController
             "j_kelamin" => $j_kelamin
         ];
 
-        return $this->successResponse($this
-            ->serviceDriver
-            ->register($body));
-//        return json_decode($this->successResponse($this
+//        return $this->successResponse($this
 //            ->serviceDriver
-//            ->register($body))
-//            ->original, true);
+//            ->register($body));
+        return json_decode($this->successResponse($this
+            ->serviceDriver
+            ->register($body))
+            ->original, true);
     }
 
 
