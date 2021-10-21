@@ -140,6 +140,8 @@ class AuthDriverController extends BaseController
                 $data['jwt'] = $jwt;
                 return $data;
             }
+        }else {
+            return $response;
         }
     }
 
