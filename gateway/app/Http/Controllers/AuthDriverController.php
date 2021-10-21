@@ -111,10 +111,15 @@ class AuthDriverController extends BaseController
 
     public function checkPhone(Request $request,$phone)
     {
+
+        return $this->successResponse($this
+        ->authServiceDriver
+        ->checkPhone($phone));
         $response = json_decode($this->successResponse($this
             ->authServiceDriver
             ->checkPhone($phone))
             ->original, true);
+
         if ($response['success']) {
             $body = [
                 'fcm' => $request->header('fcm')
