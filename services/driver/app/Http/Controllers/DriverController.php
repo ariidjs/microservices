@@ -163,13 +163,15 @@ class DriverController extends BaseController
         if ($checkPhone) {
             return response()->json([
                 'success' => true,
-                'message' => 'phone is register'
+                'message' => 'phone is register',
+                'available' => true
             ], 200);
         } else {
             return response()->json([
                 'success' => false,
-                'message' => 'phone not register'
-            ], 401);
+                'message' => 'phone not register',
+                'available' => false
+            ], 200);
         }
     }
 
