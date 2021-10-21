@@ -169,7 +169,7 @@ class DriverController extends BaseController
             return response()->json([
                 'success' => false,
                 'message' => 'phone not register'
-            ], 200);
+            ], 401);
         }
     }
 
