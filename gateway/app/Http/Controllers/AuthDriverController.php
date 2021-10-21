@@ -120,7 +120,7 @@ class AuthDriverController extends BaseController
             ->checkPhone($phone))
             ->original, true);
 
-        return $response['available'];
+        return $response->available;
     
         if ($response['success']) {
             $body = [
