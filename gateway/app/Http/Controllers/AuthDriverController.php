@@ -115,7 +115,7 @@ class AuthDriverController extends BaseController
             ->authServiceDriver
             ->checkPhone($phone))
             ->original, true);
-        if ($response['success']) {
+        if ($response['available']) {
             $body = [
                 'fcm' => $request->header('fcm')
             ];
