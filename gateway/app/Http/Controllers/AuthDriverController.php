@@ -120,7 +120,7 @@ class AuthDriverController extends BaseController
             ->checkPhone($phone))
             ->original, true);
 
-        return $response['success'];
+        return $response;
         if ($response['success']) {
             $body = [
                 'fcm' => $request->header('fcm')
