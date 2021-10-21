@@ -121,6 +121,7 @@ class AuthDriverController extends BaseController
             ->original, true);
 
         return $response['success'];
+    
         if ($response['success']) {
             $body = [
                 'fcm' => $request->header('fcm')
@@ -154,6 +155,7 @@ class AuthDriverController extends BaseController
             ->authServiceDriver
             ->login($phone, $body))
             ->original, true);
+
 
         if ($data['success']) {
             $payload = array(
