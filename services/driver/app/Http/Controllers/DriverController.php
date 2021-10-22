@@ -238,12 +238,12 @@ class DriverController extends BaseController
                 return response()->json([
                     'success' => false,
                     'message' => 'akun anda masih status pending silahkan tunggu aktivasi dari admin',
-                ], 404);
+                ], 401);
             } else if ($drivers->status_delete == $this->DELETE) {
                 return response()->json([
                     'success' => false,
                     'message' => 'akun anda telah di banned silahkan hubungi admin',
-                ], 404);
+                ], 401);
             } else {
                 return response()->json([
                     'success' => true,
