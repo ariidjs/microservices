@@ -243,7 +243,7 @@ class DriverController extends BaseController
                 return response()->json([
                     'success' => false,
                     'message' => 'akun anda telah di banned silahkan hubungi admin',
-                ], 404);
+                ], 403);
             } else {
                 return response()->json([
                     'success' => true,
