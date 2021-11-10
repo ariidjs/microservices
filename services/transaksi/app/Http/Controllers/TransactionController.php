@@ -305,10 +305,10 @@ class TransactionController extends Controller
         $status = $request->input('status');
         $transaction = json_decode(Transaction::whereId($id)->first());
         // return var_dump($transaction);
-        $key = $this->databaseFirebase->getReference('driver')->getChildKeys();
+        $key = $this->databaseFirebase->getReference('DriversLocation')->getChildKeys();
         $dataDriver = [];
         foreach ($key as $value) {
-            array_push($dataDriver, $this->databaseFirebase->getReference('driver')->getChild($value)->getValue());
+            array_push($dataDriver, $this->databaseFirebase->getReference('DriversLocation')->getChild($value)->getValue());
         }
 
         // return $dataDriver;
