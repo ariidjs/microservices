@@ -20,7 +20,7 @@ class Drivers extends Model implements AuthenticatableContract, AuthorizableCont
      */
     protected $fillable = [
         'name_driver', 'email', 'phone',
-        'nomor_stnk', 'plat_kendaraan', 'nik', 'photo_profile', 'photo_stnk', 'photo_ktp', 'rating', 'saldo', 'status', 'fcm','j_kelamin'
+        'nomor_stnk', 'plat_kendaraan', 'nik', 'photo_profile', 'photo_stnk', 'photo_ktp', 'rating', 'saldo', 'status', 'fcm','j_kelamin','total_order'
     ];
 
     /**
@@ -28,7 +28,5 @@ class Drivers extends Model implements AuthenticatableContract, AuthorizableCont
      *
      * @var array
      */
-    protected $hidden = [
-        'photo_ktp', 'photo_stnk'
-    ];
+    protected $hidden = [];
 }

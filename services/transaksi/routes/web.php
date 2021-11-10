@@ -14,13 +14,14 @@
 */
 
 
-$router->group(['prefix'=>'api/v1/transaksi'],function() use($router){
-    $router->post('','TransactionController@insertCustomer');
-    $router->put('[{id}]','TransactionController@updateStatus');
-    $router->post('/driver/{id}','TransactionController@statusFromDriver');
-    $router->get('/done/{id}','TransactionController@transactionFinish');
-    $router->get('{id}/kode/{kode}','TransactionController@validationCodeFromDriver');
-    $router->post('/{id}','TransactionController@statusFromStore');
+$router->group(['prefix' => 'api/v1/transaksi'], function () use ($router) {
+    $router->post('', 'TransactionController@insertCustomer');
+    $router->put('[{id}]', 'TransactionController@updateStatus');
+    $router->post('/driver/{id}', 'TransactionController@statusFromDriver');
+    $router->get('/done/{id}', 'TransactionController@transactionFinish');
+    $router->get('{id}/kode/{kode}', 'TransactionController@validationCodeFromDriver');
+    $router->post('/{id}', 'TransactionController@statusFromStore');
+    $router->get('', 'TransactionController@getListTransaction');
     // $router->post('update[/{id}]','TransactionController@update');
     // $router->delete('[{id}]','TransactionController@delete');
 });

@@ -13,20 +13,20 @@
 |
 */
 
-$router->group(['prefix'=>'api/v1/driver/'],function() use($router){
-    $router->get('admin','DriverController@getListDriversFromAdmin');
-    $router->post('auth','DriverController@auth');
-    $router->get('logout/{id}','DriverController@logOut');
-    $router->post('','DriverController@insert');
-    $router->post('{id}','DriverController@updated');
-    $router->get('phone/{phone}','DriverController@phoneNumberAvailable');
-    $router->get('{id}','DriverController@getDrivers');
-    $router->get('baned/{id}','DriverController@banedDriver');
-    $router->get('{id}/saldo/{saldo}','DriverController@updatedSaldo');
-    $router->post('login/[{phone}]','DriverController@login');
-    $router->get('','DriverController@getListDriver');
-    $router->get('activation/[{id}]','DriverController@active');
-    $router->get('{id}/status/{status}','DriverController@driverWork');
+$router->group(['prefix' => 'api/v1/driver/'], function () use ($router) {
+    $router->get('admin', 'DriverController@getListDriversFromAdmin');
+    $router->post('auth', 'DriverController@auth');
+    $router->get('logout/{id}', 'DriverController@logOut');
+    $router->post('', 'DriverController@insert');
+    $router->post('{id}', 'DriverController@updated');
+    $router->get('phone/{phone}', 'DriverController@phoneNumberAvailable');
+    $router->get('{id}', 'DriverController@getDrivers');
+    $router->get('baned/{id}', 'DriverController@banedDriver');
+    $router->get('{id}/saldo/{saldo}', 'DriverController@updatedSaldo');
+    $router->post('login/[{phone}]', 'DriverController@login');
+    $router->get('', 'DriverController@getListDriver');
+    $router->get('{id_driver}/activation/{status}', 'DriverController@ChangeStatusUser');
+    $router->get('{id}/status/{status}', 'DriverController@driverWork');
 });
 
 

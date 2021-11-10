@@ -19,6 +19,7 @@ class CreateCustomersTable extends Migration
             $table->string("phone")->unique();
             $table->string("email")->unique();
             $table->string("address")->default("");
+            $table->enum("level", ["Silver", "Gold", "Platinum"])->default("Silver");
             $table->string("image");
             $table->string("fcm")->default("");
             $table->integer("status_delete")->default(0);

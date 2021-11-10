@@ -20,14 +20,13 @@ trait ConsumeExternalService
             'base_uri'  =>  $this->baseUri,
         ]);
 
-        if(isset($this->secret))
-        {
+        if (isset($this->secret)) {
             $headers['Authorization'] = $this->secret;
         }
 
         $response = $client->request($method, $requestUrl, [
             'json' => $formParams,
-            'headers'=> $headers,
+            'headers' => $headers,
         ]);
 
         return $response->getBody()->getContents();
@@ -39,19 +38,15 @@ trait ConsumeExternalService
             'base_uri'  =>  $this->baseUri,
         ]);
 
-        if(isset($this->secret))
-        {
+        if (isset($this->secret)) {
             $headers['Authorization'] = $this->secret;
         }
 
         $response = $client->request($method, $requestUrl, [
-               'multipart' => $formParams,
-               'headers'=> $headers,
+            'multipart' => $formParams,
+            'headers' => $headers,
         ]);
 
         return $response->getBody()->getContents();
     }
-
-
-
 }

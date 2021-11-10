@@ -10,7 +10,7 @@ use Laravel\Lumen\Routing\Controller as BaseController;
 use \App\Traits\ApiResponser;
 
 
-class DriverController extends BaseController
+class DriverController extends Controller
 {
     use ApiResponser;
     public $driverServices;
@@ -38,6 +38,8 @@ class DriverController extends BaseController
     }
 
     public function login(Request $request,$phone){
+        // return "hello";
+        // return var_dump($request->getContent());
         $body = [
             'fcm'=>$request->input('fcm')
         ];

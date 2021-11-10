@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Services;
+
 use App\Traits\ConsumeExternalService;
 
 class ServiceAdmin
@@ -25,7 +26,8 @@ class ServiceAdmin
         $this->secret = config('service.customer.secret');
     }
 
-    public function register($data){
-        return $this->performRequest('POST','/api/v1/admins/',$data);
+    public function register($data)
+    {
+        return $this->performRequest('POST', '/api/v1/admins/', $data);
     }
 }

@@ -29,8 +29,6 @@ trait ConsumeExternalService
             'json' => $formParams,
             'headers'     => $headers,
         ]);
-
-
         return $response->getBody()->getContents();
     }
 }

@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Services;
+
 use App\Traits\ConsumeExternalService;
 
 class ServiceCustomer
@@ -25,7 +26,17 @@ class ServiceCustomer
         $this->secret = config('service.customer.secret');
     }
 
-    public function register($data){
-        return $this->performRequest("POST",'/api/v1/customer/',$data);
+    public function register($data)
+    {
+        return $this->performRequest("POST", '/api/v1/customer/', $data);
+    }
+
+    public function getLisCustomer()
+    {
+        return $this->performRequest("GET", '/api/v1/customer/');
+    }
+
+    public function getCustomer($id){
+        return $this->performRequest("GET","/api/v1/customer/".$id);
     }
 }

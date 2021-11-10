@@ -19,7 +19,7 @@ class Product extends Model implements AuthenticatableContract, AuthorizableCont
      * @var array
      */
     protected $fillable = [
-        'id_store','name_product', 'category','price','price_promo','image1','image2','image3','image4','description','status_delete'
+        'id_store', 'name_product', 'category', 'price', 'price_promo', 'image1', 'image2', 'image3', 'image4', 'description', 'status_delete'
     ];
 
     /**
@@ -27,9 +27,5 @@ class Product extends Model implements AuthenticatableContract, AuthorizableCont
      *
      * @var array
      */
-    protected $hidden = [
-        'status_delete'
-    ];
-
-
+    protected $hidden = [];
 }

@@ -6,14 +6,12 @@ use App\Services\AuthServiceDriver;
 use App\Services\ServiceDriver;
 use App\Services\ServiceSaldoDriver;
 use App\Services\ServiceTransaction;
-use GuzzleHttp\Exception\ClientException;
 use Illuminate\Http\Request;
 use Laravel\Lumen\Routing\Controller as BaseController;
 use \App\Traits\ApiResponser;
 use Firebase\JWT\ExpiredException;
 use Firebase\JWT\JWT;
 use Illuminate\Support\Facades\Mail;
-use function PHPUnit\Framework\isInstanceOf;
 
 class AuthDriverController extends BaseController
 {
@@ -27,6 +25,10 @@ class AuthDriverController extends BaseController
     private $JWT_EXPIRED = false;
     private $WITHDRAW = 2;
     private $DEPOSIT = 1;
+
+    private $DELETE = -1;
+    private $ACTIVE = 1;
+    private $PENDING = 0;
     private $key = "asjlkdnaskjndjkawqnbdjkwbqdjknasljkmmndasjkjdnijkwqbduiqwbdojkawqnd";
     public function __construct(AuthServiceDriver $authServiceDriver, ServiceDriver $serviceDriver, ServiceSaldoDriver $saldoDriver, ServiceTransaction $serviceTransaction)
     {
@@ -52,7 +54,6 @@ class AuthDriverController extends BaseController
 
     public function register(Request $request)
     {
-
         $name = $request->input("name_driver");
         $email = $request->input("email");
         $phone = $request->input("phone");
@@ -60,9 +61,10 @@ class AuthDriverController extends BaseController
         $photo_profile = $request->file("photo_profile");
         $photo_stnk = $request->file("photo_stnk");
         $photo_ktp = $request->file("photo_ktp");
+        $saldo = $request->input("saldo");
+        $status = $request->input("status");
         $nomorstnk = $request->input("nomor_stnk");
         $nik = $request->input("nik");
-        $j_kelamin = $request->input("j_kelamin");
 
 
         if ($photo_ktp) {
@@ -93,15 +95,14 @@ class AuthDriverController extends BaseController
             "plat_kendaraan" => $platkendaraan,
             "nik" => $nik,
             "nomor_stnk" => $nomorstnk,
-            "photo_profile" => $avatar,
-            "photo_stnk" => $stnk,
-            "photo_ktp" => $ktp,
-            "j_kelamin" => $j_kelamin
+            "photo_profile" => $photo_profile,
+            "photo_stnk" => $photo_stnk,
+            "photo_ktp" => $photo_ktp,
+            "saldo" => $saldo,
+            "status" => $status
         ];
 
-//        return $this->successResponse($this
-//            ->serviceDriver
-//            ->register($body));
+
         return json_decode($this->successResponse($this
             ->serviceDriver
             ->register($body))
@@ -109,19 +110,14 @@ class AuthDriverController extends BaseController
     }
 
 
-    public function checkPhone(Request $request,$phone)
+    public function checkPhone(Request $request, $phone)
     {
-
-        // return $this->successResponse($this
-        // ->authServiceDriver
-        // ->checkPhone($phone));
         $response = json_decode($this->successResponse($this
             ->authServiceDriver
             ->checkPhone($phone))
             ->original, true);
 
-    
-        if ($response['available']) {
+        if ($response["success"]) {
             $body = [
                 'fcm' => $request->header('fcm')
             ];
@@ -140,8 +136,6 @@ class AuthDriverController extends BaseController
                 $data['jwt'] = $jwt;
                 return $data;
             }
-        }else {
-            return $response;
         }
     }
 
@@ -156,7 +150,6 @@ class AuthDriverController extends BaseController
             ->authServiceDriver
             ->login($phone, $body))
             ->original, true);
-
 
         if ($data['success']) {
             $payload = array(
@@ -361,5 +354,109 @@ class AuthDriverController extends BaseController
             return "Gagal mengirim Email";
         }
         return "Email berhasil dikirim!";
+    }
+
+    public function getListDriverFromAdmin()
+    {
+        return json_decode($this->successResponse($this
+            ->serviceDriver
+            ->getListDriverFromAdmin())
+            ->original, true);
+    }
+
+    public function changeStatusAktivation($id, $status)
+    {
+        if ($status == $this->ACTIVE) {
+            return json_decode($this->successResponse($this
+                ->serviceDriver
+                ->changeStatusAktivation($id, $this->ACTIVE))
+                ->original, true);
+        } else {
+            return json_decode($this->successResponse($this
+                ->serviceDriver
+                ->changeStatusAktivation($id, $this->DELETE))
+                ->original, true);
+        }
+    }
+
+    public function getDriver($id)
+    {
+        return json_decode($this->successResponse($this
+            ->serviceDriver
+            ->getDriver($id))
+            ->original, true);
+    }
+
+    public function getDriverById(Request $request, $id)
+    {
+        $this->validationJWT($request);
+        return json_decode($this->successResponse($this
+            ->serviceDriver
+            ->getDriver($id))
+            ->original, true);
+    }
+
+    public function getDriverTrans(Request $request, $id)
+    {
+        $validation = $this->validationJWT($request);
+        // return 'test';
+        return json_decode($this->successResponse($this
+            ->serviceTransaction
+            ->getDriverTrans($id))
+            ->original, true);
+    }
+
+    public function updateDriver(Request $request, $id)
+    {
+        $name = $request->input("name_driver");
+        $email = $request->input("email");
+        $phone = $request->input("phone");
+        $platkendaraan = $request->input("plat_kendaraan");
+        $photo_profile = $request->file("photo_profile");
+        $photo_stnk = $request->file("photo_stnk");
+        $photo_ktp = $request->file("photo_ktp");
+        $saldo = $request->input("saldo");
+        $status = $request->input("status");
+        $nomorstnk = $request->input("nomor_stnk");
+        $nik = $request->input("nik");
+
+        if ($photo_ktp) {
+            $ktp = time() . $photo_ktp->getClientOriginalName();
+            $photo_ktp->move('images', $ktp);
+        } else {
+            $ktp = 'default.png';
+        }
+        if ($photo_profile) {
+            $avatar = time() . $photo_profile->getClientOriginalName();
+            $photo_profile->move('images', $avatar);
+        } else {
+            $avatar = 'default.png';
+        }
+        if ($photo_stnk) {
+            $stnk = time() . $photo_stnk->getClientOriginalName();
+            $photo_stnk->move('images', $stnk);
+        } else {
+            $stnk = 'default.png';
+        }
+
+
+        $body = [
+            "name_driver" => $name,
+            "email" => $email,
+            "phone" => $phone,
+            "plat_kendaraan" => $platkendaraan,
+            "nik" => $nik,
+            "nomor_stnk" => $nomorstnk,
+            "photo_profile" => $photo_profile,
+            "photo_stnk" => $photo_stnk,
+            "photo_ktp" => $photo_ktp,
+            "saldo" => $saldo,
+            "status" => $status
+        ];
+
+        return json_decode($this->successResponse($this
+            ->serviceDriver
+            ->updatedDriver($body, $id))
+            ->original, true);
     }
 }

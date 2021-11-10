@@ -14,7 +14,7 @@
 */
 
 $router->get('/', function () use ($router) {
-    return 'auth serpis';
+    return $router->app->version();
 });
 
 $router->group(['prefix'=>'api/v1/auth/store'],function() use($router){

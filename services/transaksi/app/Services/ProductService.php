@@ -29,7 +29,7 @@ class ProductService
  
     public function getListFilterProduct($data)
     {
-        return $this->performRequest('POST', '/products/list',$data);
+        return $this->performRequest('POST', '/api/v1/products/list',$data);
     }
 
     public function getProductStore($id){

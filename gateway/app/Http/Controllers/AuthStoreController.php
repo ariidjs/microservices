@@ -28,36 +28,43 @@ class AuthStoreController extends BaseController
     private $JWT_EXPIRED = false;
     private $WITHDRAW = 2;
     private $DEPOSIT = 1;
+    private $DELETE = -1;
+    private $ACTIVE = 1;
+    private $PENDING = 0;
+
+    private $SUPER_ADMIN = "super_admin";
+    private $ADMIN = "admin";
 
 
-    public function __construct(AuthServiceStore $authServiceStore,ServiceStore $serviceStore,ServiceProduct $serviceProduct,ServiceSaldoStore $serviceSaldoStore,ServiceTransaction $serviceTransaction)
+    public function __construct(AuthServiceStore $authServiceStore, ServiceStore $serviceStore, ServiceProduct $serviceProduct, ServiceSaldoStore $serviceSaldoStore, ServiceTransaction $serviceTransaction)
     {
-        $this->authServiceStore =$authServiceStore;
+        $this->authServiceStore = $authServiceStore;
         $this->serviceStore = $serviceStore;
         $this->serviceProduct = $serviceProduct;
         $this->serviceSaldo = $serviceSaldoStore;
         $this->serviceTransaction = $serviceTransaction;
     }
 
-    private function auth($fcm){
-         $body = [
-            "fcm"=>$fcm
+    private function auth($fcm)
+    {
+        $body = [
+            "fcm" => $fcm
         ];
-
         return json_decode($this->successResponse($this
             ->authServiceStore
             ->auth($body))
-            ->original,true);
+            ->original, true);
     }
 
-    public function authStore(Request $request){
+    public function authStore(Request $request)
+    {
         $data = $this->auth($request->input("fcm"));
-        if($data['success']){
+        if ($data['success']) {
             $payload = array(
                 "id" => $data['data']['id'],
                 "owner_name" => $data['data']['owner_name'],
                 "store_name" => $data['data']['store_name'],
-                "exp"=>(round(microtime(true) * 1000) + ($this->TIME_EXPIRE*60000))
+                "exp" => (round(microtime(true) * 1000) + ($this->TIME_EXPIRE * 60000))
             );
             $jwt = JWT::encode($payload, $this->key);
             $data['jwt'] = $jwt;
@@ -65,28 +72,33 @@ class AuthStoreController extends BaseController
         }
     }
 
-    public function inserProduct(Request $request){
+    public function inserProduct(Request $request)
+    {
         $jwt = $request->header("jwt");
         $fcm = $request->header('fcm');
-    
-        Try{
-            JWT::decode($jwt,$this->key,array('HS256'));
-            return $this->insert($request,$jwt,$this->JWT_EXPIRED);
-        }catch(ExpiredException $ex){
+
+        try {
+            $validation = JWT::decode($jwt, $this->key, array('HS256'));
+            // return dd($validation);
+            $this->insert($request, $jwt, $this->JWT_EXPIRED);
+        } catch (ExpiredException $ex) {
+        
             $data = $this->auth($fcm);
+
+            // return dd($data);
             $payload = array(
-                "id" => $data['data']['id'],
+                "id" => $data['data']['id_store'],
                 "owner_name" => $data['data']['owner_name'],
                 "store_name" => $data['data']['store_name'],
-                "exp"=>(round(microtime(true) * 1000) + ($this->TIME_EXPIRE*60000))
+                "exp" => (round(microtime(true) * 1000) + ($this->TIME_EXPIRE * 60000))
             );
             $jwt = JWT::encode($payload, $this->key);
-            return $this->insert($request,$jwt,!$this->JWT_EXPIRED);
+            return $this->insert($request, $jwt, !$this->JWT_EXPIRED);
         }
-
     }
 
-    public function insert($request,$jwt,$expired){
+    public function insert($request, $jwt, $expired)
+    {
         $id_store = $request->input('id_store');
         $name_product = $request->input('name_product');
         $category = $request->input('category');
@@ -99,79 +111,79 @@ class AuthStoreController extends BaseController
         $description = $request->input('description');
         $status_delete = 0;
 
-        if($image1){
-            $fotoProduct1 =time().$image1->getClientOriginalName();
-        }else{
+        if ($image1) {
+            $fotoProduct1 = time() . $image1->getClientOriginalName();
+        } else {
             $fotoProduct1 = '';
         }
 
-        if($image2){
-            $fotoProduct2 =time().$image2->getClientOriginalName();
-        }else{
+        if ($image2) {
+            $fotoProduct2 = time() . $image2->getClientOriginalName();
+        } else {
             $fotoProduct2 = '';
         }
 
-        if($image3){
-            $fotoProduct3 = time().$image3->getClientOriginalName();
-        }else{
+        if ($image3) {
+            $fotoProduct3 = time() . $image3->getClientOriginalName();
+        } else {
             $fotoProduct3 = '';
         }
 
-        if($image4){
-            $fotoProduct4 = time().$image4->getClientOriginalName();
-        }else{
+        if ($image4) {
+            $fotoProduct4 = time() . $image4->getClientOriginalName();
+        } else {
             $fotoProduct4 = '';
         }
 
         $body = [
-            'id_store'=>$id_store,
-            'name_product'=>$name_product,
-            'category'=>$category,
-            'price'=>$price,
-            'price_promo'=>$price_promo,
-            'image1'=>$fotoProduct1,
-            'image2'=>$fotoProduct2,
-            'image3'=>$fotoProduct3,
-            'image4'=>$fotoProduct4,
-            'description'=>$description,
-            'status_delete'=>$status_delete,
-            'jwt' =>$jwt
+            'id_store' => $id_store,
+            'name_product' => $name_product,
+            'category' => $category,
+            'price' => $price,
+            'price_promo' => $price_promo,
+            'image1' => $fotoProduct1,
+            'image2' => $fotoProduct2,
+            'image3' => $fotoProduct3,
+            'image4' => $fotoProduct4,
+            'description' => $description,
+            'status_delete' => $status_delete,
+            'jwt' => $jwt
         ];
 
 
-            $response = json_decode($this->successResponse($this
+        $response = json_decode($this->successResponse($this
             ->serviceProduct
             ->insertProduct($body))
-            ->original,true);
+            ->original, true);
 
-            if($response["success"]){
-                if($image1){
-                    $image1->move('images',$fotoProduct1);
-                }
-                if($image2){
-                    $image2->move('images',$fotoProduct2);
-                }
-                if($image3){
-                    $image3->move('images',$fotoProduct3);
-                }
-                if($image4){
-                    $image4->move('images',$fotoProduct4);
-                }
-            
-            
-     
-                if($expired){
-                    $response["jwt"]=$jwt;
-                }else{
-                   $response["jwt"]=null; 
-                }
-                return $response;
+        if ($response["success"]) {
+            if ($image1) {
+                $image1->move('images', $fotoProduct1);
             }
-       
+            if ($image2) {
+                $image2->move('images', $fotoProduct2);
+            }
+            if ($image3) {
+                $image3->move('images', $fotoProduct3);
+            }
+            if ($image4) {
+                $image4->move('images', $fotoProduct4);
+            }
+
+
+
+            if ($expired) {
+                $response["data"]["jwt"] = $jwt;
+            } else {
+                $response["jwt"] = null;
+            }
+            return $response;
+        }
     }
 
 
-    public function register(Request $request){
+    public function register(Request $request)
+    {
         $owner_name = $request->input("owner_name");
         $store_name = $request->input("store_name");
         $phone = $request->input("phone");
@@ -186,15 +198,15 @@ class AuthStoreController extends BaseController
         $address = $request->input("address");
 
 
-         if($photo_ktp){
-            $ktp = time().$photo_ktp->getClientOriginalName();
-        }else{
+        if ($photo_ktp) {
+            $ktp = time() . $photo_ktp->getClientOriginalName();
+        } else {
             $ktp = 'default.png';
         }
-        
-        if($photo_store){
-            $store = time().$photo_store->getClientOriginalName();
-        }else{
+
+        if ($photo_store) {
+            $store = time() . $photo_store->getClientOriginalName();
+        } else {
             $store = 'default.png';
         }
 
@@ -210,61 +222,65 @@ class AuthStoreController extends BaseController
             "latitude" => $latitude,
             "longititude" => $longititude,
             "address" => $address,
-            "photo_store"=>$store
+            "photo_store" => $store
         ];
 
-          $response = json_decode($this->successResponse($this
+        $response = json_decode($this->successResponse($this
             ->serviceStore
             ->register($body))
-            ->original,true);
+            ->original, true);
 
-            if($response["success"]){
-                 $photo_ktp->move('images',$ktp); 
-                 $photo_store->move('images',$store);    
-                 return $response;
+        if ($response["success"]) {
+            if($photo_ktp){
+                $photo_ktp->move('images', $ktp);
             }
-     }
-     
-        
+            if($photo_store){
+                $photo_store->move('images', $store);
+            }
+            return $response;
+        }
+    }
 
-    
-    
-     public function checkPhone($phone){
+    public function checkPhone($phone)
+    {
         return json_decode($this->successResponse($this
             ->authServiceStore
             ->checkPhone($phone))
-            ->original,true);
+            ->original, true);
     }
 
-    public function getListProduct(Request $request){
+    public function getListProduct(Request $request)
+    {
         $validation = $this->validationJWT($request);
         return json_decode($this->successResponse($this
             ->serviceProduct
             ->getListProductStore($validation["data"]["id"]))
-            ->original,true);
+            ->original, true);
     }
 
-    public function updateProduct(Request $request,$idProduct){
+    public function updateProduct(Request $request, $idProduct)
+    {
         // return "Hello";
         $jwt = $request->header("jwt");
         $fcm = $request->header('fcm');
-    
-        Try{
-            JWT::decode($jwt,$this->key,array('HS256'));
-            return $this->update($request,$jwt,$this->JWT_EXPIRED,$idProduct);
-        }catch(ExpiredException $ex){
+
+        try {
+            JWT::decode($jwt, $this->key, array('HS256'));
+            return $this->update($request, $jwt, $this->JWT_EXPIRED, $idProduct);
+        } catch (ExpiredException $ex) {
             $data = $this->auth($fcm);
             $payload = array(
                 "id" => $data['data']['id_store'],
                 "owner_name" => $data['data']['owner_name'],
                 "store_name" => $data['data']['store_name'],
-                "exp"=>(round(microtime(true) * 1000) + ($this->TIME_EXPIRE*60000))
+                "exp" => (round(microtime(true) * 1000) + ($this->TIME_EXPIRE * 60000))
             );
             $jwt = JWT::encode($payload, $this->key);
-            return $this->update($request,$jwt,!$this->JWT_EXPIRED,$idProduct);
+            return $this->update($request, $jwt, !$this->JWT_EXPIRED, $idProduct);
         }
     }
-    public function update($request,$jwt,$expired,$idProduct){
+    public function update($request, $jwt, $expired, $idProduct)
+    {
         $name_product = $request->input('name_product');
         $category = $request->input('category');
         $price = $request->input('price');
@@ -275,223 +291,230 @@ class AuthStoreController extends BaseController
         $image4 = $request->file('image4');
         $description = $request->input('description');
 
-        $store = JWT::decode($jwt,$this->key,array('HS256'));
+        $store = JWT::decode($jwt, $this->key, array('HS256'));
 
-        if($image1){
-            $fotoProduct1 =time().$image1->getClientOriginalName();
-        }else{
+        if ($image1) {
+            $fotoProduct1 = time() . $image1->getClientOriginalName();
+        } else {
             $fotoProduct1 = '';
         }
 
-        if($image2){
-            $fotoProduct2 =time().$image2->getClientOriginalName();
-        }else{
+        if ($image2) {
+            $fotoProduct2 = time() . $image2->getClientOriginalName();
+        } else {
             $fotoProduct2 = '';
         }
 
-        if($image3){
-            $fotoProduct3 = time().$image3->getClientOriginalName();
-
-        }else{
+        if ($image3) {
+            $fotoProduct3 = time() . $image3->getClientOriginalName();
+        } else {
             $fotoProduct3 = '';
         }
 
-        if($image4){
-            $fotoProduct4 = time().$image4->getClientOriginalName();
-        }else{
+        if ($image4) {
+            $fotoProduct4 = time() . $image4->getClientOriginalName();
+        } else {
             $fotoProduct4 = '';
         }
 
-         $body = [
-            'id_store'=>$store->id,
-            'name_product'=>$name_product,
-            'category'=>$category,
-            'price'=>$price,
-            'price_promo'=>$price_promo,
-            'image1'=>$fotoProduct1,
-            'image2'=>$fotoProduct2,
-            'image3'=>$fotoProduct3,
-            'image4'=>$fotoProduct4,
-            'description'=>$description,
-            'status_delete'=>0,
+        $body = [
+            'id_store' => $store->id,
+            'name_product' => $name_product,
+            'category' => $category,
+            'price' => $price,
+            'price_promo' => $price_promo,
+            'image1' => $fotoProduct1,
+            'image2' => $fotoProduct2,
+            'image3' => $fotoProduct3,
+            'image4' => $fotoProduct4,
+            'description' => $description,
+            'status_delete' => 0,
         ];
 
 
         $response = json_decode($this->successResponse($this
-        ->serviceProduct
-        ->updatedProduct($body,$idProduct))
-        ->original,true);
+            ->serviceProduct
+            ->updatedProduct($body, $idProduct))
+            ->original, true);
 
 
-        if($response["success"]){
-             if($image1){
-                $image1->move('images',$fotoProduct1);
-             }
-             if($image2){
-                $image2->move('images',$fotoProduct2);
-             }
-             if($image3){
-                $image3->move('images',$fotoProduct3);
-             }
-             if($image4){
-               $image4->move('images',$fotoProduct4);  
-             }
+        if ($response["success"]) {
+            if ($image1) {
+                $image1->move('images', $fotoProduct1);
+            }
+            if ($image2) {
+                $image2->move('images', $fotoProduct2);
+            }
+            if ($image3) {
+                $image3->move('images', $fotoProduct3);
+            }
+            if ($image4) {
+                $image4->move('images', $fotoProduct4);
+            }
 
-             if($expired){
-                $response["jwt"]=$jwt;
-             }else{
-                $response["jwt"]=null;
-             }
-            
-             return $response;
+            if ($expired) {
+                $response["jwt"] = $jwt;
+            } else {
+                $response["jwt"] = null;
+            }
+
+            return $response;
         }
     }
 
-    public function login(Request $request,$phone){
-       
-        $body = [
-            'fcm'=>$request->input('fcm')
-        ];
-        
-        $data = json_decode($this->successResponse($this
-            ->authServiceStore
-            ->login($phone,$body))
-            ->original,true);
+ 
 
-        if($data['success']){
+    public function login(Request $request, $phone)
+    {
+
+        $body = [
+            'fcm' => $request->input('fcm')
+        ];
+
+        $response = json_decode($this->successResponse($this
+            ->authServiceStore
+            ->login($phone, $body))
+            ->original, true);
+
+        if ($response['success']) {
             $payload = array(
-                "id" => $data['data']['id_store'],
-                "owner_name" => $data['data']['owner_name'],
-                "store_name" => $data['data']['store_name'],
-                "exp"=>(round(microtime(true) * 1000) + ($this->TIME_EXPIRE*60000))
+                "id" => $response['data']['id_store'],
+                "owner_name" => $response['data']['owner_name'],
+                "store_name" => $response['data']['store_name'],
+                "exp" => (round(microtime(true) * 1000) + ($this->TIME_EXPIRE * 60000))
             );
             $jwt = JWT::encode($payload, $this->key);
-            $data['jwt'] = $jwt;
-            return $data;
+            $response['data']['jwt'] = $jwt;
+            return $response;
         }
     }
 
-    public function confirmOrder(Request $request,$idTransaction){
+    public function confirmOrder(Request $request, $idTransaction)
+    {
         $this->validationJWT($request);
         $body = [
             "status" => $request->input("status")
         ];
         return json_decode($this->successResponse($this
-        ->serviceTransaction
-        ->confirmStore($idTransaction,$body))
-        ->original,true);
+            ->serviceTransaction
+            ->confirmStore($idTransaction, $body))
+            ->original, true);
     }
 
 
-    public function validationJWT($request){
+    public function validationJWT($request)
+    {
         $jwt = $request->header("jwt");
         $fcm = $request->header('fcm');
-    
-        Try{
-            $data = JWT::decode($jwt,$this->key,array('HS256'));
+
+        try {
+            $data = JWT::decode($jwt, $this->key, array('HS256'));
             return [
                 "expired" => $this->JWT_EXPIRED,
-                "jwt"=> $jwt,
-                "data"=>(array)$data
+                "jwt" => $jwt,
+                "data" => (array)$data
             ];
-        }catch(ExpiredException $ex){
+        } catch (ExpiredException $ex) {
             $data = $this->auth($fcm);
             $payload = array(
                 "id" => $data['data']['id_store'],
                 "owner_name" => $data['data']['owner_name'],
                 "store_name" => $data['data']['store_name'],
-                "exp"=>(round(microtime(true) * 1000) + ($this->TIME_EXPIRE*60000))
+                "exp" => (round(microtime(true) * 1000) + ($this->TIME_EXPIRE * 60000))
             );
             $jwt = JWT::encode($payload, $this->key);
             return [
                 "expired" => !$this->JWT_EXPIRED,
-                "data"=>$payload,
-                "jwt"=> $jwt
+                "data" => $payload,
+                "jwt" => $jwt
             ];
         }
     }
 
-    public function withdraw(Request $request){
-        $validation = $this->validationJWT($request); 
+    public function withdraw(Request $request)
+    {
+        $validation = $this->validationJWT($request);
         $id_store = $validation['data']['id'];
         $norek = $request->input('norek');
         $saldo = $request->input('saldo');
-        $image= $request->file('image');
+        $image = $request->file('image');
         $namabank = $request->input('nama_bank');
-        if($image){
-            $foto =time().$image->getClientOriginalName();
-        }else{
+        if ($image) {
+            $foto = time() . $image->getClientOriginalName();
+        } else {
             $foto = '';
         }
 
-        $body =[
-            'id_store'=>$id_store,
-            'norek'=>$norek,
-            'saldo'=>$saldo,
-            'type'=>$this->WITHDRAW,
-            'nama_bank'=>$namabank,
-            'image'=>$foto,
+        $body = [
+            'id_store' => $id_store,
+            'norek' => $norek,
+            'saldo' => $saldo,
+            'type' => $this->WITHDRAW,
+            'nama_bank' => $namabank,
+            'image' => $foto,
         ];
 
         $response = json_decode($this->successResponse($this
-        ->serviceSaldo
-        ->withdraw($body))
-        ->original,true);
+            ->serviceSaldo
+            ->withdraw($body))
+            ->original, true);
 
-        if($response["success"]){
-            if($image){
-                 $image->move('images',$foto);
+        if ($response["success"]) {
+            if ($image) {
+                $image->move('images', $foto);
             }
-            if($validation['expired']){
+            if ($validation['expired']) {
                 $response["jwt"] = $validation["jwt"];
-            }else{
+            } else {
                 $response["jwt"] = null;
             }
             return $response;
         }
     }
 
-    public function deposit(Request $request){
-        $validation = $this->validationJWT($request); 
+    public function deposit(Request $request)
+    {
+        $validation = $this->validationJWT($request);
         $id_store = $validation['data']['id'];
         $norek = $request->input('norek');
         $saldo = $request->input('saldo');
-        $image= $request->file('image');
+        $image = $request->file('image');
         $namabank = $request->input('nama_bank');
-        if($image){
-            $foto =time().$image->getClientOriginalName();
-        }else{
+        if ($image) {
+            $foto = time() . $image->getClientOriginalName();
+        } else {
             $foto = '';
         }
 
-        $body =[
-            'id_store'=>$id_store,
-            'norek'=>$norek,
-            'saldo'=>$saldo,
-            'type'=>$this->DEPOSIT,
-            'nama_bank'=>$namabank,
-            'image'=>$foto,
+        $body = [
+            'id_store' => $id_store,
+            'norek' => $norek,
+            'saldo' => $saldo,
+            'type' => $this->DEPOSIT,
+            'nama_bank' => $namabank,
+            'image' => $foto,
         ];
 
         $response = json_decode($this->successResponse($this
-        ->serviceSaldo
-        ->deposit($body))
-        ->original,true);
+            ->serviceSaldo
+            ->deposit($body))
+            ->original, true);
 
-        if($response["success"]){
-            if($image){
-                 $image->move('images',$foto);
+        if ($response["success"]) {
+            if ($image) {
+                $image->move('images', $foto);
             }
-            if($validation['expired']){
+            if ($validation['expired']) {
                 $response["jwt"] = $validation["jwt"];
-            }else{
+            } else {
                 $response["jwt"] = null;
             }
             return $response;
         }
     }
 
-    public function updateStore(Request $request){
+    public function updateStore(Request $request)
+    {
         $validation = $this->validationJWT($request);
 
 
@@ -504,53 +527,217 @@ class AuthStoreController extends BaseController
         $description_store = $request->input('description_store');
 
 
-        if($photo_store){
-            $fotoStore = time().$photo_store->getClientOriginalName();
-        }else{
+        if ($photo_store) {
+            $fotoStore = time() . $photo_store->getClientOriginalName();
+        } else {
             $fotoStore = null;
         }
 
         $body = [
-                'store_name'=>$store_name,
-                'phone'=>$phone,
-                'photo_store'=>$fotoStore,
-                'address'=>$address,
-                'latitude'=>$latitude,
-                'longititude'=>$longititude,
-                'description_store'=>$description_store
+            'store_name' => $store_name,
+            'phone' => $phone,
+            'photo_store' => $fotoStore,
+            'address' => $address,
+            'latitude' => $latitude,
+            'longititude' => $longititude,
+            'description_store' => $description_store
         ];
 
-         $response = json_decode($this->successResponse($this
-        ->serviceStore
-        ->update($body,$validation["data"]["id"]))
-        ->original,true);
+        $response = json_decode($this->successResponse($this
+            ->serviceStore
+            ->update($body, $validation["data"]["id"]))
+            ->original, true);
 
-        if($response["success"]){
-            if($photo_store){
-                 $photo_store->move('images',$fotoStore);
+        if ($response["success"]) {
+            if ($photo_store) {
+                $photo_store->move('images', $fotoStore);
             }
 
-            if($validation["expired"]){
+            if ($validation["expired"]) {
                 $response["jwt"] = $validation["jwt"];
-            }else{
+            } else {
                 $response["jwt"] = null;
             }
 
             return $response;
         }
-
     }
 
-    public function statusOpen(Request $request,$status){
-     
-        $validation = $this->validationJWT($request); 
-  
+    public function statusOpen(Request $request, $status)
+    {
+
+        $validation = $this->validationJWT($request);
+
         return json_decode($this->successResponse($this
-        ->serviceStore
-        ->statusOpen($status,$validation["data"]["id"]))
-        ->original,true);
+            ->serviceStore
+            ->statusOpen($status, $validation["data"]["id"]))
+            ->original, true);
     }
 
+    public function getListStoreFromAdmin(Request $request)
+    {
+        return json_decode($this->successResponse($this
+            ->serviceStore
+            ->getListStoreFromAdmin())
+            ->original, true);
+    }
+
+    public function updateStoreFromAdmin(Request $request, $id)
+    {
+        $owner_name = $request->input("owner_name");
+        $store_name = $request->input("store_name");
+        $phone = $request->input("phone");
+        $email = $request->input("email");
+        $fcm = $request->input("fcm");
+        $description_store = $request->input("description_store");
+        $nik_ktp = $request->input("nik_ktp");
+        $photo_ktp = $request->file("photo_ktp");
+        $photo_store = $request->file("photo_store");
+        $latitude = $request->input("latitude");
+        $longititude = $request->input("longititude");
+        $address = $request->input("address");
+
+        $validation = $this->validationJWT($request);
+
+        if (isset($validation["data"]["role"])) {
+            if ($validation["data"]["role"] == $this->SUPER_ADMIN || $validation["data"]["role"] == $this->ADMIN) {
 
 
+                if ($photo_ktp && $photo_store) {
+                    $ktp = time() . $photo_ktp->getClientOriginalName();
+                    $fotoStore = time() . $photo_store->getClientOriginalName();
+                    $body = [
+                        "owner_name" => $owner_name,
+                        "store_name" => $store_name,
+                        "phone" => $phone,
+                        "email" => $email,
+                        "fcm" => $fcm,
+                        "description_store" => $description_store,
+                        "nik_ktp" => $nik_ktp,
+                        "photo_ktp" => $ktp,
+                        "latitude" => $latitude,
+                        "longititude" => $longititude,
+                        "address" => $address,
+                        "photo_store" => $fotoStore
+                    ];
+                } else if ($photo_ktp) {
+                    $ktp = time() . $photo_ktp->getClientOriginalName();
+                    $body = [
+                        "owner_name" => $owner_name,
+                        "store_name" => $store_name,
+                        "phone" => $phone,
+                        "email" => $email,
+                        "fcm" => $fcm,
+                        "description_store" => $description_store,
+                        "nik_ktp" => $nik_ktp,
+                        "photo_ktp" => $ktp,
+                        "latitude" => $latitude,
+                        "longititude" => $longititude,
+                        "address" => $address,
+                    ];
+                } else if ($photo_store) {
+                    $fotoStore = time() . $photo_store->getClientOriginalName();
+                    $body = [
+                        "owner_name" => $owner_name,
+                        "store_name" => $store_name,
+                        "phone" => $phone,
+                        "email" => $email,
+                        "fcm" => $fcm,
+                        "description_store" => $description_store,
+                        "nik_ktp" => $nik_ktp,
+                        "latitude" => $latitude,
+                        "longititude" => $longititude,
+                        "address" => $address,
+                        "photo_store" => $fotoStore
+                    ];
+                } else {
+                    $body = [
+                        "owner_name" => $owner_name,
+                        "store_name" => $store_name,
+                        "phone" => $phone,
+                        "email" => $email,
+                        "fcm" => $fcm,
+                        "description_store" => $description_store,
+                        "nik_ktp" => $nik_ktp,
+                        "latitude" => $latitude,
+                        "longititude" => $longititude,
+                        "address" => $address,
+                    ];
+                }
+
+                $response = json_decode($this->successResponse($this
+                    ->serviceStore
+                    ->update($body, $id))
+                    ->original, true);
+
+                if ($response["success"]) {
+                    if ($photo_store) {
+                        $photo_store->move('images', $fotoStore);
+                    }
+                    if ($photo_ktp) {
+                        $photo_ktp->move('images', $ktp);
+                    }
+                    return $response;
+                }
+            } else {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'authentification failed',
+                ], 404);
+            }
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'not found',
+            ], 404);
+        }
+    }
+
+    public function getStore($id)
+    {
+
+        $store = json_decode($this->successResponse($this
+            ->serviceStore
+            ->getStore($id))
+            ->original, true);
+
+        $product = json_decode($this->successResponse($this
+            ->serviceProduct
+            ->getListProductStoreFromAdmin($id))
+            ->original, true);
+
+
+        if (isset($store)) {
+            if (isset(($product))) {
+                $store["product"] = $product;
+            } else {
+                $store["product"] = null;
+            }
+            return $store;
+        }
+    }
+
+    public function activation(Request $request, $id_store, $status)
+    {
+        $validation = $this->validationJWT($request);
+
+        if ($validation["data"]["role"] == "admin" || $validation["data"]["role"] == "super_admin") {
+            if ($status == $this->ACTIVE) {
+                return json_decode($this->successResponse($this
+                    ->serviceStore
+                    ->changeStatusAktivation($id_store, $this->ACTIVE))
+                    ->original, true);
+            } else {
+                return json_decode($this->successResponse($this
+                    ->serviceStore
+                    ->changeStatusAktivation($id_store, $this->DELETE))
+                    ->original, true);
+            }
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'authentifikasi failed',
+            ], 400);
+        }
+    }
 }

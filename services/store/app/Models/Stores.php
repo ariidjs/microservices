@@ -19,7 +19,7 @@ class Stores extends Model implements AuthenticatableContract, AuthorizableContr
      * @var array
      */
     protected $fillable = [
-        'id_store','owner_name','rating', 'store_name','phone', 'email','fcm', 'status_store','description_store', 'nik_ktp','photo_ktp', 'photo_store','latitude','longititude', 'address','saldo','status_delete'
+        'id_store', 'owner_name', 'rating', 'store_name', 'phone', 'email', 'fcm', 'status_store', 'description_store', 'nik_ktp', 'photo_ktp', 'photo_store', 'latitude', 'longititude', 'address', 'saldo', 'status_delete'
     ];
 
     /**
@@ -28,6 +28,6 @@ class Stores extends Model implements AuthenticatableContract, AuthorizableContr
      * @var array
      */
     protected $hidden = [
-        'password','nik_ktp','photo_ktp'
+        'password'
     ];
 }

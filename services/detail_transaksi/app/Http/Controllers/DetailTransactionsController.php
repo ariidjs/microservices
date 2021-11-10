@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Services\ServiceProduct;
 use \Illuminate\Http\Request;
-use \Illuminate\Support\Facades\Hash;
 use \App\Models\DetailTransactions;
-use \Illuminate\Support\Facades\DB;
+use App\Services\ServiceProduct;
+use App\Traits\ApiResponser;
 use Laravel\Lumen\Routing\Controller;
-use \App\Traits\ApiResponser;
+
+
 
 class DetailTransactionsController extends Controller
 {
@@ -17,18 +17,21 @@ class DetailTransactionsController extends Controller
      *
      * @return void
      */
+    
     use ApiResponser;
-
-    public $productService;
+    private $serviceProduct;
+   
     public function __construct(ServiceProduct $serviceProduct)
     {
-        $this->productService = $serviceProduct;
+        $this->serviceProduct = $serviceProduct;
     }
 
     public function insert(Request $request){
         $data = $request->getContent();
         $data = json_decode($data);
-//        return $data;
+
+        // return $data;
+     
         $dataArray = array();
         foreach ($data as $value) {
             $data = (array) $value;
@@ -44,42 +47,48 @@ class DetailTransactionsController extends Controller
             ],201);
         }else{
             return response()->json([
-                'success'=>true,
+                'success'=>false,
                 'message'=>'insert data failed',
             ],401);
         }
 
     }
 
-    public function getNotransaction($notrans,$idStore){
-        $productStore = json_decode($this->successResponse($this
-            ->productService
+
+  public function getNotransaction($notrans,$idStore){
+     $productStore = json_decode($this->successResponse($this
+            ->serviceProduct
             ->getProductStore($idStore))
             ->original,true)["data"];
-        $data = DetailTransactions::whereNotransaksi($notrans)->get();
-        $data = json_decode($data);
+            
+      $data = DetailTransactions::whereNotransaksi($notrans)->get();
+      $data = json_decode($data);
 
-        $detailProduct = array();
-        foreach ($data as $valueDetailProduct ) {
-            foreach ($productStore as $valueProduct) {
-                if($valueDetailProduct->id_product == $valueProduct["id"]){
-                    $detailProduct[] = array_merge((array)$valueDetailProduct,$valueProduct);
-                }
+     $detailProduct = array();
+    foreach ($data as $valueDetailProduct ) {
+        foreach ($productStore as $valueProduct) {
+            if($valueDetailProduct->id_product == $valueProduct["id"]){
+                $detailProduct[] = array_merge((array)$valueDetailProduct,$valueProduct);
             }
         }
+    }
 
-        if($detailProduct){
-            return response()->json([
+    if($detailProduct){
+         return response()->json([
                 'success'=>true,
                 'message'=>'Success',
                 'data'=>$detailProduct
             ],201);
-        }else{
-            return response()->json([
+      }else{
+         return response()->json([
                 'success'=>false,
                 'message'=>'get data failed',
             ],401);
-        }
+      }
+  }
 
-    }
+  public function getDetailTransaction($notrans){
+      $notrans=DetailTransactions::whereNotransaksi($notrans)->get();
+      return $notrans;
+  }
 }

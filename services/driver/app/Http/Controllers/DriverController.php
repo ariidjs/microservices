@@ -16,7 +16,6 @@ class DriverController extends BaseController
 
     public function insert(Request $request)
     {
-
         $name = $request->input("name_driver");
         $email = $request->input("email");
         $phone = $request->input("phone");
@@ -24,7 +23,8 @@ class DriverController extends BaseController
         $photo_profile = $request->input("photo_profile");
         $photo_stnk = $request->input("photo_stnk");
         $photo_ktp = $request->input("photo_ktp");
-        $jkelamin = $request->input("j_kelamin");
+        $saldo = $request->input("saldo");
+        $status = $request->input("status");
         $stnk = $request->input("nomor_stnk");
         $nik = $request->input("nik");
 
@@ -72,19 +72,6 @@ class DriverController extends BaseController
         }
 
 
-//        return [
-//            "name_driver" => $name,
-//            "email" => $email,
-//            "phone" => $phone,
-//            "plat_kendaraan" => $platkendaraan,
-//            "nik" => $nik,
-//            "nomor_stnk" => $stnk,
-//            "photo_profile" => $photo_profile,
-//            "photo_stnk" => $photo_stnk,
-//            "photo_ktp" => $photo_ktp,
-//            "saldo" => $saldo,
-//            "status" => $status
-//        ];
         $insert = Drivers::create([
             "name_driver" => $name,
             "email" => $email,
@@ -95,7 +82,8 @@ class DriverController extends BaseController
             "photo_profile" => $photo_profile,
             "photo_stnk" => $photo_stnk,
             "photo_ktp" => $photo_ktp,
-            "j_kelamin" => $jkelamin
+            "saldo" => $saldo,
+            "status" => $status
         ]);
 
         if ($insert) {
@@ -129,14 +117,12 @@ class DriverController extends BaseController
             $updated = Drivers::whereId($id)->update([
                 "name_driver" => $name,
                 "photo_profile" => $avatar,
-                "rating" => $rating,
                 "saldo" => $saldo,
                 "status" => $status,
             ]);
         } else {
             $updated = Drivers::whereId($id)->update([
                 "name_driver" => $name,
-                "rating" => $rating,
                 "saldo" => $saldo,
                 "status" => $status,
             ]);
@@ -164,13 +150,11 @@ class DriverController extends BaseController
             return response()->json([
                 'success' => true,
                 'message' => 'phone is register',
-                'available' => true
             ], 200);
         } else {
             return response()->json([
-                'success' => true,
+                'success' => false,
                 'message' => 'phone not register',
-                'available' => false
             ], 200);
         }
     }
@@ -209,18 +193,23 @@ class DriverController extends BaseController
         }
     }
 
-    public function active($id)
+    public function ChangeStatusUser($id_driver, $status)
     {
-        $delete = Drivers::whereId($id)->update(["status_delete" => $this->ACTIVE]);
-        if ($delete) {
+        if ($status == $this->ACTIVE) {
+            $status = Drivers::whereId($id_driver)->update(["status_delete" => $this->ACTIVE]);
+        } else {
+            $status = Drivers::whereId($id_driver)->update(["status_delete" => $this->DELETE]);
+        }
+
+        if ($status) {
             return response()->json([
                 'success' => true,
-                'message' => 'success active drivers',
+                'message' => 'success',
             ], 201);
         } else {
             return response()->json([
                 'success' => false,
-                'message' => 'delete failed',
+                'message' => 'failed',
             ], 401);
         }
     }

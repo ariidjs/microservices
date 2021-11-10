@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Services;
+
 use App\Traits\ConsumeExternalService;
 
 class AdminServices
@@ -33,16 +34,8 @@ class AdminServices
     /**
      * Obtain the full list of author from the author service
      */
-    public function login($data){
-        return $this->performRequest("POST",'/api/v1/admins/login',$data);
+    public function login($data)
+    {
+        return $this->performRequest("POST", '/api/v1/admins/login', $data);
     }
-    // public function checkPhone($phone){
-    //     return $this->performRequest("GET",'/api/v1/admin/phone/'.$phone);
-    // }
-    // public function login($phone,$data){
-    //     return $this->performRequest("POST",'/api/v1/admin/login/'.$phone,$data);
-    // }
-    // public function register($data){
-    //     return $this->performRequest("POST",'/api/v1/admin',$data);
-    // }
 }

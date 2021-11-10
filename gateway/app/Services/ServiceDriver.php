@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Services;
+
 use App\Traits\ConsumeExternalService;
 
 class ServiceDriver
@@ -25,11 +26,32 @@ class ServiceDriver
         $this->secret = config('service.driver.secret');
     }
 
-    public function register($data){
-        return $this->performRequest("POST",'/api/v1/driver/',$data);
+    public function register($data)
+    {
+        return $this->performRequest("POST", '/api/v1/driver/', $data);
     }
 
-    public function statusWork($status,$id){
-        return $this->performRequest("GET",'api/v1/driver/'.$id.'/status/'.$status);
+    public function statusWork($status, $id)
+    {
+        return $this->performRequest("GET", 'api/v1/driver/' . $id . '/status/' . $status);
+    }
+
+    public function getListDriverFromAdmin()
+    {
+        return $this->performRequest("GET", 'api/v1/driver/admin');
+    }
+
+    public function changeStatusAktivation($id, $status)
+    {
+        return $this->performRequest("GET", 'api/v1/driver/' . $id . '/activation/' . $status);
+    }
+
+    public function getDriver($id)
+    {
+        return $this->performRequest("GET", 'api/v1/driver/' . $id);
+    }
+    public function updatedDriver($data, $id)
+    {
+        return $this->performRequest("POST", 'api/v1/driver/' . $id, $data);
     }
 }

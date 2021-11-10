@@ -17,8 +17,7 @@
 $router->group(['prefix'=>'api/v1/detailTransaction'],function() use($router){
     $router->post('','DetailTransactionsController@insert');
     $router->get('{notrans}/store/{idStore}','DetailTransactionsController@getNotransaction');
-//    $router->get('[{id}]','ProductController@getProduct');
-//    $router->get('store/[{id}]','ProductController@getProductStore');
+    $router->get('{notrans}','DetailTransactionsController@getDetailTransaction');
 //    $router->post('update[/{id}]','ProductController@update');
 //    $router->delete('[{id}]','ProductController@delete');
 });

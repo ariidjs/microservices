@@ -22,7 +22,7 @@ use Throwable;
 
 class Handler extends ExceptionHandler
 {
-        use ApiResponser;
+    use ApiResponser;
     /**
      * A list of the exception types that should not be reported.
      *
@@ -61,7 +61,7 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Throwable $exception)
     {
-        
+
         if ($exception instanceof HttpException) {
             $code = $exception->getStatusCode();
             $message = Response::$statusTexts[$code];

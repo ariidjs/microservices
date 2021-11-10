@@ -29,6 +29,8 @@ class ServiceDriver
         return $this->performRequest("GET",'api/v1/driver/'.$id);
     }
 
+    public function statusWork($status,$id){
+        return $this->performRequest("GET",'api/v1/driver/'.$id.'/status/'.$status);
+    }
 
-   
 }

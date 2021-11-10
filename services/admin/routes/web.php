@@ -12,20 +12,15 @@
 | and give it the Closure to call when that URI is requested.
 |
 */
-$router->group(['prefix'=>'api/v1/admins/'],function() use($router){
+$router->group(['prefix' => 'api/v1/admins/'], function () use ($router) {
     // $router->get('admin','AdminsController@getListStoreFromAdmin');
-    $router->post('login','AdminsController@login');
-    // $router->get('logout/[{id}]','AdminsController@logOut');
-    $router->post('{id}','AdminsController@update');
-    $router->post('','AdminsController@insert');
-    // $router->get('phone/{phone}','AdminsController@phoneNumberAvailable');
-    // $router->get('[{id}]','AdminsController@getStore');
-    $router->get('baned/{id}','AdminsController@banedAdmin');
-    // $router->get('{id}/saldo/{saldo}','AdminsController@updatedSaldo');
-    // $router->post('login/[{phone}]','AdminsController@login');
-    $router->get('me','AdminsController@me');
-    $router->get('activation/[{id}]','AdminsController@active');
-}); 
+    $router->post('login', 'AdminsController@login');
+    $router->post('{id}', 'AdminsController@update');
+    $router->post('', 'AdminsController@insert');
+    $router->get('baned/{id}', 'AdminsController@banedAdmin');
+    $router->get('me', 'AdminsController@me');
+    $router->get('activation/[{id}]', 'AdminsController@active');
+});
 
 
 $router->get('/', function () use ($router) {
