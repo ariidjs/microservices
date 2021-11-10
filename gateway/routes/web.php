@@ -60,7 +60,7 @@ $router->group(['prefix' => 'api/v1/driver'], function () use ($router) {
     $router->get('/', 'AuthDriverController@getListDriverFromAdmin');
     $router->get('/{id}/activation/{status}', 'AuthDriverController@changeStatusAktivation');
     $router->post('/{id}', 'AuthDriverController@updateDriver');
-    $router->get('/trans/current/{id}', 'AuthDriverController@getDriverTrans');
+    $router->get('/current/{id}', 'AuthDriverController@getDriverTrans');
 });
 
 $router->group(['prefix' => 'api/v1/customer'], function () use ($router) {
