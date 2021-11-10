@@ -403,8 +403,9 @@ class AuthDriverController extends BaseController
 
     public function getDriverTrans(Request $request, $id)
     {
-        $validation = $this->validationJWT($request);
         // return 'test';
+        $validation = $this->validationJWT($request);
+        
         return json_decode($this->successResponse($this
             ->serviceTransaction
             ->getDriverTrans($id))

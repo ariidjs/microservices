@@ -22,6 +22,7 @@ $router->group(['prefix' => 'api/v1/transaksi'], function () use ($router) {
     $router->get('{id}/kode/{kode}', 'TransactionController@validationCodeFromDriver');
     $router->post('/{id}', 'TransactionController@statusFromStore');
     $router->get('', 'TransactionController@getListTransaction');
+    $router->get('/driver/current/{id}','TransactionController@driverTrans');
     // $router->post('update[/{id}]','TransactionController@update');
     // $router->delete('[{id}]','TransactionController@delete');
 });
