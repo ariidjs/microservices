@@ -55,7 +55,7 @@ $router->group(['prefix' => 'api/v1/driver'], function () use ($router) {
     $router->get('/status/{status}', 'AuthDriverController@statusDriver');
     $router->post('/confirmorder/{idTransaction}', 'AuthDriverController@confirmOrder');
     $router->get('/transaction/{idTransaction}/{code}', 'AuthDriverController@validationCode');
-    $router->get('/transaction/{idTransaction}', 'AuthDriverController@finishTransaction ');
+    $router->get('/transaction/{idTransaction}', 'AuthDriverController@finishTransaction');
     $router->post('/email', 'AuthDriverController@sendEmail');
     $router->get('/', 'AuthDriverController@getListDriverFromAdmin');
     $router->get('/{id}/activation/{status}', 'AuthDriverController@changeStatusAktivation');
