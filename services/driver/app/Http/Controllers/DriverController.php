@@ -16,6 +16,7 @@ class DriverController extends BaseController
 
     public function insert(Request $request)
     {
+
         $name = $request->input("name_driver");
         $email = $request->input("email");
         $phone = $request->input("phone");
@@ -23,8 +24,7 @@ class DriverController extends BaseController
         $photo_profile = $request->input("photo_profile");
         $photo_stnk = $request->input("photo_stnk");
         $photo_ktp = $request->input("photo_ktp");
-        $saldo = $request->input("saldo");
-        $status = $request->input("status");
+        $jkelamin = $request->input("j_kelamin");
         $stnk = $request->input("nomor_stnk");
         $nik = $request->input("nik");
 
@@ -72,6 +72,19 @@ class DriverController extends BaseController
         }
 
 
+//        return [
+//            "name_driver" => $name,
+//            "email" => $email,
+//            "phone" => $phone,
+//            "plat_kendaraan" => $platkendaraan,
+//            "nik" => $nik,
+//            "nomor_stnk" => $stnk,
+//            "photo_profile" => $photo_profile,
+//            "photo_stnk" => $photo_stnk,
+//            "photo_ktp" => $photo_ktp,
+//            "saldo" => $saldo,
+//            "status" => $status
+//        ];
         $insert = Drivers::create([
             "name_driver" => $name,
             "email" => $email,
@@ -82,8 +95,7 @@ class DriverController extends BaseController
             "photo_profile" => $photo_profile,
             "photo_stnk" => $photo_stnk,
             "photo_ktp" => $photo_ktp,
-            "saldo" => $saldo,
-            "status" => $status
+            "j_kelamin" => $jkelamin
         ]);
 
         if ($insert) {
@@ -101,6 +113,7 @@ class DriverController extends BaseController
             ], 401);
         }
     }
+
 
     public function updated(Request $request, $id)
     {

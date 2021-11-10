@@ -54,6 +54,7 @@ class AuthDriverController extends BaseController
 
     public function register(Request $request)
     {
+
         $name = $request->input("name_driver");
         $email = $request->input("email");
         $phone = $request->input("phone");
@@ -61,10 +62,9 @@ class AuthDriverController extends BaseController
         $photo_profile = $request->file("photo_profile");
         $photo_stnk = $request->file("photo_stnk");
         $photo_ktp = $request->file("photo_ktp");
-        $saldo = $request->input("saldo");
-        $status = $request->input("status");
         $nomorstnk = $request->input("nomor_stnk");
         $nik = $request->input("nik");
+        $j_kelamin = $request->input("j_kelamin");
 
 
         if ($photo_ktp) {
@@ -95,14 +95,15 @@ class AuthDriverController extends BaseController
             "plat_kendaraan" => $platkendaraan,
             "nik" => $nik,
             "nomor_stnk" => $nomorstnk,
-            "photo_profile" => $photo_profile,
-            "photo_stnk" => $photo_stnk,
-            "photo_ktp" => $photo_ktp,
-            "saldo" => $saldo,
-            "status" => $status
+            "photo_profile" => $avatar,
+            "photo_stnk" => $stnk,
+            "photo_ktp" => $ktp,
+            "j_kelamin" => $j_kelamin
         ];
 
-
+//        return $this->successResponse($this
+//            ->serviceDriver
+//            ->register($body));
         return json_decode($this->successResponse($this
             ->serviceDriver
             ->register($body))
