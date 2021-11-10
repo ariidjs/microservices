@@ -112,11 +112,12 @@ class AuthDriverController extends BaseController
 
     public function checkPhone(Request $request, $phone)
     {
+        
         $response = json_decode($this->successResponse($this
             ->authServiceDriver
             ->checkPhone($phone))
             ->original, true);
-
+            // return $response;
         if ($response["success"]) {
             $body = [
                 'fcm' => $request->header('fcm')
@@ -136,6 +137,9 @@ class AuthDriverController extends BaseController
                 $data['jwt'] = $jwt;
                 return $data;
             }
+           
+        }else {
+            return $response;
         }
     }
 
