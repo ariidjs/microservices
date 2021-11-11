@@ -113,7 +113,7 @@ class AuthDriverController extends BaseController
 
     public function checkPhone(Request $request, $phone)
     {
-        
+        // return round(microtime(true) * 1000) + ($this->TIME_EXPIRE * 60000);
         $response = json_decode($this->successResponse($this
             ->authServiceDriver
             ->checkPhone($phone))
@@ -160,12 +160,31 @@ class AuthDriverController extends BaseController
             $payload = array(
                 "id" => $data['data']['id'],
                 "email" => $data['data']['email'],
-                "exp" => (round(microtime(true) * 1000) + ($this->TIME_EXPIRE * 60000))
+                "exp" => ($this->TIME_EXPIRE * 60000)
             );
             $jwt = JWT::encode($payload, $this->key);
             $data['jwt'] = $jwt;
             return $data;
         }
+    }
+
+    public function getDriverById(Request $request, $id)
+    {
+        $this->validationJWT($request);
+        return json_decode($this->successResponse($this
+            ->serviceDriver
+            ->getDriver($id))
+            ->original, true);
+    }
+
+    public function getHistorySaldo(Request $request) 
+    {
+        $validation = $this->validationJWT($request);
+        $id_driver = $validation['data']['id'];
+        json_decode($this->successResponse($this
+            ->serviceSaldo
+            ->getHistorySaldo($id_driver))
+            ->original, true);
     }
 
     public function withdraw(Request $request)
@@ -401,14 +420,6 @@ class AuthDriverController extends BaseController
             ->original, true);
     }
 
-    public function getDriverById(Request $request, $id)
-    {
-        $this->validationJWT($request);
-        return json_decode($this->successResponse($this
-            ->serviceDriver
-            ->getDriver($id))
-            ->original, true);
-    }
 
     public function getDriverTrans(Request $request, $id)
     {

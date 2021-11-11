@@ -15,7 +15,7 @@
 
 $router->group(['prefix'=>'api/v1/saldo/'],function() use($router){
    $router->post('','SaldoController@insert');
-    $router->get('[{id}]','SaldoController@getRiwayatSaldo');
+    $router->get('{id}','SaldoController@getRiwayatSaldo');
     $router->get('store/[{id}]','ProductController@getProductStore');
     $router->post('list','ProductController@getListProduct');
     $router->post('update[/{id}]','ProductController@update');

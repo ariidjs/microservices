@@ -198,7 +198,7 @@ class SaldoController extends Controller
 //     }
 
     public function getRiwayatSaldo($id){
-        $saldo =  Saldo::where('id_store', $id)
+        $saldo =  Saldo::where('id_driver', $id)
             ->get();
 
         if($saldo){

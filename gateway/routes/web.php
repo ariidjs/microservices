@@ -64,6 +64,7 @@ $router->group(['prefix' => 'api/v1/driver'], function () use ($router) {
     $router->post('/{id}', 'AuthDriverController@updateDriver');
     $router->get('/current/{id}', 'AuthDriverController@getDriverTrans');
     $router->get('/history/{id}', 'AuthDriverController@getDriverHistory');
+    $router->get('/saldo/history', 'AuthDriverController@getHistorySaldo');
 });
 
 $router->group(['prefix' => 'api/v1/customer'], function () use ($router) {

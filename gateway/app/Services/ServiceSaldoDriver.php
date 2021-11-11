@@ -31,4 +31,9 @@ class ServiceSaldoDriver
     public function deposit($data){
         return $this->performRequest("POST",'/api/v1/saldo',$data);
     }
+
+    public function getHistorySaldo($id) 
+    {
+        return $this->performRequest("GET",'/api/v1/saldo/'.$id);
+    }
 }
