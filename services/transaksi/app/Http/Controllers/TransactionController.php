@@ -298,6 +298,24 @@ class TransactionController extends Controller
             ->original, true);
     }
 
+    public function getListTransaction($idStore)
+    {
+        $list = Transaction::whereIdStore($idStore)->get();
+        
+        if ($list) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Success',
+                'data' => $list
+            ], 200);
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'data not found'
+            ], 400);
+        }
+    }
+
     public function statusFromStore(Request $request, $id)
     {
         // $latitude = $request->input('latitude');
@@ -597,6 +615,23 @@ class TransactionController extends Controller
                 'message'=>'Transaksi sudah selesai'],404);
         }
 
+    }
+
+    public function getHistoryDriver($id) 
+    {
+        $transaction = Transaction::where('id_driver' ,$id)->where('status', 6)->get();
+        if ($transaction) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Success',
+                'data' => $transaction
+            ], 200);
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'Tidak ada history'
+            ], 404);
+        }
     }
 
     public function validationCodeFromDriver($id,$kode){
@@ -922,7 +957,7 @@ class TransactionController extends Controller
         ]);
     }
 
-    public function getListTransaction(Request $request)
+    public function getListTransactionStore(Request $request)
     {
         $list = Transaction::all();
 

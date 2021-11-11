@@ -17,6 +17,7 @@ use Firebase\JWT\JWT;
 */
 
 $router->group(['prefix' => 'api/v1/store'], function () use ($router) {
+    $router->get('listTransaction', 'AuthStoreController@getListTransaction');
     $router->post('/register', 'AuthStoreController@register');
     $router->post('/updated', 'AuthStoreController@updateStore');
     $router->post('/withdraw', 'AuthStoreController@withdraw');
@@ -31,6 +32,7 @@ $router->group(['prefix' => 'api/v1/store'], function () use ($router) {
     $router->get('/admin', 'AuthStoreController@getListStoreFromAdmin');
     $router->get('{id}', 'AuthStoreController@getStore');
     $router->get('/{id_store}/activation/{status}', 'AuthStoreController@activation');
+    
 });
 
 $router->group(['prefix' => 'api/v1/product'], function () use ($router) {
@@ -61,6 +63,7 @@ $router->group(['prefix' => 'api/v1/driver'], function () use ($router) {
     $router->get('/{id}/activation/{status}', 'AuthDriverController@changeStatusAktivation');
     $router->post('/{id}', 'AuthDriverController@updateDriver');
     $router->get('/current/{id}', 'AuthDriverController@getDriverTrans');
+    $router->get('/history/{id}', 'AuthDriverController@getDriverHistory');
 });
 
 $router->group(['prefix' => 'api/v1/customer'], function () use ($router) {

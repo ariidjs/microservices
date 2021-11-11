@@ -303,6 +303,15 @@ class AuthDriverController extends BaseController
             ->original, true);
     }
 
+    public function getDriverHistory(Request $request, $id) 
+    {
+        $validation = $this->validationJWT($request);
+        return json_decode($this->successResponse($this
+            ->serviceTransaction
+            ->getDriverHistory($id))
+            ->original, true);
+    }
+
     public function confirmOrder(Request $request, $idTransaction)
     {
         $validation = $this->validationJWT($request);

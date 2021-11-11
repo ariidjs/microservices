@@ -72,6 +72,14 @@ class AuthStoreController extends BaseController
         }
     }
 
+    public function getListTransaction(Request $request){
+        $validation = $this->validationJWT($request);
+        return json_decode($this->successResponse($this
+                    ->serviceTransaction
+                    ->getListTransactionStore($validation["data"]["id"]))
+                    ->original, true);
+    }
+
     public function inserProduct(Request $request)
     {
         $jwt = $request->header("jwt");
