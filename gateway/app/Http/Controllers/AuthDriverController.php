@@ -181,10 +181,12 @@ class AuthDriverController extends BaseController
     {
         $validation = $this->validationJWT($request);
         $id_driver = $validation['data']['id'];
-        json_decode($this->successResponse($this
+        return json_decode($this->successResponse($this
             ->serviceSaldo
             ->getHistorySaldo($id_driver))
             ->original, true);
+
+    
     }
 
     public function withdraw(Request $request)
