@@ -8,6 +8,7 @@ CREATE DATABASE IF NOT EXISTS `db_saldo_store`;
 CREATE DATABASE IF NOT EXISTS `db_saldo_driver`;
 CREATE DATABASE IF NOT EXISTS `db_transaction`;
 CREATE DATABASE IF NOT EXISTS `db_customer`;
+CREATE DATABASE IF NOT EXISTS `db_promo`;
 
 
 
