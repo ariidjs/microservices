@@ -27,6 +27,7 @@ services:
           - detailtrans.service
           - saldo.service
           - driversaldo.service
+          - promo.service
 
   gateway:
     build:
@@ -208,6 +209,23 @@ services:
     tty: true
     volumes:
       - ./services/authservice/:/var/www/services/authservice
+      - ./docker/php/local.ini:/usr/local/etc/php/conf.d/local.ini
+    networks:
+      - app-network
+
+  promo:
+    build:
+      context: services/promo
+      dockerfile: Dockerfile
+    image: php:7.4-fpm
+    restart: unless-stopped
+    env_file: './services/promo/.env.example'
+    working_dir: /var/www/services/promo
+    depends_on:
+      - mysqldb
+    tty: true
+    volumes:
+      - ./services/promo/:/var/www/services/promo
       - ./docker/php/local.ini:/usr/local/etc/php/conf.d/local.ini
     networks:
       - app-network
