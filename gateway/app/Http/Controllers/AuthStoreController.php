@@ -90,7 +90,7 @@ class AuthStoreController extends BaseController
             // return dd($validation);
             $this->insert($request, $jwt, $this->JWT_EXPIRED);
         } catch (ExpiredException $ex) {
-        
+
             $data = $this->auth($fcm);
 
             // return dd($data);
@@ -370,7 +370,7 @@ class AuthStoreController extends BaseController
         }
     }
 
- 
+
 
     public function login(Request $request, $phone)
     {
@@ -574,8 +574,10 @@ class AuthStoreController extends BaseController
     public function statusOpen(Request $request, $status)
     {
 
+
         $validation = $this->validationJWT($request);
 
+        // return $validation["data"]["id"];
         return json_decode($this->successResponse($this
             ->serviceStore
             ->statusOpen($status, $validation["data"]["id"]))

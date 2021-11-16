@@ -155,7 +155,7 @@ class StoreController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'phone not register',
-                
+
             ], 201);
         }
     }
@@ -328,8 +328,8 @@ class StoreController extends Controller
 
     public function onOffStore($id, $status)
     {
-        // return "hello";
-        $result = Stores::whereId($id)->update(["status_store" => $status]);
+
+        $result = Stores::whereIdStore($id)->update(["status_store" => $status]);
         if ($result) {
             return response()->json([
                 'success' => true,
