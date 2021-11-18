@@ -34,15 +34,9 @@ class SaldoController extends Controller
         $norek = $request->input('norek');
         $saldo = $request->input('saldo');
         $type = $request->input('type');
-        $image= $request->file('image');
+        $image= $request->input('image');
         $namabank = $request->input('nama_bank');
         $namaAcount = $request->input('nama');
-        if($image){
-            $foto =time().$image->getClientOriginalName();
-            $image->move('images',$foto);
-        }else{
-            $foto = '';
-        }
 
         if($type == 1){
             $type = $this->DEPOSIT;
@@ -56,7 +50,7 @@ class SaldoController extends Controller
             'saldo'=>$saldo,
             'type'=>$type,
             'namabank'=>$namabank,
-            'image'=>$foto,
+            'image'=>$image,
             'nama'=>$namaAcount
         ]);
 
