@@ -17,6 +17,7 @@ class CreateSaldoTable extends Migration
             $table->id();
             $table->biginteger('id_driver');
             $table->string('namabank');
+            $table->string('nama');
             $table->string('norek');
             $table->double('saldo');
             $table->enum('type',["withdraw","deposit"]);

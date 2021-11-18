@@ -52,8 +52,7 @@ $router->group(['prefix' => 'api/v1/driver'], function () use ($router) {
     $router->post('/register', 'AuthDriverController@register');
     $router->get('/phone/{phone}', 'AuthDriverController@checkPhone');
     $router->post('/login/{phone}', 'AuthDriverController@login');
-    $router->post('/withdraw', 'AuthDriverController@withdraw');
-    $router->post('/deposit', 'AuthDriverController@deposit');
+    $router->post('/withdrawordeposit', 'AuthDriverController@withdrawORDeposit');
     $router->get('/status/{status}', 'AuthDriverController@statusDriver');
     $router->post('/confirmorder/{idTransaction}', 'AuthDriverController@confirmOrder');
     $router->get('/transaction/{idTransaction}/{code}', 'AuthDriverController@validationCode');

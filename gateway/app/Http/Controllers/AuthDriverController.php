@@ -189,14 +189,16 @@ class AuthDriverController extends BaseController
 
     }
 
-    public function withdraw(Request $request)
+    public function withdrawORDeposit(Request $request)
     {
         $validation = $this->validationJWT($request);
         $id_driver = $validation['data']['id'];
         $norek = $request->input('norek');
         $saldo = $request->input('saldo');
         $image = $request->file('image');
+        $type = $request->input('type');
         $namabank = $request->input('nama_bank');
+        $nama = $request->input('nama');
         if ($image) {
             $foto = time() . $image->getClientOriginalName();
         } else {
@@ -207,9 +209,10 @@ class AuthDriverController extends BaseController
             'id_driver' => $id_driver,
             'norek' => $norek,
             'saldo' => $saldo,
-            'type' => $this->WITHDRAW,
+            'type' => $type,
             'nama_bank' => $namabank,
             'image' => $foto,
+            'nama' => $nama
         ];
 
         $response = json_decode($this->successResponse($this
@@ -270,48 +273,7 @@ class AuthDriverController extends BaseController
         }
     }
 
-    public function deposit(Request $request)
-    {
-        $validation = $this->validationJWT($request);
 
-        // return $validation;
-        $id_driver = $validation['data']['id'];
-        $norek = $request->input('norek');
-        $saldo = $request->input('saldo');
-        $image = $request->file('image');
-        $namabank = $request->input('nama_bank');
-        if ($image) {
-            $foto = time() . $image->getClientOriginalName();
-        } else {
-            $foto = '';
-        }
-
-        $body = [
-            'id_driver' => $id_driver,
-            'norek' => $norek,
-            'saldo' => $saldo,
-            'type' => $this->DEPOSIT,
-            'nama_bank' => $namabank,
-            'image' => $foto,
-        ];
-
-        $response = json_decode($this->successResponse($this
-            ->serviceSaldo
-            ->deposit($body))
-            ->original, true);
-
-        if ($response["success"]) {
-            if ($image) {
-                $image->move('images', $foto);
-            }
-            if ($validation['expired']) {
-                $response["jwt"] = $validation["jwt"];
-            } else {
-                $response["jwt"] = null;
-            }
-            return $response;
-        }
-    }
 
     public function statusDriver(Request $request, $status)
     {

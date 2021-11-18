@@ -36,7 +36,8 @@ class SaldoController extends Controller
         $type = $request->input('type');
         $image= $request->input('image');
         $namabank = $request->input('nama_bank');
-        
+        $nama = $request->input('nama');
+
 
         if($type == 1){
             $type = $this->DEPOSIT;
@@ -51,6 +52,7 @@ class SaldoController extends Controller
             'type'=>$type,
             'namabank'=>$namabank,
             'image'=>$image,
+            'nama'=>$nama
         ]);
 
         if($insert){
