@@ -205,6 +205,27 @@ class AuthDriverController extends BaseController
             $foto = '';
         }
 
+        if($type == $this->WITHDRAW){
+            $driver = json_decode($this->successResponse($this
+            ->serviceDriver
+            ->getDriver($id_driver))
+            ->original, true);
+
+            if($driver["data"]){
+                if($driver["data"]["saldo"] < $saldo){
+                    return response()->json([
+                        'success'=>false,
+                        'message'=>'saldo anda tidak mencukupi untuk melakukan withdraw'
+                    ],400);
+                }
+            }else{
+                return response()->json([
+                    'success'=>false,
+                    'message'=>'data driver not found'
+                ],400);
+            }
+        }
+
         $body = [
             'id_driver' => $id_driver,
             'norek' => $norek,

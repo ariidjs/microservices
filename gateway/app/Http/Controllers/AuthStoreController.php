@@ -461,6 +461,27 @@ class AuthStoreController extends BaseController
             $foto = '';
         }
 
+        if($type == $this->WITHDRAW){
+            $store = json_decode($this->successResponse($this
+            ->serviceStore
+            ->getStore($id_store))
+            ->original, true);
+
+            if($store["data"]){
+                if($store["data"]["saldo"] < $saldo){
+                    return response()->json([
+                        'success'=>false,
+                        'message'=>'saldo anda tidak mencukupi untuk melakukan withdraw'
+                    ],400);
+                }
+            }else{
+                return response()->json([
+                    'success'=>false,
+                    'message'=>'data store not found'
+                ],400);
+            }
+        }
+
         $body = [
             'id_store' => $id_store,
             'norek' => $norek,
