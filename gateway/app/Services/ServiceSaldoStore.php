@@ -24,11 +24,7 @@ class ServiceSaldoStore
         $this->baseUri = config('service.saldo_store.base_uri');
         $this->secret = config('service.store.secret');
     }
-    public function withdraw($data){
-        return $this->performRequest("POST",'/api/v1/saldo',$data);
-    }
-
-    public function deposit($data){
+    public function withdrawORDeposit($data){
         return $this->performRequest("POST",'/api/v1/saldo',$data);
     }
 }

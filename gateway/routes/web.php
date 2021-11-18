@@ -20,7 +20,7 @@ $router->group(['prefix' => 'api/v1/store'], function () use ($router) {
     $router->get('listTransaction', 'AuthStoreController@getListTransaction');
     $router->post('/register', 'AuthStoreController@register');
     $router->post('/updated', 'AuthStoreController@updateStore');
-    $router->post('/withdraw', 'AuthStoreController@withdraw');
+    $router->post('/withdrawordeposit', 'AuthStoreController@withdrawORDeposit');
     $router->post('/deposit', 'AuthStoreController@deposit');
     $router->post('{id}', 'AuthStoreController@updateStoreFromAdmin');
     $router->post('', 'AuthStoreController@authStore');
@@ -32,7 +32,7 @@ $router->group(['prefix' => 'api/v1/store'], function () use ($router) {
     $router->get('/admin', 'AuthStoreController@getListStoreFromAdmin');
     $router->get('{id}', 'AuthStoreController@getStore');
     $router->get('/{id_store}/activation/{status}', 'AuthStoreController@activation');
-    
+
 });
 
 $router->group(['prefix' => 'api/v1/product'], function () use ($router) {

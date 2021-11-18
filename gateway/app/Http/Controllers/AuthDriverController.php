@@ -138,7 +138,7 @@ class AuthDriverController extends BaseController
                 $data['jwt'] = $jwt;
                 return $data;
             }
-           
+
         }else {
             return $response;
         }
@@ -177,7 +177,7 @@ class AuthDriverController extends BaseController
             ->original, true);
     }
 
-    public function getHistorySaldo(Request $request) 
+    public function getHistorySaldo(Request $request)
     {
         $validation = $this->validationJWT($request);
         $id_driver = $validation['data']['id'];
@@ -186,7 +186,7 @@ class AuthDriverController extends BaseController
             ->getHistorySaldo($id_driver))
             ->original, true);
 
-    
+
     }
 
     public function withdraw(Request $request)
@@ -324,7 +324,7 @@ class AuthDriverController extends BaseController
             ->original, true);
     }
 
-    public function getDriverHistory(Request $request, $id) 
+    public function getDriverHistory(Request $request, $id)
     {
         $validation = $this->validationJWT($request);
         return json_decode($this->successResponse($this
@@ -341,10 +341,12 @@ class AuthDriverController extends BaseController
             "id_driver" => $validation['data']['id']
         ];
 
-        return json_decode($this->successResponse($this
+       $response = json_decode($this->successResponse($this
             ->serviceTransaction
             ->confirmDriver($idTransaction, $body))
             ->original, true);
+
+        return $response;
     }
 
     public function validationCode(Request $request, $idTransaction, $code)
@@ -427,7 +429,7 @@ class AuthDriverController extends BaseController
     {
         // return 'test';
         $validation = $this->validationJWT($request);
-        
+
         return json_decode($this->successResponse($this
             ->serviceTransaction
             ->getDriverTrans($id))

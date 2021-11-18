@@ -11,6 +11,9 @@ use App\Services\ServiceTransaction;
 use Illuminate\Http\Request;
 use Laravel\Lumen\Routing\Controller as BaseController;
 use \App\Traits\ApiResponser;
+use Carbon\Carbon;
+use DateTime;
+use DateTimeZone;
 use Firebase\JWT\ExpiredException;
 use Firebase\JWT\JWT;
 
@@ -412,7 +415,10 @@ class AuthStoreController extends BaseController
 
     public function validationJWT($request)
     {
-        $jwt = $request->header("jwt");
+        $jwt = request()->header('Authorization');
+        $jwt = str_replace('Bearer ', '', $jwt);
+        // return JWT::decode($jwt,  env('KEY_JWT'), array('HS256'));
+        // $jwt = $request->header("jwt");
         $fcm = $request->header('fcm');
 
         try {
@@ -439,14 +445,16 @@ class AuthStoreController extends BaseController
         }
     }
 
-    public function withdraw(Request $request)
+    public function withdrawORDeposit(Request $request)
     {
         $validation = $this->validationJWT($request);
         $id_store = $validation['data']['id'];
         $norek = $request->input('norek');
         $saldo = $request->input('saldo');
+        $type = $request->input('type');
         $image = $request->file('image');
         $namabank = $request->input('nama_bank');
+        $namaAcount = $request->input('nama');
         if ($image) {
             $foto = time() . $image->getClientOriginalName();
         } else {
@@ -457,55 +465,15 @@ class AuthStoreController extends BaseController
             'id_store' => $id_store,
             'norek' => $norek,
             'saldo' => $saldo,
-            'type' => $this->WITHDRAW,
+            'type' => $type,
             'nama_bank' => $namabank,
             'image' => $foto,
+            'nama' => $namaAcount
         ];
 
         $response = json_decode($this->successResponse($this
             ->serviceSaldo
-            ->withdraw($body))
-            ->original, true);
-
-        if ($response["success"]) {
-            if ($image) {
-                $image->move('images', $foto);
-            }
-            if ($validation['expired']) {
-                $response["jwt"] = $validation["jwt"];
-            } else {
-                $response["jwt"] = null;
-            }
-            return $response;
-        }
-    }
-
-    public function deposit(Request $request)
-    {
-        $validation = $this->validationJWT($request);
-        $id_store = $validation['data']['id'];
-        $norek = $request->input('norek');
-        $saldo = $request->input('saldo');
-        $image = $request->file('image');
-        $namabank = $request->input('nama_bank');
-        if ($image) {
-            $foto = time() . $image->getClientOriginalName();
-        } else {
-            $foto = '';
-        }
-
-        $body = [
-            'id_store' => $id_store,
-            'norek' => $norek,
-            'saldo' => $saldo,
-            'type' => $this->DEPOSIT,
-            'nama_bank' => $namabank,
-            'image' => $foto,
-        ];
-
-        $response = json_decode($this->successResponse($this
-            ->serviceSaldo
-            ->deposit($body))
+            ->withdrawORDeposit($body))
             ->original, true);
 
         if ($response["success"]) {

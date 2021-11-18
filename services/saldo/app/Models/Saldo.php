@@ -19,7 +19,7 @@ class Saldo extends Model implements AuthenticatableContract, AuthorizableContra
      * @var array
      */
     protected $fillable = [
-        'id_store','id','norek', 'saldo','type','status','image','namabank',
+        'id_store','id','norek', 'saldo','type','status','image','namabank','nama'
     ];
 
     /**
