@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+
 use App\Services\AuthServiceDriver;
 use App\Services\ServiceDriver;
 use App\Services\ServiceSaldoDriver;
@@ -181,10 +182,22 @@ class AuthDriverController extends BaseController
     {
         $validation = $this->validationJWT($request);
         $id_driver = $validation['data']['id'];
-        return json_decode($this->successResponse($this
+        $driver = json_decode($this->successResponse($this
+        ->serviceDriver
+        ->getDriver($id_driver))
+        ->original, true);
+
+        $response = json_decode($this->successResponse($this
             ->serviceSaldo
             ->getHistorySaldo($id_driver))
             ->original, true);
+
+        if($driver){
+            $response['total_saldo'] = $driver['data']['saldo'];
+            return $response;
+        }
+
+
 
 
     }
@@ -268,9 +281,9 @@ class AuthDriverController extends BaseController
 
     public function validationJWT($request)
     {
-        $jwt = $request->header("jwt");
+        $jwt = request()->header('Authorization');
+        $jwt = str_replace('Bearer ', '', $jwt);
         $fcm = $request->header('fcm');
-
         try {
             $data = JWT::decode($jwt, $this->key, array('HS256'));
             return [
