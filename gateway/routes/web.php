@@ -47,10 +47,9 @@ $router->group(['prefix' => 'api/v1/product'], function () use ($router) {
 });
 
 $router->group(['prefix' => 'api/v1/driver'], function () use ($router) {
-    $router->get('/{id}', 'AuthDriverController@getDriverById');
+    $router->get('', 'AuthDriverController@getDriverById');
     $router->post('', 'AuthDriverController@authDriver');
     $router->post('/register', 'AuthDriverController@register');
-    $router->get('/phone/{phone}', 'AuthDriverController@checkPhone');
     $router->post('/login/{phone}', 'AuthDriverController@login');
     $router->post('/withdrawordeposit', 'AuthDriverController@withdrawORDeposit');
     $router->get('/status/{status}', 'AuthDriverController@statusDriver');
@@ -58,11 +57,10 @@ $router->group(['prefix' => 'api/v1/driver'], function () use ($router) {
     $router->get('/transaction/{idTransaction}/{code}', 'AuthDriverController@validationCode');
     $router->get('/transaction/{idTransaction}', 'AuthDriverController@finishTransaction');
     $router->post('/email', 'AuthDriverController@sendEmail');
-    $router->get('/', 'AuthDriverController@getListDriverFromAdmin');
     $router->get('/{id}/activation/{status}', 'AuthDriverController@changeStatusAktivation');
     $router->post('/{id}', 'AuthDriverController@updateDriver');
-    $router->get('/current/{id}', 'AuthDriverController@getDriverTrans');
-    $router->get('/history/{id}', 'AuthDriverController@getDriverHistory');
+    $router->get('/current', 'AuthDriverController@getDriverTrans');
+    $router->get('/history', 'AuthDriverController@getDriverHistory');
     $router->get('/saldo/history', 'AuthDriverController@getHistorySaldo');
 });
 
@@ -77,6 +75,7 @@ $router->group(['prefix' => 'api/v1/customer'], function () use ($router) {
 
 $router->group(['prefix' => 'api/v1/admin'], function () use ($router) {
     $router->get('driver/{id}', 'AuthDriverController@getDriver');
+    $router->get('driver', 'AuthDriverController@getListDriverFromAdmin');
     $router->post('', 'AuthAdminController@register');
     $router->post('/login', 'AuthAdminController@login');
     $router->get('/promoCustomer', 'AuthAdminController@getPromo');

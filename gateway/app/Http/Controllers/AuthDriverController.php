@@ -112,9 +112,9 @@ class AuthDriverController extends BaseController
     }
 
 
-    public function checkPhone(Request $request, $phone)
+    public function login(Request $request, $phone)
     {
-        // return round(microtime(true) * 1000) + ($this->TIME_EXPIRE * 60000);
+
         $response = json_decode($this->successResponse($this
             ->authServiceDriver
             ->checkPhone($phone))
@@ -145,36 +145,13 @@ class AuthDriverController extends BaseController
         }
     }
 
-
-    public function login(Request $request, $phone)
+    public function getDriverById(Request $request)
     {
-
-        $body = [
-            'fcm' => $request->input('fcm')
-        ];
-        $data = json_decode($this->successResponse($this
-            ->authServiceDriver
-            ->login($phone, $body))
-            ->original, true);
-
-        if ($data['success']) {
-            $payload = array(
-                "id" => $data['data']['id'],
-                "email" => $data['data']['email'],
-                "exp" => ($this->TIME_EXPIRE * 60000)
-            );
-            $jwt = JWT::encode($payload, $this->key);
-            $data['jwt'] = $jwt;
-            return $data;
-        }
-    }
-
-    public function getDriverById(Request $request, $id)
-    {
-        $this->validationJWT($request);
+        $validation = $this->validationJWT($request);
+        $id_driver = $validation['data']['id'];
         return json_decode($this->successResponse($this
             ->serviceDriver
-            ->getDriver($id))
+            ->getDriver($id_driver))
             ->original, true);
     }
 
@@ -320,12 +297,13 @@ class AuthDriverController extends BaseController
             ->original, true);
     }
 
-    public function getDriverHistory(Request $request, $id)
+    public function getDriverHistory(Request $request)
     {
         $validation = $this->validationJWT($request);
+        $id_driver = $validation['data']['id'];
         return json_decode($this->successResponse($this
             ->serviceTransaction
-            ->getDriverHistory($id))
+            ->getDriverHistory($id_driver))
             ->original, true);
     }
 
@@ -421,14 +399,13 @@ class AuthDriverController extends BaseController
     }
 
 
-    public function getDriverTrans(Request $request, $id)
+    public function getDriverTrans(Request $request)
     {
-        // return 'test';
         $validation = $this->validationJWT($request);
-
+        $id_driver = $validation['data']['id'];
         return json_decode($this->successResponse($this
             ->serviceTransaction
-            ->getDriverTrans($id))
+            ->getDriverTrans($id_driver))
             ->original, true);
     }
 
