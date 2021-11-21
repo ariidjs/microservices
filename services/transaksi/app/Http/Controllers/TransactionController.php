@@ -222,7 +222,7 @@ class TransactionController extends Controller
             ->productService
             ->getProductStore($dataCustomer->id_store))
             ->original, true);
- 
+
         $productFilter = $this->inner_join($product["data"], $dataProductFromCustomer, "id");
         $date = date_create();
         date_timestamp_set($date, time());
@@ -240,20 +240,20 @@ class TransactionController extends Controller
                 array_push($dataSubProduct, ["notransaksi" => $noTransaction, "id_product" => $value["id"], "price_product" => $value["price"], "count" => $value["count"]]);
             }
         }
- 
-        // return $driver_price; 
+
+        // return $driver_price;
         // return var_dump($productFilter);
- 
+
         //  return $product;
- 
+
         // return var_dump($product["data"]);
         $store = json_decode($this->successResponse($this
             ->storeService
             ->getStore($dataCustomer->id_store))
             ->original, true);
- 
-    
- 
+
+
+
         $transaction = Transaction::create([
             'notransaksi' => $noTransaction,
             'id_customer' => $dataCustomer->id_customer,
@@ -268,14 +268,14 @@ class TransactionController extends Controller
             'status_delete' => 0,
             'kode_validasi' => $code_validation
         ]);
- 
+
         $dataFcmStore = [
             "title" => "Store notification",
             "content" => "Ada orderan ".$noTransaction
         ];
- 
+
         $this->pushFcm($dataFcmStore,$store["data"]["fcm"]);
- 
+
         if ($transaction) {
             return json_decode($this->successResponse($this
                 ->detailTransactionService
@@ -310,7 +310,7 @@ class TransactionController extends Controller
     public function getListTransaction($idStore)
     {
         $list = Transaction::whereIdStore($idStore)->get();
-        
+
         if ($list) {
             return response()->json([
                 'success' => true,
@@ -626,7 +626,7 @@ class TransactionController extends Controller
 
     }
 
-    public function getHistoryDriver($id) 
+    public function getHistoryDriver($id)
     {
         $transaction = Transaction::where('id_driver' ,$id)->where('status', 6)->get();
         if ($transaction) {
@@ -966,9 +966,9 @@ class TransactionController extends Controller
         ]);
     }
 
-    public function getListTransactionStore(Request $request)
+    public function getListTransactionStore(Request $request,$idStore)
     {
-        $list = Transaction::all();
+        $list = Transaction::whereIdStore($idStore);
 
         if ($list) {
             return response()->json([
