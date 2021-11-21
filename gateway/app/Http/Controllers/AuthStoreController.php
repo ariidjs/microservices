@@ -78,6 +78,8 @@ class AuthStoreController extends BaseController
     public function getListTransaction(Request $request){
         $validation = $this->validationJWT($request);
 
+        // return $validation["data"]["id"];
+
         // return var_dump($validation);
         return json_decode($this->successResponse($this
                     ->serviceTransaction

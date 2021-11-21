@@ -968,7 +968,7 @@ class TransactionController extends Controller
 
     public function getListTransactionStore(Request $request,$idStore)
     {
-        $list = Transaction::whereIdStore($idStore);
+        $list = Transaction::whereIdStore($idStore)->get();
 
         if ($list) {
             return response()->json([
