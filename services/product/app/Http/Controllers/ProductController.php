@@ -34,50 +34,42 @@ class ProductController extends Controller
         $name_product = $request->input('name_product');
         $category = $request->input('category');
         $price = $request->input('price');
+        $id_store = $request->input('id_store');
         $price_promo = $request->input('price_promo');
         $image1 = $request->input('image1');
         $image2 = $request->input('image2');
         $image3 = $request->input('image3');
         $image4 = $request->input('image4');
         $description = $request->input('description');
-        $jwt = $request->input('jwt');
         $status_delete = 0;
 
+        $insert = Product::create([
+            'id_store' => $id_store,
+            'name_product' => $name_product,
+            'category' => $category,
+            'price' => $price,
+            'price_promo' => $price_promo,
+            'image1' => $image1,
+            'image2' => $image2,
+            'image3' => $image3,
+            'image4' => $image4,
+            'description' => $description,
+            'status_delete' => $status_delete,
+        ]);
 
-        try {
-            $store = JWT::decode($jwt, $this->key, array('HS256'));
-            $insert = Product::create([
-                'id_store' => $store->id,
-                'name_product' => $name_product,
-                'category' => $category,
-                'price' => $price,
-                'price_promo' => $price_promo,
-                'image1' => $image1,
-                'image2' => $image2,
-                'image3' => $image3,
-                'image4' => $image4,
-                'description' => $description,
-                'status_delete' => $status_delete,
-            ]);
-
-            if ($insert) {
-                return response()->json([
-                    'success' => true,
-                    'message' => 'success',
-                    'data' => $insert
-                ], 201);
-            } else {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'gagal menambahkan data'
-                ], 400);
-            }
-        } catch (ExpiredException $ex) {
+        if ($insert) {
+            return response()->json([
+                'success' => true,
+                'message' => 'success',
+                'data' => $insert
+            ], 201);
+        } else {
             return response()->json([
                 'success' => false,
-                'message' => 'jwt failed'
+                'message' => 'gagal menambahkan data'
             ], 400);
         }
+
     }
 
     public function update(Request $request, $id)
@@ -264,7 +256,7 @@ class ProductController extends Controller
             ->serviceStore
             ->getListStore())
             ->original, true);
-        
+
         // return $response;
 
         $store = null;

@@ -78,9 +78,6 @@ class AuthStoreController extends BaseController
     public function getListTransaction(Request $request){
         $validation = $this->validationJWT($request);
 
-        // return $validation["data"]["id"];
-
-        // return var_dump($validation);
         return json_decode($this->successResponse($this
                     ->serviceTransaction
                     ->getListTransactionStore($validation["data"]["id"]))
@@ -89,32 +86,12 @@ class AuthStoreController extends BaseController
 
     public function inserProduct(Request $request)
     {
-        $jwt = $request->header("jwt");
-        $fcm = $request->header('fcm');
+        $validation = $this->validationJWT($request);
 
-        try {
-            $validation = JWT::decode($jwt, $this->key, array('HS256'));
-            // return dd($validation);
-            $this->insert($request, $jwt, $this->JWT_EXPIRED);
-        } catch (ExpiredException $ex) {
+        // return var_dump($validation);
+        // return $validation["data"]["id"];
 
-            $data = $this->auth($fcm);
 
-            // return dd($data);
-            $payload = array(
-                "id" => $data['data']['id_store'],
-                "owner_name" => $data['data']['owner_name'],
-                "store_name" => $data['data']['store_name'],
-                "exp" => (round(microtime(true) * 1000) + ($this->TIME_EXPIRE * 60000))
-            );
-            $jwt = JWT::encode($payload, $this->key);
-            return $this->insert($request, $jwt, !$this->JWT_EXPIRED);
-        }
-    }
-
-    public function insert($request, $jwt, $expired)
-    {
-        $id_store = $request->input('id_store');
         $name_product = $request->input('name_product');
         $category = $request->input('category');
         $price = $request->input('price');
@@ -151,7 +128,7 @@ class AuthStoreController extends BaseController
         }
 
         $body = [
-            'id_store' => $id_store,
+            'id_store' => $validation["data"]["id"],
             'name_product' => $name_product,
             'category' => $category,
             'price' => $price,
@@ -162,7 +139,6 @@ class AuthStoreController extends BaseController
             'image4' => $fotoProduct4,
             'description' => $description,
             'status_delete' => $status_delete,
-            'jwt' => $jwt
         ];
 
 
@@ -187,14 +163,18 @@ class AuthStoreController extends BaseController
 
 
 
-            if ($expired) {
-                $response["data"]["jwt"] = $jwt;
+            if ($validation['expired']) {
+                $response["data"]["jwt"] = $validation['jwt'];
             } else {
                 $response["jwt"] = null;
             }
+
             return $response;
         }
+
     }
+
+
 
 
     public function register(Request $request)
@@ -421,8 +401,6 @@ class AuthStoreController extends BaseController
     {
         $jwt = request()->header('Authorization');
         $jwt = str_replace('Bearer ', '', $jwt);
-        // return JWT::decode($jwt,  env('KEY_JWT'), array('HS256'));
-        // $jwt = $request->header("jwt");
         $fcm = $request->header('fcm');
 
         try {

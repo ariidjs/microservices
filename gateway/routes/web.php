@@ -27,6 +27,7 @@ $router->group(['prefix' => 'api/v1/store'], function () use ($router) {
     $router->get('/phone/{phone}', 'AuthStoreController@checkPhone');
     $router->post('/login/{phone}', 'AuthStoreController@login');
     $router->get('/products', 'AuthStoreController@getListProduct');
+    $router->post('/products', 'AuthStoreController@inserProduct');
     $router->get('/statusopen/{status}', 'AuthStoreController@statusOpen');
     $router->post('/confirmorder/{idTransaction}', 'AuthStoreController@confirmOrder');
     $router->get('/admin', 'AuthStoreController@getListStoreFromAdmin');
