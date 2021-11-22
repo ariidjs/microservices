@@ -17,6 +17,7 @@ use Firebase\JWT\JWT;
 */
 
 $router->group(['prefix' => 'api/v1/store'], function () use ($router) {
+    $router->post('/products', 'AuthStoreController@inserProduct');
     $router->get('listTransaction', 'AuthStoreController@getListTransaction');
     $router->post('/register', 'AuthStoreController@register');
     $router->post('/updated', 'AuthStoreController@updateStore');
@@ -27,7 +28,6 @@ $router->group(['prefix' => 'api/v1/store'], function () use ($router) {
     $router->get('/phone/{phone}', 'AuthStoreController@checkPhone');
     $router->post('/login/{phone}', 'AuthStoreController@login');
     $router->get('/products', 'AuthStoreController@getListProduct');
-    $router->post('/products', 'AuthStoreController@inserProduct');
     $router->get('/statusopen/{status}', 'AuthStoreController@statusOpen');
     $router->post('/confirmorder/{idTransaction}', 'AuthStoreController@confirmOrder');
     $router->get('/admin', 'AuthStoreController@getListStoreFromAdmin');
