@@ -199,14 +199,14 @@ class SaldoController extends Controller
 //     }
 
     public function getRiwayatSaldo($id){
-        $saldo =  Saldo::where('id_store', $id)
+        $history =  Saldo::where('id_store', $id)
             ->get();
 
-        if($saldo){
+        if($history){
             return response()->json([
                 'success'=>true,
                 'message'=>'success',
-                'data'=>$saldo
+                'data'=>$history
             ],201);
         }else{
             return response()->json([

@@ -34,6 +34,7 @@ $router->group(['prefix' => 'api/v1/store'], function () use ($router) {
     $router->get('{id}', 'AuthStoreController@getStore');
     $router->get('/{id_store}/activation/{status}', 'AuthStoreController@activation');
     $router->get('product/delete/{idProduct}', 'AuthStoreController@deleteProduct');
+    $router->get('historysaldo', 'AuthStoreController@getHistoryWithDrawOrDeposit');
 });
 
 $router->group(['prefix' => 'api/v1/product'], function () use ($router) {

@@ -27,4 +27,8 @@ class ServiceSaldoStore
     public function withdrawORDeposit($data){
         return $this->performRequest("POST",'/api/v1/saldo',$data);
     }
+
+    public function getHistoryWithdrawOrDeposit($idStore){
+        return $this->performRequest("GET",'/api/v1/saldo/'.$idStore);
+    }
 }
