@@ -49,6 +49,7 @@ class ServiceProduct
         return $this->performRequest("GET", "/api/v1/products/stores/" . $id);
     }
 
+
     public function changeStatusDeleteProduct($id, $status)
     {
         return $this->performRequest("GET", "/api/v1/products/" . $id . "/" . $status);
