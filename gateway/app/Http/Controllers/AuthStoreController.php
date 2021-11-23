@@ -175,9 +175,7 @@ class AuthStoreController extends BaseController
     }
 
     public function getHistoryWithDrawOrDeposit(Request $request){
-
         $validation =$this->validationJWT($request);
-
         return json_decode($this->successResponse($this
         ->serviceSaldo
         ->getHistoryWithDrawOrDeposit($validation["data"]["id"]))
