@@ -223,6 +223,8 @@ class TransactionController extends Controller
             ->getProductStore($dataCustomer->id_store))
             ->original, true);
 
+
+
         $productFilter = $this->inner_join($product["data"], $dataProductFromCustomer, "id");
         $date = date_create();
         date_timestamp_set($date, time());
@@ -240,6 +242,8 @@ class TransactionController extends Controller
                 array_push($dataSubProduct, ["notransaksi" => $noTransaction, "id_product" => $value["id"], "price_product" => $value["price"], "count" => $value["count"]]);
             }
         }
+
+
 
         // return $driver_price;
         // return var_dump($productFilter);

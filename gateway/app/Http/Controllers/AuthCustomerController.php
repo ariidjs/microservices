@@ -107,7 +107,7 @@ class AuthCustomerController extends BaseController
             $jwt = JWT::encode($payload, env('APP_KEY'));
             $response['data']['jwt'] = $jwt;
             return $response;
-        
+
         }
     }
 
@@ -131,17 +131,19 @@ class AuthCustomerController extends BaseController
     public function order(Request $request)
     {
         $data = (array)json_decode($request->getContent());
+
         $dataProduct = [];
         foreach ($data["data_product"] as $value) {
             array_push($dataProduct, (array)$value);
         }
         $data["data_product"] = $dataProduct;
+        // return $dataProduct;
         return json_decode($this->successResponse($this
             ->serviceTransaction
             ->orderCustomer($data))
             ->original, true);
         // return $dataproduct;
-        return var_dump($data);
+        // return var_dump($data);
     }
 
     public function getListCustomers()
