@@ -37,11 +37,11 @@ return [
         'base_uri'  =>  env('ADMIN_BASE_URL'),
         'secret'  =>  env('PRODUCT_SERVICE_SECRET'),
     ],
-    'detail_transaction'   =>  [
-      'base_uri'  =>  env('DETAIL_TRANSACTION_BASE_URL'),
-      'secret'  =>  env('PRODUCT_SERVICE_SECRET'),
-  ],
-    
+  'detailTransaction'   =>  [
+    'base_uri' =>  env('DETAIL_TRANSACTION_BASE_URL'),
+    'secret'   =>  env('DETAIL_TRANSACTION_SERVICE_SECRET'),
+],
 
-    
+
+
 ];

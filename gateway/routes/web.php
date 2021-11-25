@@ -35,6 +35,7 @@ $router->group(['prefix' => 'api/v1/store'], function () use ($router) {
     $router->get('{id}', 'AuthStoreController@getStore');
     $router->get('/{id_store}/activation/{status}', 'AuthStoreController@activation');
     $router->get('product/delete/{idProduct}', 'AuthStoreController@deleteProduct');
+    $router->get('/detailTransaction/{notrans}/{id_store}', 'AuthStoreController@getDetailTransaction');
 });
 
 $router->group(['prefix' => 'api/v1/product'], function () use ($router) {
@@ -64,6 +65,7 @@ $router->group(['prefix' => 'api/v1/driver'], function () use ($router) {
     $router->get('/current', 'AuthDriverController@getDriverTrans');
     $router->get('/history', 'AuthDriverController@getDriverHistory');
     $router->get('/saldo/history', 'AuthDriverController@getHistorySaldo');
+    $router->get('/detailTransaction/{notrans}/{id_store}', 'AuthStoreController@getDetailTransaction');
 });
 
 $router->group(['prefix' => 'api/v1/customer'], function () use ($router) {

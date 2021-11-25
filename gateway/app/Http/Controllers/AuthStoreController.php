@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 
 use App\Services\AuthServiceStore;
+use App\Services\ServiceDetailTransaction;
 use App\Services\ServiceProduct;
 use App\Services\ServiceSaldoStore;
 use App\Services\ServiceStore;
@@ -25,6 +26,7 @@ class AuthStoreController extends BaseController
     private $serviceStore;
     private $serviceSaldo;
     private $serviceTransaction;
+    private $serviceDetailTransaction;
     private $key = "asjlkdnaskjndjkawqnbdjkwbqdjknasljkmmndasjkjdnijkwqbduiqwbdojkawqnd";
     private $TIME_EXPIRE = 3;
     private $serviceProduct;
@@ -39,13 +41,14 @@ class AuthStoreController extends BaseController
     private $ADMIN = "admin";
 
 
-    public function __construct(AuthServiceStore $authServiceStore, ServiceStore $serviceStore, ServiceProduct $serviceProduct, ServiceSaldoStore $serviceSaldoStore, ServiceTransaction $serviceTransaction)
+    public function __construct(AuthServiceStore $authServiceStore, ServiceStore $serviceStore, ServiceProduct $serviceProduct, ServiceSaldoStore $serviceSaldoStore, ServiceTransaction $serviceTransaction,ServiceDetailTransaction $serviceDetailTransaction)
     {
         $this->authServiceStore = $authServiceStore;
         $this->serviceStore = $serviceStore;
         $this->serviceProduct = $serviceProduct;
         $this->serviceSaldo = $serviceSaldoStore;
         $this->serviceTransaction = $serviceTransaction;
+        $this->serviceDetailTransaction = $serviceDetailTransaction;
     }
 
     private function auth($fcm)
@@ -736,5 +739,18 @@ class AuthStoreController extends BaseController
                 'message' => 'authentifikasi failed',
             ], 400);
         }
+    }
+
+    public function getDetailTransaction(Request $request,$notrans,$id_store){
+        $this->validationJWT($request);
+
+        // return $notrans;
+
+        $response = json_decode($this->successResponse($this
+        ->serviceDetailTransaction
+        ->getDetail($notrans,$id_store))
+        ->original,true);
+
+        return $response;
     }
 }

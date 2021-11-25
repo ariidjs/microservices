@@ -363,7 +363,5 @@ class AuthAdminController extends BaseController
         ->original,true);
 
         return $response;
-
-
     }
 }

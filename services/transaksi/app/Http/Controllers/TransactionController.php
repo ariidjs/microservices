@@ -334,6 +334,8 @@ class TransactionController extends Controller
         // $latitude = $request->input('latitude');
         // $longititude = $request->input('longititude');
         $status = $request->input('status');
+
+        // return $status;
         $transaction = json_decode(Transaction::whereId($id)->first());
         // return var_dump($transaction);
         $key = $this->databaseFirebase->getReference('DriversLocation')->getChildKeys();
@@ -973,6 +975,7 @@ class TransactionController extends Controller
     public function getListTransactionStore(Request $request,$idStore)
     {
         $list = Transaction::whereIdStore($idStore)->get();
+
 
         if ($list) {
             return response()->json([

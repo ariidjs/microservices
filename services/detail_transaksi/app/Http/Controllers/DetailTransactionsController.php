@@ -17,10 +17,10 @@ class DetailTransactionsController extends Controller
      *
      * @return void
      */
-    
+
     use ApiResponser;
     private $serviceProduct;
-   
+
     public function __construct(ServiceProduct $serviceProduct)
     {
         $this->serviceProduct = $serviceProduct;
@@ -31,7 +31,7 @@ class DetailTransactionsController extends Controller
         $data = json_decode($data);
 
         // return $data;
-     
+
         $dataArray = array();
         foreach ($data as $value) {
             $data = (array) $value;
@@ -60,11 +60,15 @@ class DetailTransactionsController extends Controller
             ->serviceProduct
             ->getProductStore($idStore))
             ->original,true)["data"];
-            
+
+        // return $productStore;
+
       $data = DetailTransactions::whereNotransaksi($notrans)->get();
       $data = json_decode($data);
 
-     $detailProduct = array();
+    //   return $data;
+
+    $detailProduct = array();
     foreach ($data as $valueDetailProduct ) {
         foreach ($productStore as $valueProduct) {
             if($valueDetailProduct->id_product == $valueProduct["id"]){
@@ -72,6 +76,8 @@ class DetailTransactionsController extends Controller
             }
         }
     }
+
+    // return $detailProduct;
 
     if($detailProduct){
          return response()->json([

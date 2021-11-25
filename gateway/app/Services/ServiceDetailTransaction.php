@@ -22,13 +22,13 @@ class ServiceDetailTransaction
 
     public function __construct()
     {
-        $this->baseUri = config('service.detail_transaction.base_uri');
-        $this->secret = config('service.detail_transaction.secret');
+        $this->baseUri = config('service.detailTransaction.base_uri');
+        $this->secret = config('service.detailTransaction.secret');
     }
 
     public function getDetail($notrans,$id_store)
     {
-        return $this->performRequest("GET", "/api/v1/detailTransaction/".$notrans."/store/".$id_store);
+        return $this->performRequest("GET", "api/v1/detailTransaction/".$notrans."/store/".$id_store);
     }
 
 }
