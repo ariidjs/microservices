@@ -749,7 +749,7 @@ class AuthStoreController extends BaseController
 
         // return $notrans;
 
-        if(isset($id_driver)){
+        if($id_driver != -1){
             $driver = json_decode($this->successResponse($this
             ->serviceDriver
             ->getDriver($id_driver))
@@ -761,7 +761,7 @@ class AuthStoreController extends BaseController
         ->getDetail($notrans,$id_store))
         ->original,true);
 
-        if(isset($id_driver)){
+        if($id_driver != -1){
             $response["driver"] = $driver["data"];
         }else{
             $response["driver"] = null;
