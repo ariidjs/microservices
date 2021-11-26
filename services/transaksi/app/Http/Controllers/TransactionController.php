@@ -461,6 +461,12 @@ class TransactionController extends Controller
             ->getNotransaksi($transaction->notransaksi,$transaction->id_store))
             ->original,true)["data"];
 
+        $driver = json_decode($this->successResponse($this
+        ->serviceDriver
+        ->getDriver($id_driver))
+        ->original,true);
+
+
 
         $filterDetailTransaction = [];
         foreach ($detailTransaction as $key => $value) {
@@ -484,11 +490,13 @@ class TransactionController extends Controller
             ]);
             $dataFcmCustomer = [
                 "title"=>"customer notification",
-                "content"=>"Driver ditemukan"
+                "content"=>"Driver ditemukan",
+                "driver"=>$driver["data"]
             ];
             $dataFcmStore = [
                 "title"=>"Store notification",
-                "content"=>"Driver ditemukan"
+                "content"=>"Driver ditemukan",
+                "driver"=>$driver["data"]
             ];
 
             $notifCustomer = $this->pushFcm($dataFcmCustomer,$customer["fcm"]);
