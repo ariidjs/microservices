@@ -528,7 +528,8 @@ class TransactionController extends Controller
                             "customer_phone"=>$customer["phone"],
                             "status"=>$transaction->status,
                             "latitude"=>$transaction->latitude,
-                            "longitude"=>$transaction->longitude
+                            "longitude"=>$transaction->longitude,
+                            'created_at' => $transaction->created_at
                         ],
                         'store'=>[
                             "id_store"=>$store["id_store"],
@@ -620,7 +621,8 @@ class TransactionController extends Controller
                     "customer_phone"=>$customer["phone"],
                     'status'=>$transaction->status,
                     "latitude"=>$transaction->latitude,
-                    "longitude"=>$transaction->longitude
+                    "longitude"=>$transaction->longitude,
+                    'created_at' => $transaction->created_at
                 ],
                 'store'=>[
                     "id_store"=>$store["id_store"],
@@ -713,7 +715,8 @@ class TransactionController extends Controller
                         "customer_phone"=>$customer["phone"],
                         "customer_name"=>$customer["name"],
                         "latitude"=>$transaction->latitude,
-                        "longitude"=>$transaction->longitude
+                        "longitude"=>$transaction->longitude,
+                        'created_at' => $transaction->created_at
                     ],
                     'detail_transaksi'=>$filterDetailTransaction
                 ],200);
