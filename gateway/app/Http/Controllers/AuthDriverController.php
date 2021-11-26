@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 
 use App\Services\AuthServiceDriver;
+use App\Services\ServiceDetailTransaction;
 use App\Services\ServiceDriver;
 use App\Services\ServiceSaldoDriver;
 use App\Services\ServiceTransaction;
@@ -21,6 +22,7 @@ class AuthDriverController extends BaseController
     private $serviceDriver;
     private $serviceSaldo;
     private $serviceTransaction;
+    private $serviceDetailTransaction;
 
     private $TIME_EXPIRE = 3;
     private $JWT_EXPIRED = false;
@@ -31,12 +33,13 @@ class AuthDriverController extends BaseController
     private $ACTIVE = 1;
     private $PENDING = 0;
     private $key = "asjlkdnaskjndjkawqnbdjkwbqdjknasljkmmndasjkjdnijkwqbduiqwbdojkawqnd";
-    public function __construct(AuthServiceDriver $authServiceDriver, ServiceDriver $serviceDriver, ServiceSaldoDriver $saldoDriver, ServiceTransaction $serviceTransaction)
+    public function __construct(AuthServiceDriver $authServiceDriver, ServiceDriver $serviceDriver, ServiceSaldoDriver $saldoDriver, ServiceTransaction $serviceTransaction,ServiceDetailTransaction $serviceDetailTransaction)
     {
         $this->authServiceDriver = $authServiceDriver;
         $this->serviceDriver = $serviceDriver;
         $this->serviceSaldo = $saldoDriver;
         $this->serviceTransaction = $serviceTransaction;
+        $this->serviceDetailTransaction = $serviceDetailTransaction;
     }
 
     public function authDriver(Request $request)
@@ -460,5 +463,18 @@ class AuthDriverController extends BaseController
             ->serviceDriver
             ->updatedDriver($body, $id))
             ->original, true);
+    }
+
+    public function getDetailTransaction(Request $request,$notrans,$id_store){
+        $this->validationJWT($request);
+
+        // return $notrans;
+
+        $response = json_decode($this->successResponse($this
+        ->serviceDetailTransaction
+        ->getDetail($notrans,$id_store))
+        ->original,true);
+
+        return $response;
     }
 }

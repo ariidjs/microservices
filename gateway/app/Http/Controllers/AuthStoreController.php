@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 
 use App\Services\AuthServiceStore;
 use App\Services\ServiceDetailTransaction;
+use App\Services\ServiceDriver;
 use App\Services\ServiceProduct;
 use App\Services\ServiceSaldoStore;
 use App\Services\ServiceStore;
@@ -27,6 +28,7 @@ class AuthStoreController extends BaseController
     private $serviceSaldo;
     private $serviceTransaction;
     private $serviceDetailTransaction;
+    private $serviceDriver;
     private $key = "asjlkdnaskjndjkawqnbdjkwbqdjknasljkmmndasjkjdnijkwqbduiqwbdojkawqnd";
     private $TIME_EXPIRE = 3;
     private $serviceProduct;
@@ -41,7 +43,7 @@ class AuthStoreController extends BaseController
     private $ADMIN = "admin";
 
 
-    public function __construct(AuthServiceStore $authServiceStore, ServiceStore $serviceStore, ServiceProduct $serviceProduct, ServiceSaldoStore $serviceSaldoStore, ServiceTransaction $serviceTransaction,ServiceDetailTransaction $serviceDetailTransaction)
+    public function __construct(AuthServiceStore $authServiceStore, ServiceStore $serviceStore, ServiceProduct $serviceProduct, ServiceSaldoStore $serviceSaldoStore, ServiceTransaction $serviceTransaction,ServiceDetailTransaction $serviceDetailTransaction,ServiceDriver $serviceDriver)
     {
         $this->authServiceStore = $authServiceStore;
         $this->serviceStore = $serviceStore;
@@ -49,6 +51,7 @@ class AuthStoreController extends BaseController
         $this->serviceSaldo = $serviceSaldoStore;
         $this->serviceTransaction = $serviceTransaction;
         $this->serviceDetailTransaction = $serviceDetailTransaction;
+        $this->serviceDriver = $serviceDriver;
     }
 
     private function auth($fcm)
@@ -741,15 +744,29 @@ class AuthStoreController extends BaseController
         }
     }
 
-    public function getDetailTransaction(Request $request,$notrans,$id_store){
+    public function getDetailTransaction(Request $request,$notrans,$id_store,$id_driver){
         $this->validationJWT($request);
 
         // return $notrans;
+
+        if(isset($id_driver)){
+            $driver = json_decode($this->successResponse($this
+            ->serviceDriver
+            ->getDriver($id_driver))
+            ->original,true);
+        }
 
         $response = json_decode($this->successResponse($this
         ->serviceDetailTransaction
         ->getDetail($notrans,$id_store))
         ->original,true);
+
+        if(isset($id_driver)){
+            $response["driver"] = $driver;
+        }else{
+            $response["driver"] = null;
+        }
+
 
         return $response;
     }
