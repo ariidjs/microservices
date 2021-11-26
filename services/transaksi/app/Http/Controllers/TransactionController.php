@@ -489,17 +489,18 @@ class TransactionController extends Controller
                 "id_driver"=>$id_driver
             ]);
             $dataFcmCustomer = [
-                "title"=>"customer notification",
-                "content"=>"Driver ditemukan",
-                "driver"=>$driver["data"]
-            ];
-            $dataFcmStore = [
-                "title"=>"Store notification",
+                "title"=>"Driver ditemukan",
                 "content"=>[
                     "title" => "Driver ditemukan",
                     "driver" => $driver["data"]
                 ],
-                "driver"=>$driver["data"]
+            ];
+            $dataFcmStore = [
+                "title"=>"Driver ditemukan",
+                "content"=>[
+                    "title" => "Driver ditemukan",
+                    "driver" => $driver["data"]
+                ],
             ];
 
             $notifCustomer = $this->pushFcm($dataFcmCustomer,$customer["fcm"]);
