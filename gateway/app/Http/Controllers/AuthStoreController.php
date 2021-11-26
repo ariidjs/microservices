@@ -762,7 +762,7 @@ class AuthStoreController extends BaseController
         ->original,true);
 
         if(isset($id_driver)){
-            $response["driver"] = $driver;
+            $response["driver"] = $driver["data"];
         }else{
             $response["driver"] = null;
         }
