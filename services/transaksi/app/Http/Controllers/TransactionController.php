@@ -495,7 +495,10 @@ class TransactionController extends Controller
             ];
             $dataFcmStore = [
                 "title"=>"Store notification",
-                "content"=>"Driver ditemukan",
+                "content"=>[
+                    "title" => "Driver ditemukan",
+                    "driver" => $driver["data"]
+                ],
                 "driver"=>$driver["data"]
             ];
 
