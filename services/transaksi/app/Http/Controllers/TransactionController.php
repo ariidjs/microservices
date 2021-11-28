@@ -331,6 +331,10 @@ class TransactionController extends Controller
         // return $status;
         $transaction = json_decode(Transaction::whereId($id)->first());
         // return var_dump($transaction);
+        $customer = json_decode($this->successResponse($this
+        ->serviceCustomer
+        ->getCustomer($transaction->id_customer))
+        ->original, true)["data"];
 
         try{
             $reference = $this->databaseFirebase->getReference('DriversLocation');
@@ -347,9 +351,14 @@ class TransactionController extends Controller
 
             // Ketika driver yang ditemukan sedang menerima orderan
             if(sizeof($dataDriver) == 0){
+                $dataFcmCustomer = [
+                    "title" => "Orderan anda sedang di proses oleh toko",
+                    "content" => "Orderan anda telah diterima oleh toko silahkan menunngu proses pencarian driver"
+                ];
                 $updated = Transaction::whereId($id)->update([
                     "status" => $this->TRANSACTION_ACCEPT_STORE
                 ]);
+                $notifCustomer = $this->pushFcm($dataFcmCustomer, $customer["fcm"]);
                 return response()->json([
                     'success' => false,
                     'message' => 'Semua driver sedang menerima orderan silahkan tunggu beberapa saat lagi',
@@ -365,10 +374,7 @@ class TransactionController extends Controller
             // return $driver;
             // return var_dump($driver);
 
-            $customer = json_decode($this->successResponse($this
-                ->serviceCustomer
-                ->getCustomer($transaction->id_customer))
-                ->original, true)["data"];
+
             $driver = json_decode($this->successResponse($this
                 ->serviceDriver
                 ->getDriver($driver["id_driver"]))
@@ -453,6 +459,11 @@ class TransactionController extends Controller
             $updated = Transaction::whereId($id)->update([
                 "status" => $this->TRANSACTION_ACCEPT_STORE
             ]);
+            $dataFcmCustomer = [
+                "title" => "Orderan anda sedang di proses oleh toko",
+                "content" => "Orderan anda telah diterima oleh toko silahkan menunngu proses pencarian driver"
+            ];
+            $notifCustomer = $this->pushFcm($dataFcmCustomer, $customer["fcm"]);
             return response()->json([
                 'success' => false,
                 'message' => 'Tidak ada driver yang aktif saat ini',
@@ -659,7 +670,6 @@ class TransactionController extends Controller
                     "address"=>$store["address"],
                 ],
                 'detail_transaksi'=>$filterDetailTransaction
-
             ],200);
         }else {
             return response()->json([
