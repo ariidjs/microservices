@@ -434,7 +434,7 @@ class TransactionController extends Controller
             }
         }catch(FirebaseException $e){
             $updated = Transaction::whereId($id)->update([
-                "status" => $this->TRANSACTION_WAITING_DRIVER
+                "status" => $this->TRANSACTION_ACCEPT_STORE
             ]);
             return response()->json([
                 'success' => false,
