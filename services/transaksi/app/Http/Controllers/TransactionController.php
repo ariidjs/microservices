@@ -17,7 +17,7 @@ use \App\Traits\ApiResponser;
 use Kreait\Firebase\Database;
 use Kreait\Firebase\Factory;
 use Laravel\Lumen\Routing\Controller;
-
+use PhpParser\Node\Stmt\TryCatch;
 
 class TransactionController extends Controller
 {
@@ -164,15 +164,6 @@ class TransactionController extends Controller
 
         return $result;
 
-        // $this->fcm($result["fcm"]);
-
-        // return response()->json([
-        //     'success'=>true,
-        //     'message'=>'success',
-        //     "listdata"=>$listDriver,
-        //     "result"=>$result
-        // ],201);
-        //        return $result;
     }
 
     function haversineGreatCircleDistance(
@@ -338,104 +329,115 @@ class TransactionController extends Controller
         // return $status;
         $transaction = json_decode(Transaction::whereId($id)->first());
         // return var_dump($transaction);
-        $key = $this->databaseFirebase->getReference('DriversLocation')->getChildKeys();
-        $dataDriver = [];
-        foreach ($key as $value) {
-            array_push($dataDriver, $this->databaseFirebase->getReference('DriversLocation')->getChild($value)->getValue());
-        }
 
-        // return $dataDriver;
-        // return var_dump($dataDriver);
-        // return $ref;
+        $reference = $this->databaseFirebase->getReference('DriversLocation');
 
-        // return var_dump($ref);
-        $driver = $this->searchDriver($transaction->latitude, $transaction->longitude, $dataDriver);
-        // return $driver;
-        // return var_dump($driver);
+        if(isset($reference)){
+            $key = $reference->getChildKeys();
+            $dataDriver = [];
+            foreach ($key as $value) {
+                array_push($dataDriver, $this->databaseFirebase->getReference('DriversLocation')->getChild($value)->getValue());
+            }
 
-        $customer = json_decode($this->successResponse($this
-            ->serviceCustomer
-            ->getCustomer($transaction->id_customer))
-            ->original, true)["data"];
-        $driver = json_decode($this->successResponse($this
-            ->serviceDriver
-            ->getDriver($driver["id_driver"]))
-            ->original, true)["data"];
+            // return $dataDriver;
+            // return var_dump($dataDriver);
+            // return $ref;
 
-        $store = json_decode($this->successResponse($this
-            ->storeService
-            ->getStore($transaction->id_store))
-            ->original, true)["data"];
+            // return var_dump($ref);
+            $driver = $this->searchDriver($transaction->latitude, $transaction->longitude, $dataDriver);
+            // return $driver;
+            // return var_dump($driver);
 
-        // return var_dump($store);
-        if ($status == $this->TRANSACTION_ACCEPT_STORE || $status == $this->TRANSACTION_WAITING_DRIVER) {
-            $updated = Transaction::whereId($id)->update([
-                "status" => $this->TRANSACTION_WAITING_DRIVER
-            ]);
-            $dataFcmCustomer = [
-                "title" => "Store notification",
-                "content" => "sedang mencari driver"
-            ];
-            $dataFcmDriver = [
-                "title" => "Driver notification",
-                "content" => [
-                    "transaksi" => $transaction,
-                    "store" => [
-                        "store_name" => $store["store_name"],
-                        "phone" => $store["phone"],
-                        "latitude" => $store["latitude"],
-                        "longititude" => $store["longititude"],
-                        "address" => $store["address"]
+            $customer = json_decode($this->successResponse($this
+                ->serviceCustomer
+                ->getCustomer($transaction->id_customer))
+                ->original, true)["data"];
+            $driver = json_decode($this->successResponse($this
+                ->serviceDriver
+                ->getDriver($driver["id_driver"]))
+                ->original, true)["data"];
+
+            $store = json_decode($this->successResponse($this
+                ->storeService
+                ->getStore($transaction->id_store))
+                ->original, true)["data"];
+
+            // return var_dump($store);
+            if ($status == $this->TRANSACTION_ACCEPT_STORE || $status == $this->TRANSACTION_WAITING_DRIVER) {
+                $updated = Transaction::whereId($id)->update([
+                    "status" => $this->TRANSACTION_WAITING_DRIVER
+                ]);
+                $dataFcmCustomer = [
+                    "title" => "Store notification",
+                    "content" => "sedang mencari driver"
+                ];
+                $dataFcmDriver = [
+                    "title" => "Driver notification",
+                    "content" => [
+                        "transaksi" => $transaction,
+                        "store" => [
+                            "store_name" => $store["store_name"],
+                            "phone" => $store["phone"],
+                            "latitude" => $store["latitude"],
+                            "longititude" => $store["longititude"],
+                            "address" => $store["address"]
+                        ]
                     ]
-                ]
-            ];
+                ];
 
 
-            $notifCustomer = $this->pushFcm($dataFcmCustomer, $customer["fcm"]);
-            $notifDriver = $this->pushFcm($dataFcmDriver, $driver["fcm"]);
-            if ($updated) {
-                return response()->json([
-                    'success' => true,
-                    'message' => 'success',
-                    'notifDriver' => $notifDriver,
-                    'notifCustomer' => $notifCustomer,
+                $notifCustomer = $this->pushFcm($dataFcmCustomer, $customer["fcm"]);
+                $notifDriver = $this->pushFcm($dataFcmDriver, $driver["fcm"]);
+                if ($updated) {
+                    return response()->json([
+                        'success' => true,
+                        'message' => 'success',
+                        'notifDriver' => $notifDriver,
+                        'notifCustomer' => $notifCustomer,
 
-                ], 201);
-            } else {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'failed',
-                    'notifDriver' => $notifDriver,
-                    'notifCustomer' => $notifCustomer,
-                ], 404);
+                    ], 201);
+                } else {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'failed',
+                        'notifDriver' => $notifDriver,
+                        'notifCustomer' => $notifCustomer,
+                    ], 404);
+                }
             }
+
+            if ($status == $this->TRANSACTION_CANCEL) {
+                $updated = Transaction::whereId($id)->update([
+                    "status" => $this->TRANSACTION_CANCEL
+                ]);
+
+                $dataFcm = [
+                    "title" => "Store notification",
+                    "content" => "pesanan anda dibatalkan"
+                ];
+
+                $notifCustomer = $this->pushFcm($dataFcm, $customer["fcm"]);
+
+                if ($updated) {
+                    return response()->json([
+                        'success' => true,
+                        'message' => 'success',
+                        'notifCustomer' => $notifCustomer,
+                    ], 201);
+                } else {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'failed',
+                    ], 404);
+                }
+            }
+        }else{
+            return response()->json([
+                'success' => false,
+                'message' => 'Tidak ada driver yang aktif saat ini',
+            ], 404);
         }
 
-        if ($status == $this->TRANSACTION_CANCEL) {
-            $updated = Transaction::whereId($id)->update([
-                "status" => $this->TRANSACTION_CANCEL
-            ]);
-
-            $dataFcm = [
-                "title" => "Store notification",
-                "content" => "pesanan anda dibatalkan"
-            ];
-
-            $notifCustomer = $this->pushFcm($dataFcm, $customer["fcm"]);
-
-            if ($updated) {
-                return response()->json([
-                    'success' => true,
-                    'message' => 'success',
-                    'notifCustomer' => $notifCustomer,
-                ], 201);
-            } else {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'failed',
-                ], 404);
-            }
-        }
     }
 
     public function statusFromDriver(Request $request,$id){
