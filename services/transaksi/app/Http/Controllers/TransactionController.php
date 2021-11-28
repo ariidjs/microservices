@@ -15,9 +15,11 @@ use App\Services\ServiceCustomer;
 use App\Services\ServiceDriver;
 use \App\Traits\ApiResponser;
 use Kreait\Firebase\Database;
+use Kreait\Firebase\Exception\FirebaseException;
 use Kreait\Firebase\Factory;
 use Laravel\Lumen\Routing\Controller;
 use PhpParser\Node\Stmt\TryCatch;
+use Throwable;
 
 class TransactionController extends Controller
 {
@@ -330,9 +332,8 @@ class TransactionController extends Controller
         $transaction = json_decode(Transaction::whereId($id)->first());
         // return var_dump($transaction);
 
-        $reference = $this->databaseFirebase->getReference('DriversLocation');
-
-        if(isset($reference)){
+        try{
+            $reference = $this->databaseFirebase->getReference('DriversLocation');
             $key = $reference->getChildKeys();
             $dataDriver = [];
             foreach ($key as $value) {
@@ -431,7 +432,7 @@ class TransactionController extends Controller
                     ], 404);
                 }
             }
-        }else{
+        }catch(FirebaseException $e){
             return response()->json([
                 'success' => false,
                 'message' => 'Tidak ada driver yang aktif saat ini',
