@@ -340,6 +340,22 @@ class TransactionController extends Controller
                 array_push($dataDriver, $this->databaseFirebase->getReference('DriversLocation')->getChild($value)->getValue());
             }
 
+            $dataDriver  = collect($dataDriver)->filter(function($value,$key){
+                return $value["status"] == 0;
+            });
+
+
+            // Ketika driver yang ditemukan sedang menerima orderan
+            if(sizeof($dataDriver) == 0){
+                $updated = Transaction::whereId($id)->update([
+                    "status" => $this->TRANSACTION_ACCEPT_STORE
+                ]);
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Semua driver sedang menerima orderan silahkan tunggu beberapa saat lagi',
+                ], 404);
+            }
+
             // return $dataDriver;
             // return var_dump($dataDriver);
             // return $ref;
@@ -433,6 +449,7 @@ class TransactionController extends Controller
                 }
             }
         }catch(FirebaseException $e){
+            // Ketika driver tidak ada yang aktif
             $updated = Transaction::whereId($id)->update([
                 "status" => $this->TRANSACTION_ACCEPT_STORE
             ]);
