@@ -433,6 +433,9 @@ class TransactionController extends Controller
                 }
             }
         }catch(FirebaseException $e){
+            $updated = Transaction::whereId($id)->update([
+                "status" => $this->TRANSACTION_WAITING_DRIVER
+            ]);
             return response()->json([
                 'success' => false,
                 'message' => 'Tidak ada driver yang aktif saat ini',
