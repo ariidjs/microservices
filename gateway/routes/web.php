@@ -41,7 +41,7 @@ $router->group(['prefix' => 'api/v1/store'], function () use ($router) {
 
 $router->group(['prefix' => 'api/v1/product'], function () use ($router) {
     $router->post('', 'AuthStoreController@inserProduct');
-    $router->post('updated/{idProduct}', 'AuthStoreController@updateProduct');
+    $router->post('{idProduct}', 'AuthStoreController@updateProduct');
     $router->get('', 'AuthCustomerController@getListProduct');
     $router->get('/store/{id}', 'AuthCustomerController@getListProductStore');
     $router->get('{idProduct}/{status}', 'AuthAdminController@statusDeleteProduct');
