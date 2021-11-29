@@ -80,12 +80,12 @@ class TransactionController extends Controller
 
     public function searchDriver($latitude, $longitude, $listDriver)
     {
+
         // $listDriver = array(
         //     array("id_driver"=>1,"rating"=>4,"total_order"=>4,"coordinate"=>"-0.8948229819361365,100.36756917663485","fcm"=>"fQWvUY-8SL2mdFNPYy95_d:APA91bGWmptRIa2x9pE8yZN4v64eFvPQYDvHAA0hCctAddQpifS-bHMkjFl3G9xHv5JtXLnygsOMcNa36ysYLLlvvpmQC4T-jw8T5OfoPZwMvw_KejiKkVn8pTww35jiG8AjrUAhD4KK"),
         //     array("id_driver"=>2,"rating"=>3,"total_order"=>3,"coordinate"=>"-0.8923167624595327,100.36766181489392","fcm"=>"sadddddddddddddddddddddd"),
         //     array("id_driver"=>3,"rating"=>5,"total_order"=>41,"coordinate"=>"-0.9237285327683936, 100.37486082016031","fcm"=>"saddddddddddddddddddddddddddddd"),
         // );
-
 
         foreach ($listDriver as $key => $value) {
             //        convert coordinate
@@ -163,9 +163,7 @@ class TransactionController extends Controller
                 $result = $value;
             }
         }
-
         return $result;
-
     }
 
     function haversineGreatCircleDistance(
@@ -372,8 +370,9 @@ class TransactionController extends Controller
             // return $ref;
 
             // return var_dump($ref);
-            $driver = $this->searchDriver($transaction->latitude, $transaction->longitude, $dataDriver);
-            // return $driver;
+            // return $dataDriver;
+            $driver = $this->searchDriver($transaction->latitude, $transaction->longitude, $dataDriver->toArray());
+
             // return var_dump($driver);
 
 
