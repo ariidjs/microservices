@@ -273,7 +273,7 @@ class AuthStoreController extends BaseController
 
     public function updateProduct(Request $request, $idProduct)
     {
-        $this->validationJWT($request);
+        $validation =$this->validationJWT($request);
 
         $name_product = $request->input('name_product');
         $category = $request->input('category');
@@ -310,7 +310,7 @@ class AuthStoreController extends BaseController
         }
 
         $body = [
-            'id_store' => $idProduct,
+            'id_store' => $validation["data"]["id"],
             'name_product' => $name_product,
             'category' => $category,
             'price' => $price,
@@ -344,8 +344,8 @@ class AuthStoreController extends BaseController
                 $image4->move('images', $fotoProduct4);
             }
 
-            if ($expired) {
-                $response["jwt"] = $jwt;
+            if ($validation["expired"]) {
+                $response["jwt"] = $validation["jwt"];
             } else {
                 $response["jwt"] = null;
             }
