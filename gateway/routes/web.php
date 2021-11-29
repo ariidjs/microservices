@@ -18,6 +18,7 @@ use Firebase\JWT\JWT;
 
 $router->group(['prefix' => 'api/v1/store'], function () use ($router) {
     $router->get('historysaldo', 'AuthStoreController@getHistoryWithDrawOrDeposit');
+    $router->get('/products/{id}','AuthStoreController@updateProduct');
     $router->post('/products', 'AuthStoreController@inserProduct');
     $router->get('listTransaction', 'AuthStoreController@getListTransaction');
     $router->post('/register', 'AuthStoreController@register');

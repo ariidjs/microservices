@@ -94,10 +94,6 @@ class AuthStoreController extends BaseController
     {
         $validation = $this->validationJWT($request);
 
-        // return var_dump($validation);
-        // return $validation["data"]["id"];
-
-
         $name_product = $request->input('name_product');
         $category = $request->input('category');
         $price = $request->input('price');
@@ -199,8 +195,6 @@ class AuthStoreController extends BaseController
         ->original, true);
     }
 
-
-
     public function register(Request $request)
     {
         $owner_name = $request->input("owner_name");
@@ -279,27 +273,8 @@ class AuthStoreController extends BaseController
 
     public function updateProduct(Request $request, $idProduct)
     {
-        // return "Hello";
-        $jwt = $request->header("jwt");
-        $fcm = $request->header('fcm');
+        $this->validationJWT($request);
 
-        try {
-            JWT::decode($jwt, $this->key, array('HS256'));
-            return $this->update($request, $jwt, $this->JWT_EXPIRED, $idProduct);
-        } catch (ExpiredException $ex) {
-            $data = $this->auth($fcm);
-            $payload = array(
-                "id" => $data['data']['id_store'],
-                "owner_name" => $data['data']['owner_name'],
-                "store_name" => $data['data']['store_name'],
-                "exp" => (round(microtime(true) * 1000) + ($this->TIME_EXPIRE * 60000))
-            );
-            $jwt = JWT::encode($payload, $this->key);
-            return $this->update($request, $jwt, !$this->JWT_EXPIRED, $idProduct);
-        }
-    }
-    public function update($request, $jwt, $expired, $idProduct)
-    {
         $name_product = $request->input('name_product');
         $category = $request->input('category');
         $price = $request->input('price');
@@ -309,8 +284,6 @@ class AuthStoreController extends BaseController
         $image3 = $request->file('image3');
         $image4 = $request->file('image4');
         $description = $request->input('description');
-
-        $store = JWT::decode($jwt, $this->key, array('HS256'));
 
         if ($image1) {
             $fotoProduct1 = time() . $image1->getClientOriginalName();
@@ -337,7 +310,7 @@ class AuthStoreController extends BaseController
         }
 
         $body = [
-            'id_store' => $store->id,
+            'id_store' => $idProduct,
             'name_product' => $name_product,
             'category' => $category,
             'price' => $price,
@@ -379,7 +352,9 @@ class AuthStoreController extends BaseController
 
             return $response;
         }
+
     }
+
 
     public function login(Request $request, $phone)
     {
