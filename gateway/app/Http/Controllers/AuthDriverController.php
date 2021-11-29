@@ -7,6 +7,7 @@ use App\Services\AuthServiceDriver;
 use App\Services\ServiceDetailTransaction;
 use App\Services\ServiceDriver;
 use App\Services\ServiceSaldoDriver;
+use App\Services\ServiceStore;
 use App\Services\ServiceTransaction;
 use Illuminate\Http\Request;
 use Laravel\Lumen\Routing\Controller as BaseController;
@@ -23,6 +24,7 @@ class AuthDriverController extends BaseController
     private $serviceSaldo;
     private $serviceTransaction;
     private $serviceDetailTransaction;
+    private $serviceStore;
 
     private $TIME_EXPIRE = 3;
     private $JWT_EXPIRED = false;
@@ -33,13 +35,14 @@ class AuthDriverController extends BaseController
     private $ACTIVE = 1;
     private $PENDING = 0;
     private $key = "asjlkdnaskjndjkawqnbdjkwbqdjknasljkmmndasjkjdnijkwqbduiqwbdojkawqnd";
-    public function __construct(AuthServiceDriver $authServiceDriver, ServiceDriver $serviceDriver, ServiceSaldoDriver $saldoDriver, ServiceTransaction $serviceTransaction,ServiceDetailTransaction $serviceDetailTransaction)
+    public function __construct(AuthServiceDriver $authServiceDriver, ServiceDriver $serviceDriver, ServiceSaldoDriver $saldoDriver, ServiceTransaction $serviceTransaction,ServiceDetailTransaction $serviceDetailTransaction,ServiceStore $serviceStore)
     {
         $this->authServiceDriver = $authServiceDriver;
         $this->serviceDriver = $serviceDriver;
         $this->serviceSaldo = $saldoDriver;
         $this->serviceTransaction = $serviceTransaction;
         $this->serviceDetailTransaction = $serviceDetailTransaction;
+        $this->serviceStore = $serviceStore;
     }
 
     public function authDriver(Request $request)
@@ -469,12 +472,23 @@ class AuthDriverController extends BaseController
         $this->validationJWT($request);
 
         // return $notrans;
+        $store = json_decode($this->successResponse($this
+            ->serviceStore
+            ->getStore($id_store))
+            ->original,true);
 
-        $response = json_decode($this->successResponse($this
+        $detailProduct = json_decode($this->successResponse($this
         ->serviceDetailTransaction
         ->getDetail($notrans,$id_store))
         ->original,true);
 
-        return $response;
+        return response()->json([
+            'success'=>true,
+            'message'=>'success',
+            'data'=>[
+                "store"=> $store["data"],
+                "detail_product"=>$detailProduct["data"]
+            ]
+        ],201);
     }
 }
