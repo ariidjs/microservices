@@ -344,9 +344,11 @@ class TransactionController extends Controller
                 array_push($dataDriver, $this->databaseFirebase->getReference('DriversLocation')->getChild($value)->getValue());
             }
 
+
             $dataDriver  = collect($dataDriver)->filter(function($value,$key){
                 return $value["status"] == 1;
             });
+            // return $dataDriver;
 
 
             // Ketika driver yang ditemukan sedang menerima orderan
@@ -407,8 +409,6 @@ class TransactionController extends Controller
                         ]
                     ]
                 ];
-
-
                 $notifCustomer = $this->pushFcm($dataFcmCustomer, $customer["fcm"]);
                 $notifDriver = $this->pushFcm($dataFcmDriver, $driver["fcm"]);
                 if ($updated) {
