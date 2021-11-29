@@ -477,8 +477,7 @@ class AuthDriverController extends BaseController
             ->getStore($id_store))
             ->original,true);
 
-        $store = collect($store["data"])
-        ->contains('id_store', 'owner_name', 'rating', 'store_name','description_store','photo_store', 'latitude', 'longititude', 'address');
+        $store = collect($store["data"])->except(['fcm', 'status_store', 'nik_ktp', 'photo_ktp', 'saldo', 'status_delete']);
 
         $detailProduct = json_decode($this->successResponse($this
         ->serviceDetailTransaction
