@@ -477,6 +477,9 @@ class AuthDriverController extends BaseController
             ->getStore($id_store))
             ->original,true);
 
+        $store = collect($store["data"])
+        ->contains('id_store', 'owner_name', 'rating', 'store_name','description_store','photo_store', 'latitude', 'longititude', 'address');
+
         $detailProduct = json_decode($this->successResponse($this
         ->serviceDetailTransaction
         ->getDetail($notrans,$id_store))
@@ -486,7 +489,7 @@ class AuthDriverController extends BaseController
             'success'=>true,
             'message'=>'success',
             'data'=>[
-                "store"=> $store["data"],
+                "store"=> $store,
                 "detail_product"=>$detailProduct["data"]
             ]
         ],201);

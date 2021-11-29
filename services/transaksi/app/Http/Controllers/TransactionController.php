@@ -333,7 +333,7 @@ class TransactionController extends Controller
         // return var_dump($transaction);
         $customer = json_decode($this->successResponse($this
         ->serviceCustomer
-        ->getCustomer($transaction->id_customer))
+        ->getCustomer($transaction["id_customer"]))
         ->original, true)["data"];
 
         try{
