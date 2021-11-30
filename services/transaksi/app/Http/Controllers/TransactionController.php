@@ -1037,4 +1037,85 @@ class TransactionController extends Controller
             ], 400);
         }
     }
+
+    public function getDetailTransaction(Request $request, $notrans) 
+    {
+        $transaction = json_decode(Transaction::where('notransaksi' ,$notrans)->first());
+
+        // return response()->json([
+        //     'success'=>true,
+        //     'message'=>'success',
+        //     'data' => 'data']);
+
+
+        if($transaction) {
+            $customer = json_decode($this->successResponse($this
+                ->serviceCustomer
+                ->getCustomer($transaction->id_customer))
+                ->original,true)["data"];
+
+            $store =json_decode($this->successResponse($this
+                ->storeService
+                ->getStore($transaction->id_store))
+                ->original,true)["data"];
+
+            $detailTransaction =json_decode($this->successResponse($this
+                ->detailTransactionService
+                ->getNotransaksi($transaction->notransaksi,$transaction->id_store))
+                ->original,true)["data"];
+
+            $filterDetailTransaction = [];
+            foreach ($detailTransaction as $key => $value) {
+                array_push($filterDetailTransaction,[
+                    "id_product"=>$value["id_product"],
+                    "price_product"=>$value["price_product"],
+                    "count"=>$value["count"],
+                    "name_product"=>$value["name_product"],
+                    "category"=>$value["category"],
+                    "image1"=>$value["image1"],
+                    "image2"=>$value["image2"],
+                    "image3"=>$value["image3"],
+                    "image4"=>$value["image4"],
+                    "description"=>$value["description"]
+                ]);
+            }
+
+
+            return response()->json([
+                'success'=>true,
+                'message'=>'success',
+                // 'notifStore'=>$notifStore,
+                // 'notifCustomer'=>$notifCustomer,
+                'transaction'=>[
+                    "id"=> $transaction->id,
+                    "notransaksi"=>$transaction->notransaksi,
+                    "total_price"=>$transaction->total_price,
+                    "driver_price"=>$transaction->driver_price,
+                    "address_customer"=>$transaction->alamat_user,
+                    "customer_name"=>$customer["name"],
+                    "customer_phone"=>$customer["phone"],
+                    'status'=>$transaction->status,
+                    "latitude"=>$transaction->latitude,
+                    "longitude"=>$transaction->longitude,
+                    'created_at' => $transaction->created_at
+                ],
+                'store'=>[
+                    "id_store"=>$store["id_store"],
+                    "owner_name"=>$store["owner_name"],
+                    "store_name"=>$store["store_name"],
+                    "phone"=>$store["phone"],
+                    "rating"=>$store["rating"],
+                    "photo_store"=>$store["photo_store"],
+                    "latitude"=>$store["latitude"],
+                    "longititude"=>$store["longititude"],
+                    "address"=>$store["address"],
+                ],
+                'detail_transaksi'=>$filterDetailTransaction
+            ],200);
+        }else {
+            return response()->json([
+                'success'=>false,
+                'message'=>'Transaksi tidak ditemukan'],404);
+        }
+    }
 }

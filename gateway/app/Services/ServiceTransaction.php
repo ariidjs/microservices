@@ -69,6 +69,11 @@ class ServiceTransaction
         return $this->performRequest("GET", '/api/v1/transaksi/driver/history/'.$id);
     }
 
+    public function getDetailTransaction($notrans)
+    {
+        return $this->performRequest("GET", '/api/v1/transaksi/detail/'.$notrans);
+    }
+
     // public function update($data,$id){
     //     return $this->performRequest("POST",'api/v1/store/'.$id,$data);
     // }

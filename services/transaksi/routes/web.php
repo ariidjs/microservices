@@ -25,6 +25,7 @@ $router->group(['prefix' => 'api/v1/transaksi'], function () use ($router) {
     $router->get('/driver/current/{id}','TransactionController@driverTrans');
     $router->get('store/{idStore}', 'TransactionController@getListTransactionStore');
     $router->get('/driver/history/{id}', 'TransactionController@getHistoryDriver');
+    $router->get('/detail/{notrans}', 'TransactionController@getDetailTransaction');
     // $router->post('update[/{id}]','TransactionController@update');
     // $router->delete('[{id}]','TransactionController@delete');
 });

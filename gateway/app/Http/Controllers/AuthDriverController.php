@@ -468,29 +468,13 @@ class AuthDriverController extends BaseController
             ->original, true);
     }
 
-    public function getDetailTransaction(Request $request,$notrans,$id_store){
+    public function getDetailTransaction(Request $request,$notrans){
         $this->validationJWT($request);
 
         // return $notrans;
-        $store = json_decode($this->successResponse($this
-            ->serviceStore
-            ->getStore($id_store))
-            ->original,true);
-
-        $store = collect($store["data"])->except(['fcm', 'status_store', 'nik_ktp', 'photo_ktp', 'saldo', 'status_delete']);
-
-        $detailProduct = json_decode($this->successResponse($this
-        ->serviceDetailTransaction
-        ->getDetail($notrans,$id_store))
-        ->original,true);
-
-        return response()->json([
-            'success'=>true,
-            'message'=>'success',
-            'data'=>[
-                "store"=> $store,
-                "detail_product"=>$detailProduct["data"]
-            ]
-        ],201);
+        return json_decode($this->successResponse($this
+            ->serviceTransaction
+            ->getDetailTransaction($notrans))
+            ->original, true);
     }
 }
