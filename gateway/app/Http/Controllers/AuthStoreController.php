@@ -673,26 +673,35 @@ class AuthStoreController extends BaseController
 
     public function getStore($id)
     {
-
         $store = json_decode($this->successResponse($this
             ->serviceStore
             ->getStore($id))
             ->original, true);
 
-        $product = json_decode($this->successResponse($this
-            ->serviceProduct
-            ->getListProductStoreFromAdmin($id))
-            ->original, true);
+        // $product = json_decode($this->successResponse($this
+        //     ->serviceProduct
+        //     ->getListProductStoreFromAdmin($id))
+        //     ->original, true);
 
 
-        if (isset($store)) {
-            if (isset(($product))) {
-                $store["product"] = $product;
-            } else {
-                $store["product"] = null;
-            }
-            return $store;
-        }
+        $store = collect($store["data"])->except(['fcm', 'status_store', 'nik_ktp', 'photo_ktp', 'status_delete']);
+
+
+        return response()->json([
+            'success'=>true,
+            'message'=>'success',
+            'data'=>$store
+        ],201);
+
+        // if (isset($store)) {
+        //     if (isset(($product))) {
+        //         $store["product"] = $product;
+        //     } else {
+        //         $store["product"] = null;
+        //     }
+
+
+        // }
     }
 
     public function activation(Request $request, $id_store, $status)
