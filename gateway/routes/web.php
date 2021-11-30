@@ -72,7 +72,6 @@ $router->group(['prefix' => 'api/v1/driver'], function () use ($router) {
 $router->group(['prefix' => 'api/v1/customer'], function () use ($router) {
     $router->post('', 'AuthCustomerController@authCustomer');
     $router->post('/register', 'AuthCustomerController@register');
-    $router->get('/phone/{phone}', 'AuthCustomerController@checkPhone');
     $router->get('', 'AuthCustomerController@getListCustomers');
     $router->post('/login/{phone}', 'AuthCustomerController@login');
     $router->post('/order', 'AuthCustomerController@order');
