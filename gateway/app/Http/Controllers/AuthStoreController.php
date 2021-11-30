@@ -671,11 +671,12 @@ class AuthStoreController extends BaseController
         }
     }
 
-    public function getStore($id)
+    public function getStore(Request $request)
     {
+        $validation = $this->validationJWT($request);
         $store = json_decode($this->successResponse($this
             ->serviceStore
-            ->getStore($id))
+            ->getStore($validation["data"]["id"]))
             ->original, true);
 
         // $product = json_decode($this->successResponse($this
