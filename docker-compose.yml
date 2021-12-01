@@ -28,6 +28,7 @@ services:
           - saldo.service
           - driversaldo.service
           - promo.service
+          - management.service
 
   gateway:
     build:
@@ -226,6 +227,23 @@ services:
     tty: true
     volumes:
       - ./services/promo/:/var/www/services/promo
+      - ./docker/php/local.ini:/usr/local/etc/php/conf.d/local.ini
+    networks:
+      - app-network
+
+  management:
+    build:
+      context: services/management
+      dockerfile: Dockerfile
+    image: php:7.4-fpm
+    restart: unless-stopped
+    env_file: './services/management/.env.example'
+    working_dir: /var/www/services/management
+    depends_on:
+      - mysqldb
+    tty: true
+    volumes:
+      - ./services/management/:/var/www/services/management
       - ./docker/php/local.ini:/usr/local/etc/php/conf.d/local.ini
     networks:
       - app-network
