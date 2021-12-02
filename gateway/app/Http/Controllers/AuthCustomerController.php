@@ -78,37 +78,37 @@ class AuthCustomerController extends BaseController
             ->original, true);
     }
 
-
-    public function checkPhone($phone)
-    {
-        return json_decode($this->successResponse($this
-            ->authServiceCustomer
-            ->checkPhone($phone))
-            ->original, true);
-    }
-
-
     public function login(Request $request, $phone)
     {
 
-        $body = [
-            'fcm' => $request->input('fcm')
-        ];
-        $response=json_decode($this->successResponse($this
+        $response = json_decode($this->successResponse($this
             ->authServiceCustomer
-            ->login($phone, $body))
+            ->checkPhone($phone))
             ->original, true);
 
-        if($response["success"]){
-            $payload = array(
-                "id" => $response['data']['id'],
-                "name" => $response['data']['name']
-            );
-            $jwt = JWT::encode($payload, env('APP_KEY'));
-            $response['data']['jwt'] = $jwt;
-            return $response;
 
+        if($response['success']) 
+        {
+            $body = [
+                'fcm' => $request->input('fcm')
+            ];
+            $login = json_decode($this->successResponse($this
+                ->authServiceCustomer
+                ->login($phone, $body))
+                ->original, true);
+    
+            if($login["success"]){
+                $payload = array(
+                    "id" => $login['data']['id'],
+                    "name" => $login['data']['name']
+                );
+                $jwt = JWT::encode($payload, env('APP_KEY'));
+                $login['data']['jwt'] = $jwt;
+                return $login;
+    
+            }
         }
+        
     }
 
     public function getListProduct()
