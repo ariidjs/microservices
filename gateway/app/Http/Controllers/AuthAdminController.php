@@ -6,6 +6,7 @@ use App\Services\AuthServiceAdmin;
 use App\Services\ServiceAdmin;
 use App\Services\ServiceCustomer;
 use App\Services\ServiceDetailTransaction;
+use App\Services\ServiceManagement;
 use App\Services\ServiceProduct;
 use App\Services\ServiceStore;
 use App\Services\ServiceTransaction;
@@ -26,9 +27,10 @@ class AuthAdminController extends BaseController
     private $serviceStore;
     private $serviceDetailTransaction;
     private $DELETE = 1;
+    private $serviceManagement;
     private $AKTIF = 0;
     private $key = "asjlkdnaskjndjkawqnbdjkwbqdjknasljkmmndasjkjdnijkwqbduiqwbdojkawqnd";
-    public function __construct(ServiceAdmin $serviceAdmin, AuthServiceAdmin $authServiceAdmin, ServiceTransaction $serviceTransaction, ServiceCustomer $serviceCustomer, ServiceProduct $serviceProduct,ServiceStore $serviceStore,ServiceDetailTransaction $serviceDetailTransaction)
+    public function __construct(ServiceManagement $serviceManagement,ServiceAdmin $serviceAdmin, AuthServiceAdmin $authServiceAdmin, ServiceTransaction $serviceTransaction, ServiceCustomer $serviceCustomer, ServiceProduct $serviceProduct,ServiceStore $serviceStore,ServiceDetailTransaction $serviceDetailTransaction)
     {
         $this->serviceAdmin = $serviceAdmin;
         $this->authServiceAdmin = $authServiceAdmin;
@@ -37,6 +39,7 @@ class AuthAdminController extends BaseController
         $this->serviceProduct = $serviceProduct;
         $this->serviceStore = $serviceStore;
         $this->serviceDetailTransaction = $serviceDetailTransaction;
+        $this->serviceManagement = $serviceManagement;
     }
 
     public function validationJWT($request)
@@ -96,6 +99,7 @@ class AuthAdminController extends BaseController
 
     public function login(Request $request)
     {
+
         $username = $request->input("username");
         $password = $request->input("password");
 
@@ -109,7 +113,6 @@ class AuthAdminController extends BaseController
             ->login($body))
             ->original, true);
 
-        // return dd($response);
 
 
         if ($response["success"]) {
@@ -360,6 +363,42 @@ class AuthAdminController extends BaseController
         $response = json_decode($this->successResponse($this
         ->serviceDetailTransaction
         ->getDetail($notrans,$id_store))
+        ->original,true);
+
+        return $response;
+    }
+
+    public function getManagementSystem(){
+        $response = json_decode($this->successResponse($this
+        ->serviceManagement
+        ->getManagement())
+        ->original,true);
+
+        return $response;
+    }
+
+    public function updateManagementSystem(Request $request){
+
+        $distance = $request->input('distance');
+        $total_order = $request->input('total_order');
+        $rating = $request->input('rating');
+        $jumlah_transaksi = $request->input('jumlah_transaksi');
+        $level_pelanggan = $request->input('level_pelanggan');
+        $total_transaksi = $request->input('total_transaksi');
+
+        $body = [
+            "distance"=>$distance,
+            "total_order"=>$total_order,
+            "rating"=>$rating,
+            "jumlah_transaksi"=>$jumlah_transaksi,
+            "level_pelanggan"=>$level_pelanggan,
+            "total_transaksi"=>$total_transaksi,
+        ];
+
+
+        $response = json_decode($this->successResponse($this
+        ->serviceManagement
+        ->update($body))
         ->original,true);
 
         return $response;

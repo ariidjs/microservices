@@ -13,13 +13,10 @@
 |
 */
 
-$router->group(['prefix'=>'/api/v1/products'],function() use($router){
-        $router->get('list','ProductController@getListProduct');
-        $router->get('store/{id}','ProductController@getProductStore');
-        $router->post('','ProductController@insert');
-        $router->get('[{id}]','ProductController@getProduct');
-        $router->post('update/{id}','ProductController@update');
-        $router->delete('[{id}]','ProductController@delete');
+$router->group(['prefix'=>'/api/v1/management'],function() use($router){
+        $router->get('','ManagementController@getManagement');
+        $router->post('','ManagementController@update');
+        // $router->post('{id}','ManagementController@update');
 });
 
 $router->get('/', function () use ($router) {

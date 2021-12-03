@@ -51,8 +51,8 @@ $router->group(['prefix' => 'api/v1/product'], function () use ($router) {
 });
 
 $router->group(['prefix' => 'api/v1/driver'], function () use ($router) {
-    $router->get('', 'AuthDriverController@getDriverById');
-    $router->post('', 'AuthDriverController@authDriver');
+    $router->get('', 'AuthAdminController@getDriverById');
+    $router->post('', 'AuthAdminControllerr@authDriver');
     $router->post('/register', 'AuthDriverController@register');
     $router->post('/login/{phone}', 'AuthDriverController@login');
     $router->post('/withdrawordeposit', 'AuthDriverController@withdrawORDeposit');
@@ -81,13 +81,18 @@ $router->group(['prefix' => 'api/v1/admin'], function () use ($router) {
     $router->get('driver/{id}', 'AuthDriverController@getDriver');
     $router->get('driver', 'AuthDriverController@getListDriverFromAdmin');
     $router->post('', 'AuthAdminController@register');
-    $router->post('/login', 'AuthAdminController@login');
+    $router->post('login', 'AuthAdminController@login');
     $router->get('/promoCustomer', 'AuthAdminController@getPromo');
     $router->get('/transaction', 'AuthAdminController@getListTransaction');
     $router->get('/detailTransaction/{notrans}/{id_store}', 'AuthAdminController@getDetailTransaction');
     // $router->get('/phone/{phone}','AuthCustomerController@checkPhone');
     // $router->post('/login/{phone}','AuthCustomerController@login');
     // $router->post('/order','AuthCustomerController@order');
+});
+
+$router->group(['prefix' => 'api/v1/management'], function () use ($router) {
+    $router->get('', 'AuthAdminController@getManagementSystem');
+    $router->post('', 'AuthAdminController@updateManagementSystem');
 });
 
 

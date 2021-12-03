@@ -36,6 +36,6 @@ class AdminServices
      */
     public function login($data)
     {
-        return $this->performRequest("POST", '/api/v1/admins/login', $data);
+        return $this->performRequest("POST", '/api/v1/admin/login', $data);
     }
 }

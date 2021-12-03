@@ -13,6 +13,7 @@ use \App\Models\Store;
 use App\Services\FcmService;
 use App\Services\ServiceCustomer;
 use App\Services\ServiceDriver;
+use App\Services\ServiceManagement;
 use \App\Traits\ApiResponser;
 use Kreait\Firebase\Database;
 use Kreait\Firebase\Exception\FirebaseException;
@@ -45,6 +46,7 @@ class TransactionController extends Controller
     private $databaseFirebase;
     private $serviceCustomer;
     private $serviceDriver;
+    private $serviceManagement;
     private $AUTHKEYFCM = "key=AAAAC-0CIus:APA91bGZfiR7Q8hIO4W_gCTegqugpbiPnf8Ygnn72lyNtg1MoGt2Q3OkSNH_aOBefIjiEWcXl1VUbsLlWKAziWPBJiol_RBI1X2IDkfG9MY9YbR_wuHMO8FOTUFuSE-dYY8OjsLq6din";
 
 
@@ -54,7 +56,8 @@ class TransactionController extends Controller
         DetailTransactionService $detailTransactionService,
         FcmService $fcmService,
         ServiceCustomer $serviceCustomer,
-        ServiceDriver $serviceDriver
+        ServiceDriver $serviceDriver,
+        ServiceManagement $serviceManagement
     ) {
         // $factory = (new Factory)->withServiceAccount('../../../config/firebaseConfig.json');
         // $this->configFirebase = $factory;
@@ -64,6 +67,7 @@ class TransactionController extends Controller
         $this->fcmService = $fcmService;
         $this->serviceCustomer = $serviceCustomer;
         $this->serviceDriver = $serviceDriver;
+        $this->serviceManagement = $serviceManagement;
         $factory = (new Factory)
             ->withServiceAccount(__DIR__ . '/firebaseKey.json')
             ->withDatabaseUri('https://proyek-akhir-1b6f2-default-rtdb.asia-southeast1.firebasedatabase.app/');
@@ -87,49 +91,78 @@ class TransactionController extends Controller
         //     array("id_driver"=>3,"rating"=>5,"total_order"=>41,"coordinate"=>"-0.9237285327683936, 100.37486082016031","fcm"=>"saddddddddddddddddddddddddddddd"),
         // );
 
+        $management = json_decode($this->successResponse($this
+        ->serviceManagement
+        ->getManagement())
+        ->original, true);
+
+        $distanceRange = explode(",", $management["data"]["distance"]);
+        $total_orderRange = explode(",", $management["data"]["total_order"]);
+        $ratingRange = explode(",", $management["data"]["rating"]);
+
+        // return response()->json([
+        //     'success' => true,
+        //     'message' => 'success',
+        //     'distance'=>$distanceRange,
+        //     'total_order'=>$total_orderRange,
+        //     'rating'=>$ratingRange,
+        // ], 201);
+
+
+
+
+        // return $distance;
+
+        // return response()->json([
+        //     'success' => true,
+        //     'message' => 'Success',
+        //     'data' => $management
+        // ], 200);
+
+
         foreach ($listDriver as $key => $value) {
             //        convert coordinate
             $distance = $this->haversineGreatCircleDistance($latitude, $longitude, explode(",", $value["coordinate"])[0], explode(",", $value["coordinate"])[1]);
             // echo $distance.PHP_EOL;
-            if ($distance <= 200) {
+            if ($distance <= $distanceRange[0]) {
                 $listDriver[$key]["coordinate"] = 1;
-            } else if ($distance > 200 && $distance <= 300) {
+            } else if ($distance > $distanceRange[0] && $distance <= $distanceRange[1]) {
                 $listDriver[$key]["coordinate"] = 0.8;
-            } else if ($distance > 300 && $distance <= 400) {
+            } else if ($distance > $distanceRange[1] && $distance <= $distanceRange[2]) {
                 $listDriver[$key]["coordinate"] = 0.6;
-            } else if ($distance > 400 && $distance <= 500) {
+            } else if ($distance > $distanceRange[2] && $distance <= $distanceRange[3]) {
                 $listDriver[$key]["coordinate"] = 0.4;
-            } else if ($distance > 500) {
+            } else if ($distance > $distanceRange[3]) {
                 $listDriver[$key]["coordinate"] = 0.2;
             }
 
             //convert total__order
             $totalOrder = $value["total_order"];
             // echo $totalOrder.PHP_EOL;
-            if ($totalOrder < 3) {
+            if ($totalOrder <= $total_orderRange[0]) {
                 $listDriver[$key]["total_order"] = 1;
-            } else if ($totalOrder >= 3 && $totalOrder <= 5) {
+            } else if ($totalOrder > $total_orderRange[0] && $totalOrder <= $total_orderRange[1]) {
                 $listDriver[$key]["total_order"] = 0.8;
-            } else if ($totalOrder >= 6 && $totalOrder <= 7) {
+            } else if ($totalOrder > $total_orderRange[1] && $totalOrder <= $total_orderRange[2]) {
                 $listDriver[$key]["total_order"] = 0.6;
-            } else if ($totalOrder >= 8 && $totalOrder <= 10) {
+            } else if ($totalOrder > $total_orderRange[2] && $totalOrder <= $total_orderRange[3]) {
                 $listDriver[$key]["total_order"] = 0.4;
-            } else if ($totalOrder > 10) {
+            } else if ($totalOrder > $total_orderRange[3]) {
                 $listDriver[$key]["total_order"] = 0.2;
             }
 
             // convert rating
             $rating = $value["rating"];
             // echo $rating.PHP_EOL;
-            if ($rating <= 3.0) {
+            if ($rating <= $ratingRange[0]) {
                 $listDriver[$key]["rating"] = 0.2;
-            } else if ($rating >= 3.1 && $rating <= 3.5) {
+            } else if ($rating > $ratingRange[0] && $rating <= $ratingRange[1]) {
                 $listDriver[$key]["rating"] = 04;
-            } else if ($rating >= 3.6 && $rating <= 4.0) {
+            } else if ($rating > $ratingRange[1] && $rating <= $ratingRange[2]) {
                 $listDriver[$key]["rating"] = 0.6;
-            } else if ($rating >= 4.1 && $rating <= 4.5) {
+            } else if ($rating > $ratingRange[2] && $rating <= $ratingRange[3]) {
                 $listDriver[$key]["rating"] = 0.8;
-            } else if ($rating >= 4.6) {
+            } else if ($rating > $ratingRange[3]) {
                 $listDriver[$key]["rating"] = 1;
             }
         }
@@ -373,7 +406,7 @@ class TransactionController extends Controller
             // return $dataDriver;
             $driver = $this->searchDriver($transaction->latitude, $transaction->longitude, $dataDriver->toArray());
 
-            // return var_dump($driver);
+            return $driver;
 
 
             $driver = json_decode($this->successResponse($this
@@ -1038,7 +1071,7 @@ class TransactionController extends Controller
         }
     }
 
-    public function getDetailTransaction(Request $request, $notrans) 
+    public function getDetailTransaction(Request $request, $notrans)
     {
         $transaction = json_decode(Transaction::where('notransaksi' ,$notrans)->first());
 

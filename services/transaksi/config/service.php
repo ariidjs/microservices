@@ -25,7 +25,11 @@ return [
         'base_uri' =>  env('DRIVER_BASE_URL'),
         'secret'   =>  env('DETAIL_TRANSACTION_SERVICE_SECRET'),
     ],
-    
+    'management'   =>  [
+        'base_uri' =>  env('MANAGEMENT_BASE_URL'),
+        'secret'   =>  env('DETAIL_TRANSACTION_SERVICE_SECRET'),
+    ],
 
-    
+
+
 ];

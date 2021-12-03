@@ -12,7 +12,7 @@
 | and give it the Closure to call when that URI is requested.
 |
 */
-$router->group(['prefix' => 'api/v1/admins/'], function () use ($router) {
+$router->group(['prefix' => 'api/v1/admin'], function () use ($router) {
     // $router->get('admin','AdminsController@getListStoreFromAdmin');
     $router->post('login', 'AdminsController@login');
     $router->post('{id}', 'AdminsController@update');

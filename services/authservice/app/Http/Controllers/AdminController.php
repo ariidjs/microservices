@@ -29,6 +29,13 @@ class AdminController extends BaseController
             "password" => $password,
         ];
 
+        // return response()->json([
+        //     'success' => false,
+        //     'message' => 'Email yang anda masukan telah terdaftar',
+        //     'data'=>$password
+        // ], 201);
+
+
 
         return json_decode($this->successResponse($this
             ->adminServices
