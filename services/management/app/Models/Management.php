@@ -19,7 +19,7 @@ class Management extends Model implements AuthenticatableContract, AuthorizableC
      * @var array
      */
     protected $fillable = [
-        'distance', 'total_order','rating','jumlah_transaksi','level_Pelanggan','total_transaksi'
+        'distance', 'total_order','rating','jumlah_transaksi','level_Pelanggan','total_transaksi','taxDriver','taxStore'
     ];
 
     /**

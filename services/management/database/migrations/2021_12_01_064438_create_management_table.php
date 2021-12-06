@@ -21,6 +21,8 @@ class CreateManagementTable extends Migration
             $table->string("jumlah_transaksi");
             $table->string("level_pelanggan");
             $table->string("total_transaksi");
+            $table->string("taxDriver");
+            $table->string("taxStore");
             $table->timestamps();
         });
     }

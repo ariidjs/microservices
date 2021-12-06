@@ -31,6 +31,8 @@ class ManagementController extends Controller
         $jumlah_transaksi = $request->input('jumlah_transaksi');
         $level_pelanggan = $request->input('level_pelanggan');
         $total_transaksi = $request->input('total_transaksi');
+        $taxDriver = $request->input('taxDriver');
+        $taxStore = $request->input('taxStore');
 
         $insert = Management::insert([
             "distance"=>$distance,
@@ -39,6 +41,8 @@ class ManagementController extends Controller
             "jumlah_transaksi"=>$jumlah_transaksi,
             "level_pelanggan"=>$level_pelanggan,
             "total_transaksi"=>$total_transaksi,
+            "taxDriver"=>$taxDriver,
+            "taxStore"=>$taxStore,
         ]);
 
         if($insert){
