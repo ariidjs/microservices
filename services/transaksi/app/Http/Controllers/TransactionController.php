@@ -15,6 +15,7 @@ use App\Services\ServiceCustomer;
 use App\Services\ServiceDriver;
 use App\Services\ServiceManagement;
 use \App\Traits\ApiResponser;
+use Illuminate\Support\Facades\DB;
 use Kreait\Firebase\Database;
 use Kreait\Firebase\Exception\FirebaseException;
 use Kreait\Firebase\Factory;
@@ -1149,6 +1150,27 @@ class TransactionController extends Controller
             return response()->json([
                 'success'=>false,
                 'message'=>'Transaksi tidak ditemukan'],404);
+        }
+    }
+
+    public function getListTransactionDone(){
+        $transaction = DB::table('transactions')
+        ->select(DB::raw('count(*) as total_transaction, id_customer,sum(total_price) as total_price'))
+        ->where('status', '=', 6)
+        ->groupBy('id_customer')
+        ->get();
+
+        if ($transaction) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Success',
+                'data' => $transaction
+            ], 200);
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'data not found'
+            ], 400);
         }
     }
 }

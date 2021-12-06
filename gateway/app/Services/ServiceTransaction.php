@@ -64,7 +64,7 @@ class ServiceTransaction
         return $this->performRequest("GET", '/api/v1/transaksi/store/'.$idStore);
     }
 
-    public function getDriverHistory($id) 
+    public function getDriverHistory($id)
     {
         return $this->performRequest("GET", '/api/v1/transaksi/driver/history/'.$id);
     }
@@ -72,6 +72,11 @@ class ServiceTransaction
     public function getDetailTransaction($notrans)
     {
         return $this->performRequest("GET", '/api/v1/transaksi/detail/'.$notrans);
+    }
+
+    // Sebuh function yang mengembalikan informasi total transaksi dari id yang telah dibuat uniq untuk SAW customer
+    public function getInfoDetailTransaction(){
+        return $this->performRequest("GET", '/api/v1/transaksi/listTransactionDone');
     }
 
     // public function update($data,$id){

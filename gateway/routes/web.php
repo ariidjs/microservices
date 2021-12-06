@@ -85,6 +85,8 @@ $router->group(['prefix' => 'api/v1/admin'], function () use ($router) {
     $router->get('/promoCustomer', 'AuthAdminController@getPromo');
     $router->get('/transaction', 'AuthAdminController@getListTransaction');
     $router->get('/detailTransaction/{notrans}/{id_store}', 'AuthAdminController@getDetailTransaction');
+    $router->post('promo', 'AuthAdminController@promo');
+    $router->get('customerPromo', 'AuthAdminController@searchCustomerPromo');
     // $router->get('/phone/{phone}','AuthCustomerController@checkPhone');
     // $router->post('/login/{phone}','AuthCustomerController@login');
     // $router->post('/order','AuthCustomerController@order');
@@ -94,6 +96,8 @@ $router->group(['prefix' => 'api/v1/management'], function () use ($router) {
     $router->get('', 'AuthAdminController@getManagementSystem');
     $router->post('', 'AuthAdminController@updateManagementSystem');
 });
+
+
 
 
 $router->get('/', function () use ($router) {
