@@ -284,48 +284,48 @@ class AuthAdminController extends BaseController
 
     public function updateCustomerAdmin(Request $request, $id)
     {
-        $name = $request->input('name');
-        $email = $request->input('email');
-        $phone = $request->input('phone');
-        $image = $request->file('name');
-        $address = $request->input('address');
+        // $name = $request->input('name');
+        // $email = $request->input('email');
+        // $phone = $request->input('phone');
+        // $image = $request->file('name');
+        // $address = $request->input('address');
 
 
-        if ($image) {
-            $avatar = time() . $image->getClientOriginalName();
-            $image->move('images', $avatar);
-        } else {
-            $avatar = 'default.png';
-        }
+        // if ($image) {
+        //     $avatar = time() . $image->getClientOriginalName();
+        //     $image->move('images', $avatar);
+        // } else {
+        //     $avatar = 'default.png';
+        // }
 
-        if ($image) {
-            $update = Customers::whereId($id)->update([
-                "name" => $name,
-                "email" => $email,
-                "phone" => $phone,
-                "image" => $avatar,
-                "address" => $address,
-            ]);
-        } else {
-            $update = Customers::whereId($id)->update([
-                "name" => $name,
-                "email" => $email,
-                "phone" => $phone,
-                "address" => $address,
-            ]);
-        }
-        if ($update) {
-            return response()->json([
-                'success' => true,
-                'message' => 'success',
-                'data' => $update
-            ], 201);
-        } else {
-            return response()->json([
-                'success' => false,
-                'message' => 'Kode validasi yang anda masukan salah',
-            ], 401);
-        }
+        // if ($image) {
+        //     $update = Customers::whereId($id)->update([
+        //         "name" => $name,
+        //         "email" => $email,
+        //         "phone" => $phone,
+        //         "image" => $avatar,
+        //         "address" => $address,
+        //     ]);
+        // } else {
+        //     $update = Customers::whereId($id)->update([
+        //         "name" => $name,
+        //         "email" => $email,
+        //         "phone" => $phone,
+        //         "address" => $address,
+        //     ]);
+        // }
+        // if ($update) {
+        //     return response()->json([
+        //         'success' => true,
+        //         'message' => 'success',
+        //         'data' => $update
+        //     ], 201);
+        // } else {
+        //     return response()->json([
+        //         'success' => false,
+        //         'message' => 'Kode validasi yang anda masukan salah',
+        //     ], 401);
+        // }
     }
 
     public function getListTransaction(Request $request){
