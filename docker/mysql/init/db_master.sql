@@ -10,8 +10,7 @@ CREATE DATABASE IF NOT EXISTS `db_transaction`;
 CREATE DATABASE IF NOT EXISTS `db_customer`;
 CREATE DATABASE IF NOT EXISTS `db_promo`;
 CREATE DATABASE IF NOT EXISTS `db_management`;
-
-
+CREATE DATABASE IF NOT EXISTS `db_benefit`;
 
 
 GRANT ALL ON *.* TO 'user'@'%';

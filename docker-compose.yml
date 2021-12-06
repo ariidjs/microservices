@@ -29,6 +29,7 @@ services:
           - driversaldo.service
           - promo.service
           - management.service
+          - benefit.service
 
   gateway:
     build:
@@ -244,6 +245,23 @@ services:
     tty: true
     volumes:
       - ./services/management/:/var/www/services/management
+      - ./docker/php/local.ini:/usr/local/etc/php/conf.d/local.ini
+    networks:
+      - app-network
+  
+  benefit:
+    build:
+      context: services/benefit
+      dockerfile: Dockerfile
+    image: php:7.4-fpm
+    restart: unless-stopped
+    env_file: './services/benefit/.env.example'
+    working_dir: /var/www/services/benefit
+    depends_on:
+      - mysqldb
+    tty: true
+    volumes:
+      - ./services/benefit/:/var/www/services/benefit
       - ./docker/php/local.ini:/usr/local/etc/php/conf.d/local.ini
     networks:
       - app-network

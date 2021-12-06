@@ -730,12 +730,21 @@ class TransactionController extends Controller
     }
 
     public function validationCodeFromDriver($id,$kode){
+        $management = json_decode($this->successResponse($this
+        ->serviceManagement
+        ->getManagement())
+        ->original, true);
+
+        // return $management;
+
         $transaction = $transaction = json_decode(Transaction::whereId($id)->first());
 
         $detailTransaction =json_decode($this->successResponse($this
             ->detailTransactionService
             ->getNotransaksi($transaction->notransaksi,$transaction->id_store))
             ->original,true)["data"];
+
+        return $detailTransaction;
 
 
         $filterDetailTransaction = [];

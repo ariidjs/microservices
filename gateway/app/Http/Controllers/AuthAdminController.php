@@ -514,8 +514,6 @@ class AuthAdminController extends BaseController
             }
             return ($a['saw'] > $b['saw']) ? -1 : 1;
         });
-
         return $listCustomer;
-
     }
 }
