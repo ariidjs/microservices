@@ -29,6 +29,9 @@ class StoreService
         return $this->performRequest("GET",'api/v1/store/'.$id);
     }
 
+    public function taxStore($id,$saldo){
+        return $this->performRequest("GET",'/api/v1/store/'.$id.'/tax/'.$saldo);
+    }
 
     /**
      * Obtain the full list of author from the author service

@@ -15,6 +15,7 @@
 
 
 $router->group(['prefix' => 'api/v1/transaksi'], function () use ($router) {
+    $router->get('driver/{idDriver}', 'TransactionController@getListTransactionDriver');
     $router->post('', 'TransactionController@insertCustomer');
     $router->put('[{id}]', 'TransactionController@updateStatus');
     $router->post('/driver/{id}', 'TransactionController@statusFromDriver');
@@ -22,8 +23,10 @@ $router->group(['prefix' => 'api/v1/transaksi'], function () use ($router) {
     $router->get('{id}/kode/{kode}', 'TransactionController@validationCodeFromDriver');
     $router->post('/{id}', 'TransactionController@statusFromStore');
     $router->get('', 'TransactionController@getListTransaction');
+    $router->get('admin', 'TransactionController@getListTransactionAdmin');
     $router->get('/driver/current/{id}','TransactionController@driverTrans');
     $router->get('store/{idStore}', 'TransactionController@getListTransactionStore');
+    $router->get('customer/{idCustomer}', 'TransactionController@getListTransactionCustomer');
     $router->get('/driver/history/{id}', 'TransactionController@getHistoryDriver');
     $router->get('/detail/{notrans}', 'TransactionController@getDetailTransaction');
     $router->get('listTransactionDone', 'TransactionController@getListTransactionDone');

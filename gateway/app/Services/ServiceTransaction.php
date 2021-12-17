@@ -63,6 +63,18 @@ class ServiceTransaction
     {
         return $this->performRequest("GET", '/api/v1/transaksi/store/'.$idStore);
     }
+    public function getListTransactionDriver($idDriver)
+    {
+        return $this->performRequest("GET", '/api/v1/transaksi/driver/'.$idDriver);
+    }
+    public function getListTransactionCustomer($idCustomer)
+    {
+        return $this->performRequest("GET", '/api/v1/transaksi/customer/'.$idCustomer);
+    }
+    public function getListTransactionAdmin()
+    {
+        return $this->performRequest("GET", '/api/v1/transaksi/admin/');
+    }
 
     public function getDriverHistory($id)
     {

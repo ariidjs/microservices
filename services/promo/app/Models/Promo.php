@@ -20,7 +20,7 @@ class Promo extends Model implements AuthenticatableContract, AuthorizableContra
      * @var array
      */
     protected $fillable = [
-        'idCustomer', 'promoName','promoDescription','promoPrice','date'
+        'idCustomer', 'promoName','promoDescription','promoPrice','date','expired','status'
     ];
 
     /**

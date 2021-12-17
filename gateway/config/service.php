@@ -48,5 +48,9 @@ return [
     'promo'=>[
         'base_uri' =>  env('PROMO_BASE_URL'),
         'secret'   =>  env('DETAIL_TRANSACTION_SERVICE_SECRET'),
-    ]
+    ],
+    'benefit'=>[
+        'base_uri' =>  env('BENEFIT_BASE_URL'),
+        'secret'   =>  env('DETAIL_TRANSACTION_SERVICE_SECRET'),
+    ],
 ];

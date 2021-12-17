@@ -39,4 +39,8 @@ class ServiceCustomer
     public function getCustomer($id){
         return $this->performRequest("GET","/api/v1/customer/".$id);
     }
+
+    public function count(){
+        return $this->performRequest("GET",'/api/v1/customer/count');
+    }
 }

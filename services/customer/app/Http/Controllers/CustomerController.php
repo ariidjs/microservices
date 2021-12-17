@@ -246,4 +246,14 @@ class CustomerController extends BaseController
         }
     }
 
+    public function countCustomer(){
+        $count = Customers::count();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'login success',
+            'data' => $count
+        ], 201);
+    }
+
 }

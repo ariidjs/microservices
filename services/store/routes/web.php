@@ -18,8 +18,10 @@ $router->get('/', function () use ($router) {
 });
 
 $router->group(['prefix' => 'api/v1/store'], function () use ($router) {
+    $router->get('count', 'StoreController@countStore');
     $router->get('admin', 'StoreController@getListStoreFromAdmin');
     $router->post('auth', 'StoreController@auth');
+    $router->get('{id}/tax/{saldo}', 'StoreController@taxSaldo');
     $router->get('logout/[{id}]', 'StoreController@logOut');
     $router->post('', 'StoreController@insert');
     $router->post('{id}', 'StoreController@updated');

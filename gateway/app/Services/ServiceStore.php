@@ -58,4 +58,8 @@ class ServiceStore
     {
         return $this->performRequest("GET", 'api/v1/store/' . $id . '/activation/' . $status);
     }
+
+    public function count(){
+        return $this->performRequest("GET",'/api/v1/store/count');
+    }
 }

@@ -25,9 +25,11 @@ class ServiceCustomer
         $this->secret = config('service.store.secret');
     }
 
-    public function getCustomer(){
-        return $this->performRequest("GET",'/api/v1/customer/');
+    public function getCustomer($id){
+        return $this->performRequest("GET",'/api/v1/customer/'.$id);
     }
+
+
 
 
 

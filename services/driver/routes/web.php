@@ -14,6 +14,7 @@
 */
 
 $router->group(['prefix' => 'api/v1/driver/'], function () use ($router) {
+    $router->get('count', 'DriverController@countDriver');
     $router->get('admin', 'DriverController@getListDriversFromAdmin');
     $router->post('auth', 'DriverController@auth');
     $router->get('logout/{id}', 'DriverController@logOut');
@@ -23,6 +24,7 @@ $router->group(['prefix' => 'api/v1/driver/'], function () use ($router) {
     $router->get('{id}', 'DriverController@getDrivers');
     $router->get('baned/{id}', 'DriverController@banedDriver');
     $router->get('{id}/saldo/{saldo}', 'DriverController@updatedSaldo');
+    $router->get('{id}/tax/{saldo}', 'DriverController@taxSaldo');
     $router->post('login/[{phone}]', 'DriverController@login');
     $router->get('', 'DriverController@getListDriver');
     $router->get('{id_driver}/activation/{status}', 'DriverController@ChangeStatusUser');

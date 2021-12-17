@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Benefit;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class BenefitController extends Controller
 {
@@ -43,4 +44,33 @@ class BenefitController extends Controller
             ], 401);
         }
     }
+
+    public function getListBenefit(){
+        $data = Benefit::all();
+
+        if($data){
+            return response()->json([
+                'success' => true,
+                'message' => 'success',
+                'data' => $data
+            ], 201);
+        }else{
+            return response()->json([
+                'success' => true,
+                'message' => 'failed',
+                'data' => null
+            ], 401);
+        }
+    }
+
+    public function getTotalBenefit(){
+        $total = Benefit::sum('totalBenefit');
+
+        return response()->json([
+            'success' => true,
+            'message' => 'success',
+            'data' => $total
+        ], 201);
+    }
+
 }

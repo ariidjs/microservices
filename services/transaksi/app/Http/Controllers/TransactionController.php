@@ -11,6 +11,7 @@ use \Illuminate\Support\Facades\Hash;
 use \App\Models\Transaction;
 use \App\Models\Store;
 use App\Services\FcmService;
+use App\Services\ServiceBenefit;
 use App\Services\ServiceCustomer;
 use App\Services\ServiceDriver;
 use App\Services\ServiceManagement;
@@ -43,6 +44,7 @@ class TransactionController extends Controller
     private $TRANSACTION_DRIVER_FOUND = 4;
     private $TRANSACTION_DRIVER_IN_STORE = 5;
     private $TRANSACTION_DONE = 6;
+    private $serviceBenefit;
     private $configFirebase;
     private $databaseFirebase;
     private $serviceCustomer;
@@ -58,7 +60,8 @@ class TransactionController extends Controller
         FcmService $fcmService,
         ServiceCustomer $serviceCustomer,
         ServiceDriver $serviceDriver,
-        ServiceManagement $serviceManagement
+        ServiceManagement $serviceManagement,
+        ServiceBenefit $serviceBenefit
     ) {
         // $factory = (new Factory)->withServiceAccount('../../../config/firebaseConfig.json');
         // $this->configFirebase = $factory;
@@ -69,6 +72,7 @@ class TransactionController extends Controller
         $this->serviceCustomer = $serviceCustomer;
         $this->serviceDriver = $serviceDriver;
         $this->serviceManagement = $serviceManagement;
+        $this->serviceBenefit = $serviceBenefit;
         $factory = (new Factory)
             ->withServiceAccount(__DIR__ . '/firebaseKey.json')
             ->withDatabaseUri('https://proyek-akhir-1b6f2-default-rtdb.asia-southeast1.firebasedatabase.app/');
@@ -735,9 +739,45 @@ class TransactionController extends Controller
         ->getManagement())
         ->original, true);
 
-        // return $management;
+        $taxDriver = $management['data']['taxDriver'];
+        $taxStore = $management['data']['taxStore'];
 
-        $transaction = $transaction = json_decode(Transaction::whereId($id)->first());
+
+
+
+        $transaction = Transaction::whereId($id)->first();
+
+        $totalPrice = $transaction["total_price"];
+        $driverPrice = $transaction["driver_price"];
+
+        $taxDriverAdmin = $totalPrice * ($taxDriver/100);
+        $taxStoreAdmin = $driverPrice * ($taxStore/100);
+        $totalBenefit = $taxDriverAdmin + $taxStoreAdmin;
+
+        $data = [
+            "notransaksi"=>$transaction["notransaksi"],
+            "totalBenefit"=> $totalBenefit,
+            "taxStore"=>$taxDriver,
+            "taxDriver"=>$taxStore,
+        ];
+
+        return json_decode($this->successResponse($this
+        ->serviceBenefit
+        ->saveBenefit($data))
+        ->original,true)["data"];
+
+
+        $responseStoreTax = json_decode($this->successResponse($this
+            ->storeService
+            ->taxStore($transaction['id_store'],$taxStoreAdmin))
+            ->original,true
+        );
+        $responseDriverTax = json_decode($this->successResponse($this
+            ->serviceDriver
+            ->taxDriver($transaction['id_driver'],$taxDriverAdmin))
+            ->original,true
+        );
+
 
         $detailTransaction =json_decode($this->successResponse($this
             ->detailTransactionService
@@ -745,6 +785,7 @@ class TransactionController extends Controller
             ->original,true)["data"];
 
         return $detailTransaction;
+
 
 
         $filterDetailTransaction = [];
@@ -1065,8 +1106,39 @@ class TransactionController extends Controller
     public function getListTransactionStore(Request $request,$idStore)
     {
         $list = Transaction::whereIdStore($idStore)->get();
+        if ($list) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Success',
+                'data' => $list
+            ], 200);
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'data not found'
+            ], 400);
+        }
+    }
 
+    public function getListTransactionDriver(Request $request,$idDriver)
+    {
+        $list = Transaction::whereIdDriver($idDriver)->get();
+        if ($list) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Success',
+                'data' => $list
+            ], 200);
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'data not found'
+            ], 400);
+        }
+    }
 
+    public function getListTransactionAdmin(){
+        $list = Transaction::all();
         if ($list) {
             return response()->json([
                 'success' => true,
@@ -1085,17 +1157,17 @@ class TransactionController extends Controller
     {
         $transaction = json_decode(Transaction::where('notransaksi' ,$notrans)->first());
 
-        // return response()->json([
-        //     'success'=>true,
-        //     'message'=>'success',
-        //     'data' => 'data']);
-
-
         if($transaction) {
             $customer = json_decode($this->successResponse($this
                 ->serviceCustomer
                 ->getCustomer($transaction->id_customer))
                 ->original,true)["data"];
+
+                // return response()->json([
+                //     'success'=>false,
+                //     'message'=>'Transaksi tidak ditemukan',
+                //     'data'=>$customer
+                // ],201);
 
             $store =json_decode($this->successResponse($this
                 ->storeService
@@ -1106,6 +1178,7 @@ class TransactionController extends Controller
                 ->detailTransactionService
                 ->getNotransaksi($transaction->notransaksi,$transaction->id_store))
                 ->original,true)["data"];
+
 
             $filterDetailTransaction = [];
             foreach ($detailTransaction as $key => $value) {
@@ -1174,6 +1247,22 @@ class TransactionController extends Controller
                 'success' => true,
                 'message' => 'Success',
                 'data' => $transaction
+            ], 200);
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'data not found'
+            ], 400);
+        }
+    }
+
+    public function getListTransactionCustomer($idCustomer){
+        $list = Transaction::whereIdCustomer($idCustomer)->get();
+        if ($list) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Success',
+                'data' => $list
             ], 200);
         } else {
             return response()->json([

@@ -216,10 +216,10 @@ class StoreController extends Controller
     public function updatedSaldo($id, $saldo)
     {
 
-        $store = Stores::whereId($id)->first();
+        $store = Stores::whereIdStore($id)->first();
 
-        $update = Stores::whereId($id)->update([
-            "saldo" => $store->$saldo + $saldo
+        $update = Stores::whereIdStore($id)->update([
+            "saldo" => $store["saldo"] + $saldo
         ]);
 
         if ($update) {
@@ -234,6 +234,30 @@ class StoreController extends Controller
             ], 404);
         }
     }
+
+    // memotong saldo store
+    public function taxSaldo($id, $saldo)
+    {
+
+        $store = Stores::whereIdStore($id)->first();
+        $update = Stores::whereIdStore($id)->update([
+            "saldo" => $store["saldo"] - $saldo
+        ]);
+
+        if ($update) {
+            return response()->json([
+                'success' => true,
+                'message' => 'success',
+            ], 201);
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'updated failed',
+            ], 404);
+        }
+    }
+
+
 
     public function login(Request $request, $phone)
     {
@@ -362,5 +386,15 @@ class StoreController extends Controller
                 'message' => 'failed',
             ], 401);
         }
+    }
+
+    public function countStore(){
+        $count = Stores::count();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'login success',
+            'data' => $count
+        ], 201);
     }
 }

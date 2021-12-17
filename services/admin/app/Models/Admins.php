@@ -44,7 +44,7 @@ class Admins extends Model implements AuthenticatableContract, AuthorizableContr
      * @var array
      */
     protected $fillable = [
-        'name','username','email','password','avatar','role','status_delete','password'
+        'name','username','email','password','avatar','role','status_delete','password','fcm'
     ];
 
     /**

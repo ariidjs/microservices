@@ -1,10 +1,9 @@
 <?php
 
 namespace App\Services;
-
 use App\Traits\ConsumeExternalService;
 
-class ServiceAdmin
+class ServiceBenefit
 {
     use ConsumeExternalService;
 
@@ -22,12 +21,16 @@ class ServiceAdmin
 
     public function __construct()
     {
-        $this->baseUri = config('service.admin.base_uri');
-        $this->secret = config('service.customer.secret');
+        $this->baseUri = config('service.benefit.base_uri');
+        $this->secret = config('service.product.secret');
     }
 
-    public function register($data)
+
+
+    public function saveBenefit($data)
     {
-        return $this->performRequest('POST', '/api/v1/admin/', $data);
+        return $this->performRequest('POST', '/api/v1/benefit',$data);
     }
+
+
 }

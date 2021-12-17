@@ -257,6 +257,9 @@ class ProductController extends Controller
             ->getListStore())
             ->original, true);
 
+
+
+
         // return $response;
 
         $store = null;
@@ -265,6 +268,7 @@ class ProductController extends Controller
                 $store = $value;
             }
         };
+
 
         if ($store) {
             $product =  Product::where('id_store', $id)

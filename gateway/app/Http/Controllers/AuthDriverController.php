@@ -372,8 +372,9 @@ class AuthDriverController extends BaseController
         return "Email berhasil dikirim!";
     }
 
-    public function getListDriverFromAdmin()
+    public function getListDriverFromAdmin(Request $request)
     {
+        $this->validationJWT($request);
         return json_decode($this->successResponse($this
             ->serviceDriver
             ->getListDriverFromAdmin())

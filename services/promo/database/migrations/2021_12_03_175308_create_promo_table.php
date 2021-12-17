@@ -19,6 +19,8 @@ class CreatePromoTable extends Migration
             $table->string("promoName");
             $table->string("promoDescription");
             $table->double("promoPrice");
+            $table->enum("status", ["Used", "unused"])->default("unused");
+            $table->string("expired");
             $table->string("date");
             $table->timestamps();
         });

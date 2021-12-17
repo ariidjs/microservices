@@ -13,6 +13,12 @@
 |
 */
 
+$router->group(['prefix' => 'api/v1/benefit'], function () use ($router) {
+    $router->post('', 'BenefitController@insert');
+    $router->get('', 'BenefitController@getListBenefit');
+    $router->get('totalBenefit', 'BenefitController@getTotalBenefit');
+});
+
 $router->get('/', function () use ($router) {
     return $router->app->version();
 });

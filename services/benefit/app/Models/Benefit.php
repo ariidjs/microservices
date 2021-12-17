@@ -12,6 +12,7 @@ use Laravel\Lumen\Auth\Authorizable;
 class Benefit extends Model implements AuthenticatableContract, AuthorizableContract
 {
     use Authenticatable, Authorizable, HasFactory;
+    protected $table = 'benefit';
 
     /**
      * The attributes that are mass assignable.

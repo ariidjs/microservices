@@ -412,4 +412,35 @@ class DriverController extends BaseController
             ], 401);
         }
     }
+
+
+    public function taxSaldo($id, $saldo)
+    {
+        $driver = Drivers::whereId($id)->first();
+        $update = Drivers::whereId($id)->update([
+            "saldo" => $driver->saldo - $saldo
+        ]);
+
+        if ($update) {
+            return response()->json([
+                'success' => true,
+                'message' => 'success',
+            ], 201);
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'updated failed',
+            ], 404);
+        }
+    }
+
+    public function countDriver(){
+        $count = Drivers::count();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'login success',
+            'data' => $count
+        ], 201);
+    }
 }

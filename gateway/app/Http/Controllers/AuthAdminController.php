@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Services\AuthServiceAdmin;
 use App\Services\ServiceAdmin;
+use App\Services\ServiceBenefit;
 use App\Services\ServiceCustomer;
 use App\Services\ServiceDetailTransaction;
+use App\Services\ServiceDriver;
 use App\Services\ServiceManagement;
 use App\Services\ServiceProduct;
 use App\Services\ServicePromo;
@@ -26,13 +28,16 @@ class AuthAdminController extends BaseController
     private $serviceCustomer;
     private $serviceProduct;
     private $serviceStore;
+    private $serviceBenefit;
+    private $serviceDriver;
+    private $TIME_EXPIRE = 3;
     private $serviceDetailTransaction;
     private $DELETE = 1;
     private $serviceManagement;
     private $AKTIF = 0;
     private $servicePromo;
     private $key = "asjlkdnaskjndjkawqnbdjkwbqdjknasljkmmndasjkjdnijkwqbduiqwbdojkawqnd";
-    public function __construct(ServicePromo $servicePromo,ServiceManagement $serviceManagement,ServiceAdmin $serviceAdmin, AuthServiceAdmin $authServiceAdmin, ServiceTransaction $serviceTransaction, ServiceCustomer $serviceCustomer, ServiceProduct $serviceProduct,ServiceStore $serviceStore,ServiceDetailTransaction $serviceDetailTransaction)
+    public function __construct(ServicePromo $servicePromo,ServiceManagement $serviceManagement,ServiceAdmin $serviceAdmin, AuthServiceAdmin $authServiceAdmin, ServiceTransaction $serviceTransaction, ServiceCustomer $serviceCustomer, ServiceProduct $serviceProduct,ServiceStore $serviceStore,ServiceDetailTransaction $serviceDetailTransaction,ServiceBenefit $serviceBenefit,ServiceDriver $serviceDriver)
     {
         $this->serviceAdmin = $serviceAdmin;
         $this->authServiceAdmin = $authServiceAdmin;
@@ -43,11 +48,16 @@ class AuthAdminController extends BaseController
         $this->serviceDetailTransaction = $serviceDetailTransaction;
         $this->serviceManagement = $serviceManagement;
         $this->servicePromo = $servicePromo;
+        $this->serviceBenefit = $serviceBenefit;
+        $this->serviceDriver = $serviceDriver;
     }
 
     public function validationJWT($request)
     {
-        $jwt = $request->header("jwt");
+
+        $jwt = request()->header('Authorization');
+        $jwt = str_replace('Bearer ', '', $jwt);
+        $fcm = $request->header('fcm');
         try {
             $data = JWT::decode($jwt, $this->key, array('HS256'));
             return [
@@ -123,9 +133,10 @@ class AuthAdminController extends BaseController
                 "id" => $response['data']['id'],
                 "name" => $response['data']['name'],
                 "avatar" => $response['data']['avatar'],
-                "role" => $response['data']['role']
+                "role" => $response['data']['role'],
+                "exp" => (round(microtime(true) * 1000) + ($this->TIME_EXPIRE * 60000))
             );
-            $jwt = JWT::encode($payload, env('APP_KEY'));
+            $jwt = JWT::encode($payload,  $this->key);
             $response['data']['jwt'] = $jwt;
             return $response;
         }
@@ -329,12 +340,16 @@ class AuthAdminController extends BaseController
     }
 
     public function getListTransaction(Request $request){
-        $validatiop= $this->validationJWT($request);
+        $this->validationJWT($request);
+
+
 
         $response = json_decode($this->successResponse($this
         ->serviceTransaction
         ->getListTransaction())
         ->original, true);
+
+        return $response;
 
        $data = collect($response["data"])->map(function($item,$key){
             $customer = json_decode($this->successResponse($this
@@ -359,6 +374,75 @@ class AuthAdminController extends BaseController
             'data' => $data
         ], 200);
     }
+
+    public function getListTransactionAdmin(Request $request){
+        $this->validationJWT($request);
+
+        $response = json_decode($this->successResponse($this
+        ->serviceTransaction
+        ->getListTransactionAdmin())
+        ->original, true);
+
+
+       $data = collect($response["data"])->map(function($item,$key){
+            $customer = json_decode($this->successResponse($this
+            ->serviceCustomer
+            ->getCustomer($item["id_customer"]))
+            ->original, true);
+
+            $store = json_decode($this->successResponse($this
+            ->serviceStore
+            ->getStore($item["id_store"]))
+            ->original, true);
+            $item["customer_name"] =$customer["data"]["name"];
+            $item["store_name"]= $store["data"]["store_name"];
+            return $item;
+        });
+
+        // $response["data"]["customer_name"]=$customer["data"]["name"];
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Success',
+            'data' => $data
+        ], 200);
+    }
+
+    // listTransaction berdasarkan id customer
+    public function getListTransactionCustomer(Request $request,$idCustomer){
+        $this->validationJWT($request);
+
+        $response = json_decode($this->successResponse($this
+        ->serviceTransaction
+        ->getListTransactionCustomer($idCustomer))
+        ->original, true);
+
+        $customer = json_decode($this->successResponse($this
+            ->serviceCustomer
+            ->getCustomer($idCustomer))
+            ->original, true);
+
+       $data = collect($response["data"])->map(function($item,$key) use($customer){
+            $store = json_decode($this->successResponse($this
+            ->serviceStore
+            ->getStore($item["id_store"]))
+            ->original, true);
+            $item["customer_name"] =$customer["data"]["name"];
+            $item["store_name"]= $store["data"]["store_name"];
+            return $item;
+        });
+
+        // $response["data"]["customer_name"]=$customer["data"]["name"];
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Success',
+            'data' => $data,
+            'customer'=>$customer["data"]
+        ], 200);
+    }
+
+
 
     public function getDetailTransaction(Request $request,$notrans,$id_store){
         $this->validationJWT($request);
@@ -410,7 +494,7 @@ class AuthAdminController extends BaseController
     public function promo(Request $request){
 
         $body = $request->only([
-            'idCustomer', 'promoName','promoDescription','promoPrice'
+            'idCustomer', 'promoName','promoDescription','promoPrice','date','expired'
         ]);
 
         // return $body;
@@ -444,67 +528,73 @@ class AuthAdminController extends BaseController
 
         $listCustomer = $this->inner_join($transaction["data"],$customer["data"]);
 
-        foreach ($listCustomer as $key => $value) {
 
+
+
+        foreach ($listCustomer as $key => $value) {
             // echo $distance.PHP_EOL;
             $jumlahTransaksi = $value["total_transaction"];
             if ($jumlahTransaksi <= $jumlahTransaksiRange[0]) {
-                $listCustomer[$key]["total_transaction"] = 0.2;
+                $listCustomer[$key]["total_transactionSaw"] = 0.2;
             } else if ($jumlahTransaksi > $jumlahTransaksiRange[0] && $jumlahTransaksi <= $jumlahTransaksiRange[1]) {
-                $listCustomer[$key]["total_transaction"] = 0.4;
+                $listCustomer[$key]["total_transactionSaw"] = 0.4;
             } else if ($jumlahTransaksi > $jumlahTransaksiRange[1] && $jumlahTransaksi <= $jumlahTransaksiRange[2]) {
-                $listCustomer[$key]["total_transaction"] = 0.6;
+                $listCustomer[$key]["total_transactionSaw"] = 0.6;
             } else if ($jumlahTransaksi > $jumlahTransaksiRange[2] && $jumlahTransaksi <= $jumlahTransaksiRange[3]) {
-                $listCustomer[$key]["total_transaction"] = 0.8;
+                $listCustomer[$key]["total_transactionSaw"] = 0.8;
             } else if ($jumlahTransaksi > $jumlahTransaksiRange[3]) {
-                $listCustomer[$key]["total_transaction"] = 1;
+                $listCustomer[$key]["total_transactionSaw"] = 1;
             }
 
             //convert total__order
             $level = $value["level"];
             // echo $totalOrder.PHP_EOL;
             if ($level == $levelRange[0]) {
-                $listCustomer[$key]["level"] = 0.7;
+                $listCustomer[$key]["levelSaw"] = 0.7;
             } else if ($level == $levelRange[1]) {
-                $listCustomer[$key]["level"] = 0.8;
+                $listCustomer[$key]["levelSaw"] = 0.8;
             } else if ($level == $levelRange[2]) {
-                $listCustomer[$key]["level"] = 0.9;
+                $listCustomer[$key]["levelSaw"] = 0.9;
             }
 
             // convert rating
             $total_price = $value["total_price"];
             // echo $rating.PHP_EOL;
             if ($total_price <= $totalTransaksiRange[0]) {
-                $listCustomer[$key]["total_price"] = 0.2;
+                $listCustomer[$key]["total_priceSaw"] = 0.2;
             } else if ($total_price > $totalTransaksiRange[0] && $total_price <= $totalTransaksiRange[1]) {
-                $listCustomer[$key]["total_price"] = 0.4;
+                $listCustomer[$key]["total_priceSaw"] = 0.4;
             } else if ($total_price > $totalTransaksiRange[1] && $total_price <= $totalTransaksiRange[2]) {
-                $listCustomer[$key]["total_price"] = 0.6;
+                $listCustomer[$key]["total_priceSaw"] = 0.6;
             } else if ($total_price > $totalTransaksiRange[2] && $total_price <= $totalTransaksiRange[3]) {
-                $listCustomer[$key]["total_price"] = 0.8;
+                $listCustomer[$key]["total_priceSaw"] = 0.8;
             } else if ($total_price > $totalTransaksiRange[3]) {
-                $listCustomer[$key]["total_price"] = 1;
+                $listCustomer[$key]["total_priceSaw"] = 1;
             }
         }
 
-        $columnJumlahTransaksi = array_column($listCustomer, "total_transaction");
-        $columnlevel = array_column($listCustomer, "level");
-        $columnTotalPrice = array_column($listCustomer, "total_price");
+        // return $listCustomer;
+
+        $columnJumlahTransaksi = array_column($listCustomer, "total_transactionSaw");
+        $columnlevel = array_column($listCustomer, "levelSaw");
+        $columnTotalPrice = array_column($listCustomer, "total_priceSaw");
         $maxJumlahTransaksi = max($columnJumlahTransaksi);
         $maxlevel = max($columnlevel);
         $maxTotalPrice = max($columnTotalPrice);
 
+        // return $levelRange;
+
         foreach ($listCustomer as $key => $value) {
-            $totalPrice = $value["total_price"] / $maxTotalPrice;
-            $level = $value["level"] / $maxlevel;
-            $jumlahTransaksi = $value["total_transaction"] / $maxJumlahTransaksi;
-            $listCustomer[$key]["level"] = $level;
-            $listCustomer[$key]["total_price"] = $totalPrice;
-            $listCustomer[$key]["total_transaction"] = $jumlahTransaksi;
+            $totalPrice = $value["total_priceSaw"] / $maxTotalPrice;
+            $level = $value["levelSaw"] / $maxlevel;
+            $jumlahTransaksi = $value["total_transactionSaw"] / $maxJumlahTransaksi;
+            $listCustomer[$key]["levelSaw"] = $level;
+            $listCustomer[$key]["total_priceSaw"] = $totalPrice;
+            $listCustomer[$key]["total_transactionSaw"] = $jumlahTransaksi;
         }
 
         foreach ($listCustomer as $key => $value) {
-            $totalSAW = ($value["total_transaction"] * 0.5) + ($value["level"] * 0.25) + ($value["total_price"] * 0.25);
+            $totalSAW = ($value["total_transactionSaw"] * 0.5) + ($value["levelSaw"] * 0.25) + ($value["total_priceSaw"] * 0.25);
             $listCustomer[$key]["saw"] = $totalSAW;
         }
 
@@ -515,5 +605,98 @@ class AuthAdminController extends BaseController
             return ($a['saw'] > $b['saw']) ? -1 : 1;
         });
         return $listCustomer;
+    }
+
+    public function dashboard(){
+
+        $countCustomer = json_decode($this->successResponse($this
+        ->serviceCustomer
+        ->count())
+        ->original,true);
+
+        $countDriver = json_decode($this->successResponse($this
+        ->serviceDriver
+        ->count())
+        ->original,true);
+
+        $countStore = json_decode($this->successResponse($this
+        ->serviceStore
+        ->count())
+        ->original,true);
+
+        $totalBenefit = json_decode($this->successResponse($this
+        ->serviceBenefit
+        ->getTotalBenefit())
+        ->original,true);
+
+
+        return response()->json([
+            'success' => true,
+            'message' => 'login success',
+            'data' => [
+                "customer"=>$countCustomer["data"],
+                "driver"=>$countDriver["data"],
+                "store"=>$countStore["data"],
+                "benefit"=>$totalBenefit["data"],
+            ]
+        ], 201);
+
+
+
+    }
+
+    public function listBenefit(){
+        return json_decode($this->successResponse($this
+        ->serviceBenefit
+        ->listBenefit())
+        ->original,true);
+    }
+
+    public function getListPromo(){
+        return json_decode($this->successResponse($this
+        ->servicePromo
+        ->getListPromo())
+        ->original,true);
+    }
+
+    public function getInfoStore($idStore){
+
+       $product = json_decode($this->successResponse($this
+        ->serviceProduct
+        ->getListProductStore($idStore))
+        ->original, true);
+
+        $store = json_decode($this->successResponse($this
+            ->serviceStore
+            ->getStore($idStore))
+            ->original, true);
+
+        return response()->json([
+                'success' => true,
+                'message' => 'success',
+                'store' => $store["data"],
+                'product' => $product["data"]
+        ], 201);
+
+
+    }
+
+    public function getInfoDriver($idDriver){
+        $transaction = json_decode($this->successResponse($this
+        ->serviceTransaction
+        ->getListTransactionDriver($idDriver))
+        ->original, true);
+
+        $driver = json_decode($this->successResponse($this
+            ->serviceDriver
+            ->getDriver($idDriver))
+            ->original, true);
+
+        return response()->json([
+                'success' => true,
+                'message' => 'success',
+                'driver' => $driver["data"],
+                'transaction' => $transaction["data"]
+        ], 201);
     }
 }

@@ -29,5 +29,8 @@ class ServicePromo
     public function savePromo($data){
         return $this->performRequest("POST", '/api/v1/promo', $data);
     }
+    public function getListPromo(){
+        return $this->performRequest("GET", '/api/v1/promo');
+    }
 
 }

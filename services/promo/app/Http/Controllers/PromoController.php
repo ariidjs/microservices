@@ -26,7 +26,7 @@ class PromoController extends Controller
     public function insert(Request $request)
     {
         $data = $request->only([
-            'idCustomer', 'promoName','promoDescription','promoPrice'
+            'idCustomer', 'promoName','promoDescription','promoPrice','date','expired'
         ]);
 
         // return $data;
@@ -80,7 +80,7 @@ class PromoController extends Controller
     public function update(Request $request, $id)
     {
         $data = $request->only([
-            'idCustomer', 'promoName','promoDescription','promoPrice'
+            'idCustomer', 'promoName','promoDescription','promoPrice','date','expired','status'
         ]);
         $update = Promo::where($id)->update($data);
 

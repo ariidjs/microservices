@@ -78,15 +78,22 @@ $router->group(['prefix' => 'api/v1/customer'], function () use ($router) {
 });
 
 $router->group(['prefix' => 'api/v1/admin'], function () use ($router) {
-    $router->get('driver/{id}', 'AuthDriverController@getDriver');
+    // $router->get('driver/{id}', 'AuthDriverController@getDriver');
+    $router->get('store/{idStore}', 'AuthAdminController@getInfoStore');
+    $router->get('driver/{idDriver}', 'AuthAdminController@getInfoDriver');
+    $router->get('listPromo', 'AuthAdminController@getListPromo');
     $router->get('driver', 'AuthDriverController@getListDriverFromAdmin');
     $router->post('', 'AuthAdminController@register');
     $router->post('login', 'AuthAdminController@login');
     $router->get('/promoCustomer', 'AuthAdminController@getPromo');
-    $router->get('/transaction', 'AuthAdminController@getListTransaction');
-    $router->get('/detailTransaction/{notrans}/{id_store}', 'AuthAdminController@getDetailTransaction');
+    $router->get('transaction', 'AuthAdminController@getListTransaction');
+    $router->get('transaction/admin', 'AuthAdminController@getListTransactionAdmin');
+    $router->get('transaction/customer/{idCustomer}', 'AuthAdminController@getListTransactionCustomer');
+    $router->get('/detailTransaction/{notrans}', 'AuthDriverController@getDetailTransaction');
     $router->post('promo', 'AuthAdminController@promo');
     $router->get('customerPromo', 'AuthAdminController@searchCustomerPromo');
+    $router->get('dashboard', 'AuthAdminController@dashboard');
+    $router->get('listBenefit', 'AuthAdminController@listBenefit');
     // $router->get('/phone/{phone}','AuthCustomerController@checkPhone');
     // $router->post('/login/{phone}','AuthCustomerController@login');
     // $router->post('/order','AuthCustomerController@order');

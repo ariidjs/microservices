@@ -61,8 +61,6 @@ class DetailTransactionsController extends Controller
             ->getProductStore($idStore))
             ->original,true)["data"];
 
-        // return $productStore;
-
       $data = DetailTransactions::whereNotransaksi($notrans)->get();
       $data = json_decode($data);
 

@@ -54,4 +54,7 @@ class ServiceDriver
     {
         return $this->performRequest("POST", 'api/v1/driver/' . $id, $data);
     }
+    public function count(){
+        return $this->performRequest("GET",'/api/v1/driver/count');
+    }
 }

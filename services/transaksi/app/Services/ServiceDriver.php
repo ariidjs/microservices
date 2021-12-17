@@ -33,4 +33,9 @@ class ServiceDriver
         return $this->performRequest("GET",'api/v1/driver/'.$id.'/status/'.$status);
     }
 
+    public function taxDriver($id,$saldo){
+        return $this->performRequest("GET",'/api/v1/driver/'.$id.'/tax/'.$saldo);
+    }
+
+
 }
