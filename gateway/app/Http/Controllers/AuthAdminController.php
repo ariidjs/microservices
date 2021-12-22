@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Customers;
 use App\Services\AuthServiceAdmin;
 use App\Services\ServiceAdmin;
 use App\Services\ServiceBenefit;
@@ -295,48 +296,37 @@ class AuthAdminController extends BaseController
 
     public function updateCustomerAdmin(Request $request, $id)
     {
-        // $name = $request->input('name');
-        // $email = $request->input('email');
-        // $phone = $request->input('phone');
-        // $image = $request->file('name');
-        // $address = $request->input('address');
+        $name = $request->input('name');
+        $email = $request->input('email');
+        $phone = $request->input('phone');
+        $address = $request->input('address');
+        $level = $request->input('level');
+
+        $body =[
+            "name" => $name,
+            "email" => $email,
+            "phone" => $phone,
+            "address" => $address,
+            "level" => $level,
+        ];
+
+        $update = json_decode($this->successResponse($this
+            ->serviceCustomer
+            ->update($body,$id))
+            ->original, true);
 
 
-        // if ($image) {
-        //     $avatar = time() . $image->getClientOriginalName();
-        //     $image->move('images', $avatar);
-        // } else {
-        //     $avatar = 'default.png';
-        // }
-
-        // if ($image) {
-        //     $update = Customers::whereId($id)->update([
-        //         "name" => $name,
-        //         "email" => $email,
-        //         "phone" => $phone,
-        //         "image" => $avatar,
-        //         "address" => $address,
-        //     ]);
-        // } else {
-        //     $update = Customers::whereId($id)->update([
-        //         "name" => $name,
-        //         "email" => $email,
-        //         "phone" => $phone,
-        //         "address" => $address,
-        //     ]);
-        // }
-        // if ($update) {
-        //     return response()->json([
-        //         'success' => true,
-        //         'message' => 'success',
-        //         'data' => $update
-        //     ], 201);
-        // } else {
-        //     return response()->json([
-        //         'success' => false,
-        //         'message' => 'Kode validasi yang anda masukan salah',
-        //     ], 401);
-        // }
+        if ($update["success"]) {
+            return response()->json([
+                'success' => true,
+                'message' => 'success',
+            ], 201);
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'update failed',
+            ], 401);
+        }
     }
 
     public function getListTransaction(Request $request){

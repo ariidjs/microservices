@@ -1169,6 +1169,8 @@ class TransactionController extends Controller
                 //     'data'=>$customer
                 // ],201);
 
+
+
             $store =json_decode($this->successResponse($this
                 ->storeService
                 ->getStore($transaction->id_store))
@@ -1179,6 +1181,19 @@ class TransactionController extends Controller
                 ->getNotransaksi($transaction->notransaksi,$transaction->id_store))
                 ->original,true)["data"];
 
+            if($transaction->id_driver != 0){
+                $driver =json_decode($this->successResponse($this
+                ->serviceDriver
+                ->getDriver($transaction->id_driver))
+                ->original,true)["data"];
+                $driver = [
+                    "id_driver"=>$driver["id"],
+                    "name"=>$driver["name_driver"],
+                    "image"=>$driver["photo_profile"],
+                ];
+            }else{
+                $driver = null;
+            }
 
             $filterDetailTransaction = [];
             foreach ($detailTransaction as $key => $value) {
@@ -1202,6 +1217,7 @@ class TransactionController extends Controller
                 'message'=>'success',
                 // 'notifStore'=>$notifStore,
                 // 'notifCustomer'=>$notifCustomer,
+                'driver'=>$driver,
                 'transaction'=>[
                     "id"=> $transaction->id,
                     "notransaksi"=>$transaction->notransaksi,

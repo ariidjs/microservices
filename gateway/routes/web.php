@@ -94,6 +94,7 @@ $router->group(['prefix' => 'api/v1/admin'], function () use ($router) {
     $router->get('customerPromo', 'AuthAdminController@searchCustomerPromo');
     $router->get('dashboard', 'AuthAdminController@dashboard');
     $router->get('listBenefit', 'AuthAdminController@listBenefit');
+    $router->post('customer/{id}', 'AuthAdminController@updateCustomerAdmin');
     // $router->get('/phone/{phone}','AuthCustomerController@checkPhone');
     // $router->post('/login/{phone}','AuthCustomerController@login');
     // $router->post('/order','AuthCustomerController@order');

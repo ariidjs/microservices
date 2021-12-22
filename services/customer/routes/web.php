@@ -17,7 +17,7 @@ $router->group(['prefix' => '/api/v1/customer'], function () use ($router) {
     $router->get('count', 'CustomerController@countCustomer');
     $router->post('/auth', 'CustomerController@auth');
     $router->post('', 'CustomerController@insert');
-    $router->post('/[{id}]', 'CustomerController@update');
+    $router->post('/{id}', 'CustomerController@update');
     $router->post('/login/[{phone}]', 'CustomerController@login');
     $router->get('/{id}', 'CustomerController@getCustomer');
     $router->get('/activasi/[{id}]', 'CustomerController@active');

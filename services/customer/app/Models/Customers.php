@@ -19,7 +19,7 @@ class Customers extends Model implements AuthenticatableContract, AuthorizableCo
      * @var array
      */
     protected $fillable = [
-        'name', 'email','phone', 'address','image','fcm'
+        'name', 'email','phone', 'address','image','fcm','level'
     ];
 
     /**

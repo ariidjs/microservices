@@ -114,25 +114,19 @@ class CustomerController extends BaseController
         $name = $request->input('name');
         $email = $request->input('email');
         $phone = $request->input('phone');
-        $image = $request->file('name');
+        $image = $request->input('image');
         $address = $request->input('address');
+        $level = $request->input('level');
 
-
-
-        if ($image) {
-            $avatar = time() . $image->getClientOriginalName();
-            $image->move('images', $avatar);
-        } else {
-            $avatar = 'default.png';
-        }
 
         if ($image) {
             $update = Customers::whereId($id)->update([
                 "name" => $name,
                 "email" => $email,
                 "phone" => $phone,
-                "image" => $avatar,
+                "image" => $image,
                 "address" => $address,
+                "level" => $level,
             ]);
         } else {
             $update = Customers::whereId($id)->update([
@@ -140,6 +134,7 @@ class CustomerController extends BaseController
                 "email" => $email,
                 "phone" => $phone,
                 "address" => $address,
+                "level" => $level,
             ]);
         }
         if ($update) {

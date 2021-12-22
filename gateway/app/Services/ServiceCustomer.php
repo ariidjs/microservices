@@ -43,4 +43,9 @@ class ServiceCustomer
     public function count(){
         return $this->performRequest("GET",'/api/v1/customer/count');
     }
+
+    public function update($data,$id){
+        return $this->performRequest("POST",'/api/v1/customer/'.$id,$data);
+    }
+
 }
