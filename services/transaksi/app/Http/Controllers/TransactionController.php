@@ -1189,6 +1189,8 @@ class TransactionController extends Controller
                 $driver = [
                     "id_driver"=>$driver["id"],
                     "name"=>$driver["name_driver"],
+                    "plat"=>$driver["plat_kendaraan"],
+                    "phone"=>$driver["phone"],
                     "image"=>$driver["photo_profile"],
                 ];
             }else{
