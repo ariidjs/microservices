@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Store;
 use App\Models\Stores;
+use Illuminate\Contracts\Cache\Store as CacheStore;
 use Illuminate\Http\Request;
 use Laravel\Lumen\Routing\Controller;
 
@@ -396,5 +397,27 @@ class StoreController extends Controller
             'message' => 'login success',
             'data' => $count
         ], 201);
+    }
+
+    public function updateProfile(Request $request,$id){
+        $profile = $request->input("profile");
+
+        $update = Stores::whereIdStore($id)->update([
+            'photo_store'=>$profile
+        ]);
+
+        if($update){
+            return response()->json([
+                'success' => true,
+                'message' => 'success'
+            ], 201);
+        }else{
+            return response()->json([
+                'success' => false,
+                'message' => 'failed'
+            ], 401);
+        }
+
+
     }
 }

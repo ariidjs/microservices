@@ -30,6 +30,7 @@ $router->group(['prefix' => 'api/v1/store'], function () use ($router) {
     $router->get('baned/{id}', 'StoreController@banedStore');
     $router->get('{id}/saldo/{saldo}', 'StoreController@updatedSaldo');
     $router->post('login/[{phone}]', 'StoreController@login');
+    $router->post('photoProfile/{id}', 'StoreController@updateProfile');
     $router->get('', 'StoreController@getListStore');
     $router->get('{id_store}/activation/{status}', 'StoreController@ChangeStatusStore');
     $router->get('{id}/status/{status}', 'StoreController@onOffStore');

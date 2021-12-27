@@ -755,4 +755,38 @@ class AuthStoreController extends BaseController
 
         return $response;
     }
+
+    public function updatePhotoProfile(Request $request){
+        $validation = $this->validationJWT($request);
+        $profile = $request->file('profile');
+
+        if ($profile) {
+            $pathProfile = time() . $profile->getClientOriginalName();
+        }
+
+        $body = [
+            'profile' => $pathProfile,
+        ];
+
+
+        $response = json_decode($this->successResponse($this
+            ->serviceStore
+            ->updateProfile($validation["data"]["id"],$body))
+            ->original, true);
+
+        if($response["success"]){
+            if ($profile) {
+                $profile->move('images', $pathProfile);
+            }
+            return response()->json([
+                'success'=>true,
+                'message'=>'success',
+            ],201);
+        }else{
+            return response()->json([
+                'success'=>false,
+                'message'=>'failed',
+            ],401);
+        }
+    }
 }
