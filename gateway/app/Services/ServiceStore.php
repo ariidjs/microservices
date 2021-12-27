@@ -62,6 +62,10 @@ class ServiceStore
     public function count(){
         return $this->performRequest("GET",'/api/v1/store/count');
     }
+    public function getListStore()
+    {
+        return $this->performRequest("GET", '/api/v1/store');
+    }
 
     public function updateProfile($id,$data){
         return $this->performRequest("POST",'/api/v1/store/photoProfile/'.$id,$data);
