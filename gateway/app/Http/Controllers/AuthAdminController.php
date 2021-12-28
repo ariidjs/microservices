@@ -452,7 +452,7 @@ class AuthAdminController extends BaseController
         ->getManagement())
         ->original,true);
 
-        return $response;
+        // return $response;
     }
 
     public function updateManagementSystem(Request $request){
