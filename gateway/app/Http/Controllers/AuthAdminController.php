@@ -12,7 +12,7 @@ use App\Services\ServiceDriver;
 use App\Services\ServiceManagement;
 use App\Services\ServiceProduct;
 use App\Services\ServicePromo;
-// use App\Services\ServiceStore;
+use App\Services\ServiceStore;
 use App\Services\ServiceTransaction;
 use Illuminate\Http\Request;
 use Laravel\Lumen\Routing\Controller as BaseController;
