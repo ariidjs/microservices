@@ -446,13 +446,13 @@ class AuthAdminController extends BaseController
     }
 
     public function getManagementSystem(){
-        return "hello";
-        // $response = json_decode($this->successResponse($this
-        // ->serviceManagement
-        // ->getManagement())
-        // ->original,true);
+        // return "hello";
+        $response = json_decode($this->successResponse($this
+        ->serviceManagement
+        ->getManagement())
+        ->original,true);
 
-        // return $response;
+        return $response;
     }
 
     public function updateManagementSystem(Request $request){
