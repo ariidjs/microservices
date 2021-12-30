@@ -37,6 +37,10 @@ return [
         'base_uri' =>  env('STORE_BASE_URL'),
         'secret'   =>  env('DETAIL_TRANSACTION_SERVICE_SECRET'),
     ],
+    'promo'   =>  [
+        'base_uri' =>  env('PROMO_BASE_URL'),
+        'secret'   =>  env('DETAIL_TRANSACTION_SERVICE_SECRET'),
+    ],
 
 
 

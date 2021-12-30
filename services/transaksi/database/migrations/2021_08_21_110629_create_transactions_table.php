@@ -27,6 +27,7 @@ class CreateTransactionsTable extends Migration
             $table->string('longitude');
             $table->string('kode_validasi');
             $table->integer('status_delete');
+            $table->integer('id_promo')->nullable(true);
             $table->timestamps();
         });
     }

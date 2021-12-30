@@ -19,7 +19,7 @@ class Transaction extends Model implements AuthenticatableContract, Authorizable
      * @var array
      */
     protected $fillable = [
-        'notransaksi', 'id_customer','id_driver','id_store','status','total_price','driver_price','alamat_user','latitude','longitude','status_delete','kode_validasi'
+        'notransaksi', 'id_customer','id_driver','id_store','status','total_price','driver_price','alamat_user','latitude','longitude','status_delete','kode_validasi','id_promo'
     ];
 
     /**

@@ -76,6 +76,24 @@ class PromoController extends Controller
 
     }
 
+    public function getPromo($id){
+        $promo = Promo::whereId($id)->first();
+        if ($promo) {
+            return response()->json([
+                'success' => true,
+                'message' => 'success',
+                'data' => $promo
+            ], 201);
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'promo tidak ditemukan',
+            ], 400);
+        }
+
+
+    }
+
 
     public function update(Request $request, $id)
     {

@@ -15,7 +15,9 @@ use App\Services\ServiceBenefit;
 use App\Services\ServiceCustomer;
 use App\Services\ServiceDriver;
 use App\Services\ServiceManagement;
+use App\Services\ServicePromo;
 use \App\Traits\ApiResponser;
+use DateTime;
 use Illuminate\Support\Facades\DB;
 use Kreait\Firebase\Database;
 use Kreait\Firebase\Exception\FirebaseException;
@@ -34,6 +36,7 @@ class TransactionController extends Controller
      */
 
     public $productService;
+    public $servicePromo;
     public $storeService;
     public $detailTransactionService;
     private $fcmService;
@@ -61,7 +64,8 @@ class TransactionController extends Controller
         ServiceCustomer $serviceCustomer,
         ServiceDriver $serviceDriver,
         ServiceManagement $serviceManagement,
-        ServiceBenefit $serviceBenefit
+        ServiceBenefit $serviceBenefit,
+        ServicePromo $servicePromo
     ) {
         // $factory = (new Factory)->withServiceAccount('../../../config/firebaseConfig.json');
         // $this->configFirebase = $factory;
@@ -73,6 +77,7 @@ class TransactionController extends Controller
         $this->serviceDriver = $serviceDriver;
         $this->serviceManagement = $serviceManagement;
         $this->serviceBenefit = $serviceBenefit;
+        $this->servicePromo = $servicePromo;
         $factory = (new Factory)
             ->withServiceAccount(__DIR__ . '/firebaseKey.json')
             ->withDatabaseUri('https://proyek-akhir-1b6f2-default-rtdb.asia-southeast1.firebasedatabase.app/');
@@ -243,10 +248,48 @@ class TransactionController extends Controller
 
     public function insertCustomer(Request $request)
     {
+
         $dataCustomer = json_decode($request->getContent());
         $dataProductFromCustomer = json_decode(json_encode($dataCustomer->data_product), true);
         // return var_dump($dataProductFromCustomer);
         // return $dataCustomer->id_store;
+
+        // return $dataCustomer->id_promo;
+
+        $promo = null;
+
+        if($dataCustomer->id_promo != null){
+            $promo = json_decode($this->successResponse($this
+            ->servicePromo
+            ->getPromoById($dataCustomer->id_promo))
+            ->original, true);
+
+            $date_now = new DateTime();
+            $date2    = new DateTime($promo["data"]["expired"]);
+
+            if ($date_now > $date2) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Success',
+                    'data' => "kode promo sudah tidak dapat digunakan lagi",
+                ], 400);
+               }else{
+                    if($promo["data"]["status"] != "Used"){
+                        $promo = $dataCustomer->id_promo;
+                    }else{
+                        return response()->json([
+                            'success' => true,
+                            'message' => 'Success',
+                            'data' => "kode promo sudah pernah digunakan",
+                        ], 400);
+                    }
+               }
+
+        }
+
+
+
+
         $product = json_decode($this->successResponse($this
             ->productService
             ->getProductStore($dataCustomer->id_store))
@@ -255,6 +298,8 @@ class TransactionController extends Controller
 
 
         $productFilter = $this->inner_join($product["data"], $dataProductFromCustomer, "id");
+
+        // return $productFilter;
         $date = date_create();
         date_timestamp_set($date, time());
         $noTransaction = $dataCustomer->id_customer . date_format($date, "YmdHis");
@@ -264,7 +309,7 @@ class TransactionController extends Controller
         $dataSubProduct = [];
         foreach ($productFilter as $value) {
             if ($value["price_promo"]) {
-                $total_price += $value["price_promo"];
+                $total_price += $value["price_promo"] * $value["count"];
                 array_push($dataSubProduct, array("notransaksi" => $noTransaction, "id_product" => $value["id"], "price_product" => $value["price_promo"], "count" => $value["count"]));
             } else {
                 $total_price += $value["price"];
@@ -272,20 +317,43 @@ class TransactionController extends Controller
             }
         }
 
-
-
-        // return $driver_price;
-        // return var_dump($productFilter);
-
-        //  return $product;
-
-        // return var_dump($product["data"]);
         $store = json_decode($this->successResponse($this
             ->storeService
             ->getStore($dataCustomer->id_store))
             ->original, true);
 
+            $promo = null;
+            $idPromo =  null;
 
+            if($dataCustomer->id_promo != null){
+                $promo = json_decode($this->successResponse($this
+                ->servicePromo
+                ->getPromoById($dataCustomer->id_promo))
+                ->original, true);
+
+                $date_now = new DateTime();
+                $date2    = new DateTime($promo["data"]["expired"]);
+
+                if ($date_now > $date2) {
+                    return response()->json([
+                        'success' => true,
+                        'message' => 'Success',
+                        'data' => "kode promo sudah tidak dapat digunakan lagi",
+                    ], 400);
+                   }else{
+                        if($promo["data"]["status"] != "Used"){
+                            $idPromo =  $dataCustomer->id_promo ;
+                            $total_price = $total_price - $promo["data"]["promoPrice"];
+                        }else{
+                            return response()->json([
+                                'success' => true,
+                                'message' => 'Success',
+                                'data' => "kode promo sudah pernah digunakan",
+                            ], 400);
+                        }
+                   }
+
+            }
 
         $transaction = Transaction::create([
             'notransaksi' => $noTransaction,
@@ -299,7 +367,8 @@ class TransactionController extends Controller
             'latitude' => $dataCustomer->latitude,
             'longitude' => $dataCustomer->longititude,
             'status_delete' => 0,
-            'kode_validasi' => $code_validation
+            'kode_validasi' => $code_validation,
+            'id_promo'=>$idPromo
         ]);
 
         $dataFcmStore = [
