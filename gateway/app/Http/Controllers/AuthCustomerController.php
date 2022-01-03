@@ -180,6 +180,7 @@ class AuthCustomerController extends BaseController
 
     public function order(Request $request)
     {
+        $this->validationJWT($request);
         $data = (array)json_decode($request->getContent());
 
         $dataProduct = [];
