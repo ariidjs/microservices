@@ -13,11 +13,13 @@
 |
 */
 
-$router->group(['prefix'=>'api/v1/saldo/'],function() use($router){
-   $router->post('','SaldoController@insert');
+$router->group(['prefix'=>'api/v1/saldo'],function() use($router){
+    $router->get('detail/{id}','SaldoController@getDetail');
+    $router->post('','SaldoController@insert');
     $router->get('{id}','SaldoController@getRiwayatSaldo');
     $router->get('store/[{id}]','ProductController@getProductStore');
-    $router->post('list','ProductController@getListProduct');
+    $router->get('','SaldoController@getListSaldo');
+    $router->get('{id}/{status}','SaldoController@updateStatus');
     $router->post('update[/{id}]','ProductController@update');
     $router->delete('[{id}]','ProductController@delete');
 });

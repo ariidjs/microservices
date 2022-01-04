@@ -23,7 +23,7 @@ $router->group(['prefix' => 'api/v1/driver/'], function () use ($router) {
     $router->get('phone/{phone}', 'DriverController@phoneNumberAvailable');
     $router->get('{id}', 'DriverController@getDrivers');
     $router->get('baned/{id}', 'DriverController@banedDriver');
-    $router->get('{id}/saldo/{saldo}', 'DriverController@updatedSaldo');
+    $router->get('{id}/saldo/{saldo}/{type}', 'DriverController@updatedSaldo');
     $router->get('{id}/tax/{saldo}', 'DriverController@taxSaldo');
     $router->post('login/[{phone}]', 'DriverController@login');
     $router->get('', 'DriverController@getListDriver');

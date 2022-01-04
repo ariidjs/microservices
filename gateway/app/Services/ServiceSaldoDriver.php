@@ -32,8 +32,23 @@ class ServiceSaldoDriver
         return $this->performRequest("POST",'/api/v1/saldo',$data);
     }
 
-    public function getHistorySaldo($id) 
+    public function getHistorySaldo($id)
     {
         return $this->performRequest("GET",'/api/v1/saldo/'.$id);
     }
+
+    public function getListSaldoDriver()
+    {
+        return $this->performRequest("GET",'/api/v1/saldo/');
+    }
+
+    public function updateStatus($id,$status)
+    {
+        return $this->performRequest("GET",'/api/v1/saldo/'.$id.'/'.$status);
+    }
+
+    public function getDetail($id){
+        return $this->performRequest("GET",'/api/v1/saldo/detail/'.$id);
+    }
+
 }

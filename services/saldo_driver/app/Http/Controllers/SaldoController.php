@@ -218,6 +218,58 @@ class SaldoController extends Controller
 
     }
 
+    public function getDetail($id){
+        $history = Saldo::whereId($id)->first();
+        if($history){
+            return response()->json([
+                'success'=>true,
+                'message'=>'success',
+                'data'=>$history
+            ],201);
+        }else{
+            return response()->json([
+                'success'=>false,
+                'message'=>'failedssa'
+            ],401);
+        }
+    }
+
+    public function getListSaldo(){
+        $data = Saldo::all();
+
+        if($data){
+            return response()->json([
+                'success'=>true,
+                'message'=>'success',
+                'data'=>$data
+            ],201);
+        }else{
+            return response()->json([
+                'success'=>false,
+                'message'=>'data saldo not found',
+            ],404);
+        }
+    }
+
+    public function updateStatus($id,$status){
+
+        $update = Saldo::whereId($id)->update([
+            'status' => $status
+        ]);
+
+        if($update){
+            return response()->json([
+                'success'=>true,
+                'message'=>'success'
+            ],201);
+        }else{
+            return response()->json([
+                'success'=>false,
+                'message'=>'failed'
+            ],401);
+        }
+    }
+
 //     public function getProductStore($id){
 //         $product =  Product::where('id_store', $id)
 //         ->where('status_delete',0)

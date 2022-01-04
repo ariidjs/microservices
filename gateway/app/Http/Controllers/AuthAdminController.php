@@ -12,6 +12,8 @@ use App\Services\ServiceDriver;
 use App\Services\ServiceManagement;
 use App\Services\ServiceProduct;
 use App\Services\ServicePromo;
+use App\Services\ServiceSaldoDriver;
+use App\Services\ServiceSaldoStore;
 use App\Services\ServiceStore;
 use App\Services\ServiceTransaction;
 use Illuminate\Http\Request;
@@ -30,6 +32,8 @@ class AuthAdminController extends BaseController
     private $serviceProduct;
     private $serviceStore;
     private $serviceBenefit;
+    private $serviceSaldoDriver;
+    private $serviceSaldoStore;
     private $serviceDriver;
     private $TIME_EXPIRE = 3;
     private $serviceDetailTransaction;
@@ -38,7 +42,10 @@ class AuthAdminController extends BaseController
     private $AKTIF = 0;
     private $servicePromo;
     private $key = "asjlkdnaskjndjkawqnbdjkwbqdjknasljkmmndasjkjdnijkwqbduiqwbdojkawqnd";
-    public function __construct(ServicePromo $servicePromo,ServiceManagement $serviceManagement,ServiceAdmin $serviceAdmin, AuthServiceAdmin $authServiceAdmin, ServiceTransaction $serviceTransaction, ServiceCustomer $serviceCustomer, ServiceProduct $serviceProduct,ServiceStore $serviceStore,ServiceDetailTransaction $serviceDetailTransaction,ServiceBenefit $serviceBenefit,ServiceDriver $serviceDriver)
+    public function __construct(ServicePromo $servicePromo,ServiceManagement $serviceManagement,ServiceAdmin $serviceAdmin,
+     AuthServiceAdmin $authServiceAdmin, ServiceTransaction $serviceTransaction, ServiceCustomer $serviceCustomer,
+    ServiceProduct $serviceProduct,ServiceStore $serviceStore,ServiceDetailTransaction $serviceDetailTransaction,
+    ServiceBenefit $serviceBenefit,ServiceDriver $serviceDriver,ServiceSaldoStore $serviceSaldoStore,ServiceSaldoDriver $serviceSaldoDriver)
     {
         $this->serviceAdmin = $serviceAdmin;
         $this->authServiceAdmin = $authServiceAdmin;
@@ -51,6 +58,8 @@ class AuthAdminController extends BaseController
         $this->servicePromo = $servicePromo;
         $this->serviceBenefit = $serviceBenefit;
         $this->serviceDriver = $serviceDriver;
+        $this->serviceSaldoDriver = $serviceSaldoDriver;
+        $this->serviceSaldoStore = $serviceSaldoStore;
     }
 
     public function validationJWT($request)
@@ -652,7 +661,6 @@ class AuthAdminController extends BaseController
     }
 
     public function getInfoStore($idStore){
-
        $product = json_decode($this->successResponse($this
         ->serviceProduct
         ->getListProductStore($idStore))
@@ -691,4 +699,110 @@ class AuthAdminController extends BaseController
                 'transaction' => $transaction["data"]
         ], 201);
     }
+
+    public function getListRequestSaldo(){
+       $saldoDriver = json_decode($this->successResponse($this
+        ->serviceSaldoDriver
+        ->getListSaldoDriver())
+        ->original, true);
+
+        // if($saldoDriver["success"])
+
+        $saldoStore = json_decode($this->successResponse($this
+            ->serviceSaldoStore
+            ->getListSaldoStore())
+            ->original, true);
+
+        if($saldoDriver["success"] && $saldoStore["success"]){
+            return response()->json([
+                'success' => true,
+                'message' => 'success',
+                'data' => [
+                    "driver"=>$saldoDriver["data"],
+                    "store"=>$saldoStore["data"],
+                ]
+            ], 201);
+        }else{
+            return response()->json([
+                'success' => false,
+                'message' => 'failed',
+                'data' => null
+            ], 201);
+        }
+    }
+
+    public function updateSaldoStore($id){
+       $info = json_decode($this->successResponse($this
+            ->serviceSaldoStore
+            ->getDetail($id))
+            ->original,true);
+
+        if($info["success"]){
+          $saldoStore = json_decode($this->successResponse($this
+            ->serviceStore
+            ->updateSaldoStore($info["data"]["id_store"],$info["data"]["saldo"],$info["data"]["type"]))
+            ->original, true);
+
+            $updateStatusSaldo = json_decode($this->successResponse($this
+            ->serviceSaldoStore
+            ->updateStatus($info["data"]["id"],"success"))
+            ->original,true);
+
+            if($saldoStore["success"] && $updateStatusSaldo["success"]){
+                return response()->json([
+                    'success' => true,
+                    'message' => 'success update ',
+                ], 201);
+            }else{
+                return response()->json([
+                    'success' => false,
+                    'message' => 'failed',
+                ], 401);
+            }
+        }else{
+            return response()->json([
+                'success' => false,
+                'message' => 'failed',
+            ], 401);
+        }
+    }
+
+    public function updateSaldoDriver($id){
+
+        $info = json_decode($this->successResponse($this
+        ->serviceSaldoDriver
+        ->getDetail($id))
+        ->original,true);
+
+        if($info["success"]){
+            $saldoDriver = json_decode($this->successResponse($this
+            ->serviceDriver
+            ->updateSaldoDriver($info["data"]["id_driver"],$info["data"]["saldo"],$info["data"]["type"]))
+            ->original, true);
+
+            $updateStatusSaldo = json_decode($this->successResponse($this
+            ->serviceSaldoDriver
+            ->updateStatus($info["data"]["id"],"success"))
+            ->original,true);
+
+
+              if($saldoDriver["success"] && $updateStatusSaldo["success"]){
+                  return response()->json([
+                      'success' => true,
+                      'message' => 'success update ',
+                  ], 201);
+              }else{
+                  return response()->json([
+                      'success' => false,
+                      'message' => 'failed',
+                  ], 401);
+              }
+          }else{
+              return response()->json([
+                  'success' => false,
+                  'message' => 'failed',
+              ], 401);
+          }
+    }
+
 }

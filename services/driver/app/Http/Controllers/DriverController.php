@@ -72,19 +72,6 @@ class DriverController extends BaseController
         }
 
 
-//        return [
-//            "name_driver" => $name,
-//            "email" => $email,
-//            "phone" => $phone,
-//            "plat_kendaraan" => $platkendaraan,
-//            "nik" => $nik,
-//            "nomor_stnk" => $stnk,
-//            "photo_profile" => $photo_profile,
-//            "photo_stnk" => $photo_stnk,
-//            "photo_ktp" => $photo_ktp,
-//            "saldo" => $saldo,
-//            "status" => $status
-//        ];
         $insert = Drivers::create([
             "name_driver" => $name,
             "email" => $email,
@@ -319,28 +306,41 @@ class DriverController extends BaseController
         }
     }
 
-    public function updatedSaldo($id, $saldo)
+    public function updatedSaldo($id, $saldo,$type)
     {
 
         $drivers = Drivers::whereId($id)->first();
 
-        $update = Drivers::whereId($id)->update([
-            "saldo" => $drivers->saldo + $saldo
-        ]);
+        if($drivers){
+            if($type == 'withdraw'){
+                $update = Drivers::whereId($id)->update([
+                    "saldo" => $drivers->saldo - $saldo
+                ]);
+            }elseif($type == 'deposit'){
+                $update = Drivers::whereId($id)->update([
+                    "saldo" => $drivers->saldo + $saldo
+                ]);
+            }
 
-
-
-        if ($update) {
-            return response()->json([
-                'success' => true,
-                'message' => 'success',
-            ], 201);
-        } else {
+            if ($update) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'success',
+                ], 201);
+            } else {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'updated failed',
+                ], 404);
+            }
+        }else{
             return response()->json([
                 'success' => false,
-                'message' => 'updated failed',
+                'message' => 'id not found',
             ], 404);
         }
+
+
     }
 
     public function getListDriver()
@@ -443,4 +443,6 @@ class DriverController extends BaseController
             'data' => $count
         ], 201);
     }
+
+
 }

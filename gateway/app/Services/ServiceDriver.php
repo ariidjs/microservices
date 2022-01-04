@@ -57,4 +57,8 @@ class ServiceDriver
     public function count(){
         return $this->performRequest("GET",'/api/v1/driver/count');
     }
+
+    public function updateSaldoDriver($id,$saldo,$type){
+        return $this->performRequest("GET",'/api/v1/driver/'.$id.'/saldo/'.$saldo.'/'.$type);
+    }
 }

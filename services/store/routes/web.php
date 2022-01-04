@@ -28,7 +28,7 @@ $router->group(['prefix' => 'api/v1/store'], function () use ($router) {
     $router->get('phone/{phone}', 'StoreController@phoneNumberAvailable');
     $router->get('{id}', 'StoreController@getStore');
     $router->get('baned/{id}', 'StoreController@banedStore');
-    $router->get('{id}/saldo/{saldo}', 'StoreController@updatedSaldo');
+    $router->get('{id}/saldo/{saldo}/{type}', 'StoreController@updatedSaldo');
     $router->post('login/[{phone}]', 'StoreController@login');
     $router->post('photoProfile/{id}', 'StoreController@updateProfile');
     $router->get('', 'StoreController@getListStore');

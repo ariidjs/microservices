@@ -31,4 +31,19 @@ class ServiceSaldoStore
     public function getHistoryWithdrawOrDeposit($idStore){
         return $this->performRequest("GET",'/api/v1/saldo/'.$idStore);
     }
+
+    public function getDetail($id){
+        return $this->performRequest("GET",'/api/v1/saldo/detail/'.$id);
+    }
+
+
+
+    public function getListSaldoStore()
+    {
+        return $this->performRequest("GET",'/api/v1/saldo/');
+    }
+    public function updateStatus($id,$status)
+    {
+        return $this->performRequest("GET",'/api/v1/saldo/'.$id.'/'.$status);
+    }
 }

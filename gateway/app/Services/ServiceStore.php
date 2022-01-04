@@ -70,4 +70,9 @@ class ServiceStore
     public function updateProfile($id,$data){
         return $this->performRequest("POST",'/api/v1/store/photoProfile/'.$id,$data);
     }
+
+    public function updateSaldoStore($id,$saldo,$type){
+       return $this->performRequest("GET",'/api/v1/store/'.$id.'/saldo/'.$saldo.'/'.$type);
+    }
+
 }

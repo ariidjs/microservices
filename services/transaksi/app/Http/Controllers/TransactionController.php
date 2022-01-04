@@ -258,7 +258,7 @@ class TransactionController extends Controller
 
         $promo = null;
 
-        if($dataCustomer->id_promo != null){
+        if($dataCustomer->id_promo != 0){
             $promo = json_decode($this->successResponse($this
             ->servicePromo
             ->getPromoById($dataCustomer->id_promo))
@@ -1226,19 +1226,13 @@ class TransactionController extends Controller
     {
         $transaction = json_decode(Transaction::where('notransaksi' ,$notrans)->first());
 
+
+
         if($transaction) {
             $customer = json_decode($this->successResponse($this
                 ->serviceCustomer
                 ->getCustomer($transaction->id_customer))
                 ->original,true)["data"];
-
-                // return response()->json([
-                //     'success'=>false,
-                //     'message'=>'Transaksi tidak ditemukan',
-                //     'data'=>$customer
-                // ],201);
-
-
 
             $store =json_decode($this->successResponse($this
                 ->storeService
@@ -1282,6 +1276,15 @@ class TransactionController extends Controller
                 ]);
             }
 
+            $promo = null;
+
+            if($transaction->id_promo != null){
+                $promo = json_decode($this->successResponse($this
+                ->servicePromo
+                ->getPromoById($transaction->id_promo))
+                ->original, true)["data"];
+            }
+
 
             return response()->json([
                 'success'=>true,
@@ -1313,6 +1316,7 @@ class TransactionController extends Controller
                     "longititude"=>$store["longititude"],
                     "address"=>$store["address"],
                 ],
+                'promo'=>$promo,
                 'detail_transaksi'=>$filterDetailTransaction
             ],200);
         }else {
