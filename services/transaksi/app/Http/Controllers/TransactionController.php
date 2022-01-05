@@ -330,7 +330,7 @@ class TransactionController extends Controller
                 ->servicePromo
                 ->getPromoById($dataCustomer->id_promo))
                 ->original, true);
- 
+
                 $date_now = new DateTime();
                 $date2    = new DateTime($promo["data"]["expired"]);
 
@@ -439,7 +439,8 @@ class TransactionController extends Controller
         $customer = json_decode($this->successResponse($this
         ->serviceCustomer
         ->getCustomer($transaction->id_customer))
-        ->original, true)["data"];
+        ->original,true)["data"];
+
 
         try{
             $reference = $this->databaseFirebase->getReference('DriversLocation');
@@ -1225,9 +1226,6 @@ class TransactionController extends Controller
     public function getDetailTransaction(Request $request, $notrans)
     {
         $transaction = json_decode(Transaction::where('notransaksi' ,$notrans)->first());
-
-
-
         if($transaction) {
             $customer = json_decode($this->successResponse($this
                 ->serviceCustomer
@@ -1361,5 +1359,109 @@ class TransactionController extends Controller
                 'message' => 'data not found'
             ], 400);
         }
+    }
+
+    public function getDetaiTransactionCustomer($id){
+        $transaction = Transaction::whereIdCustomer($id)->where('status' ,"<" ,"6")->get();
+        if(sizeof($transaction) != 0){
+            // return $transaction[sizeof($transaction)-1];
+            $customer = json_decode($this->successResponse($this
+                ->serviceCustomer
+                ->getCustomer($id))
+                ->original,true)["data"];
+
+            $store =json_decode($this->successResponse($this
+                ->storeService
+                ->getStore($transaction[sizeof($transaction)-1]["id_store"]))
+                ->original,true)["data"];
+
+         $detailTransaction =json_decode($this->successResponse($this
+                ->detailTransactionService
+                ->getNotransaksi($transaction[sizeof($transaction)-1]["notransaksi"],$transaction[sizeof($transaction)-1]["id_store"]))
+                ->original,true)["data"];
+
+            if($transaction[sizeof($transaction)-1]["id_driver"] != 0){
+                $driver =json_decode($this->successResponse($this
+                ->serviceDriver
+                ->getDriver($transaction[sizeof($transaction)-1]["id_driver"]))
+                ->original,true)["data"];
+                $driver = [
+                    "id_driver"=>$driver["id"],
+                    "name"=>$driver["name_driver"],
+                    "plat"=>$driver["plat_kendaraan"],
+                    "phone"=>$driver["phone"],
+                    "image"=>$driver["photo_profile"],
+                ];
+            }else{
+                $driver = null;
+            }
+
+            $filterDetailTransaction = [];
+            foreach ($detailTransaction as $key => $value) {
+                array_push($filterDetailTransaction,[
+                    "id_product"=>$value["id_product"],
+                    "price_product"=>$value["price_product"],
+                    "count"=>$value["count"],
+                    "name_product"=>$value["name_product"],
+                    "category"=>$value["category"],
+                    "image1"=>$value["image1"],
+                    "image2"=>$value["image2"],
+                    "image3"=>$value["image3"],
+                    "image4"=>$value["image4"],
+                    "description"=>$value["description"]
+                ]);
+            }
+
+            $promo = null;
+
+            if($transaction[sizeof($transaction)-1]["id_promo"] != null){
+                $promo = json_decode($this->successResponse($this
+                ->servicePromo
+                ->getPromoById($transaction[sizeof($transaction)-1]["id_promo"]))
+                ->original, true)["data"];
+            }
+
+
+            return response()->json([
+                'success'=>true,
+                'message'=>'success',
+                // 'notifStore'=>$notifStore,
+                // 'notifCustomer'=>$notifCustomer,
+                'driver'=>$driver,
+                'transaction'=>[
+                    "id"=> $transaction[sizeof($transaction)-1]["id"],
+                    "notransaksi"=>$transaction[sizeof($transaction)-1]["notransaksi"],
+                    "total_price"=>$transaction[sizeof($transaction)-1]["total_price"],
+                    "driver_price"=>$transaction[sizeof($transaction)-1]["driver_price"],
+                    "address_customer"=>$transaction[sizeof($transaction)-1]["alamat_user"],
+                    "customer_name"=>$customer["name"],
+                    "customer_phone"=>$customer["phone"],
+                    'status'=>$transaction[sizeof($transaction)-1]["status"],
+                    "latitude"=>$transaction[sizeof($transaction)-1]["latitude"],
+                    "longitude"=>$transaction[sizeof($transaction)-1]["longitude"],
+                    'created_at' => $transaction[sizeof($transaction)-1]["created_at"]
+                ],
+                'store'=>[
+                    "id_store"=>$store["id_store"],
+                    "owner_name"=>$store["owner_name"],
+                    "store_name"=>$store["store_name"],
+                    "phone"=>$store["phone"],
+                    "rating"=>$store["rating"],
+                    "photo_store"=>$store["photo_store"],
+                    "latitude"=>$store["latitude"],
+                    "longititude"=>$store["longititude"],
+                    "address"=>$store["address"],
+                ],
+                'promo'=>$promo,
+                'detail_transaksi'=>$filterDetailTransaction
+            ],200);
+        }else{
+            return response()->json([
+                'success'=>false,
+                'message'=>'Transaksi tidak ditemukan'],404);
+        }
+
+        // return $data[sizeof($data)-1];
+
     }
 }

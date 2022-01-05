@@ -90,6 +90,9 @@ class ServiceTransaction
     public function getInfoDetailTransaction(){
         return $this->performRequest("GET", '/api/v1/transaksi/listTransactionDone');
     }
+    public function getDetailCusotmerTransaksi($id){
+        return $this->performRequest("GET", '/api/v1/transaksi/customer/detail/'.$id);
+    }
 
     // public function update($data,$id){
     //     return $this->performRequest("POST",'api/v1/store/'.$id,$data);

@@ -135,7 +135,7 @@ class AuthCustomerController extends BaseController
             ->original, true);
 
 
-        if($response['success']) 
+        if($response['success'])
         {
             $body = [
                 'fcm' => $request->input('fcm')
@@ -144,7 +144,7 @@ class AuthCustomerController extends BaseController
                 ->authServiceCustomer
                 ->login($phone, $body))
                 ->original, true);
-    
+
             if($login["success"]){
                 $payload = array(
                     "id" => $login['data']['id'],
@@ -154,10 +154,10 @@ class AuthCustomerController extends BaseController
                 $jwt = JWT::encode($payload, $this->key);
                 $login['data']['jwt'] = $jwt;
                 return $login;
-    
+
             }
         }
-        
+
     }
 
     public function getListProduct(Request $request)
@@ -211,5 +211,19 @@ class AuthCustomerController extends BaseController
         ->serviceStore
         ->getListStore())
         ->original, true);
+    }
+
+    public function getDetailOrder(Request $request){
+        $validation = $this->validationJWT($request);
+
+        //
+      return json_decode($this->successResponse($this
+            ->serviceTransaction
+            ->getDetailCusotmerTransaksi($validation["data"]["id"]))
+            ->original,true);
+
+
+
+
     }
 }

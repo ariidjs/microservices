@@ -27,6 +27,7 @@ $router->group(['prefix' => 'api/v1/transaksi'], function () use ($router) {
     $router->get('/driver/current/{id}','TransactionController@driverTrans');
     $router->get('store/{idStore}', 'TransactionController@getListTransactionStore');
     $router->get('customer/{idCustomer}', 'TransactionController@getListTransactionCustomer');
+    $router->get('customer/detail/{id}', 'TransactionController@getDetaiTransactionCustomer');
     $router->get('/driver/history/{id}', 'TransactionController@getHistoryDriver');
     $router->get('/detail/{notrans}', 'TransactionController@getDetailTransaction');
     $router->get('listTransactionDone', 'TransactionController@getListTransactionDone');
