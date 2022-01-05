@@ -731,13 +731,26 @@ class AuthAdminController extends BaseController
         }
     }
 
-    public function updateSaldoStore($id){
+    public function updateSaldoStore($id,$type){
        $info = json_decode($this->successResponse($this
             ->serviceSaldoStore
             ->getDetail($id))
             ->original,true);
 
         if($info["success"]){
+
+            if($type == "failed"){
+                $updateStatusSaldo = json_decode($this->successResponse($this
+                ->serviceSaldoStore
+                ->updateStatus($info["data"]["id"],"failed"))
+                ->original,true);
+
+                return response()->json([
+                    'success' => true,
+                    'message' => 'success update ',
+                ], 201);
+            }
+
           $saldoStore = json_decode($this->successResponse($this
             ->serviceStore
             ->updateSaldoStore($info["data"]["id_store"],$info["data"]["saldo"],$info["data"]["type"]))
@@ -767,7 +780,7 @@ class AuthAdminController extends BaseController
         }
     }
 
-    public function updateSaldoDriver($id){
+    public function updateSaldoDriver($id,$type){
 
         $info = json_decode($this->successResponse($this
         ->serviceSaldoDriver
@@ -775,6 +788,19 @@ class AuthAdminController extends BaseController
         ->original,true);
 
         if($info["success"]){
+
+            if($type == "failed"){
+                $updateStatusSaldo = json_decode($this->successResponse($this
+                ->serviceSaldoDriver
+                ->updateStatus($info["data"]["id"],"failed"))
+                ->original,true);
+
+                return response()->json([
+                    'success' => true,
+                    'message' => 'success update ',
+                ], 201);
+            }
+
             $saldoDriver = json_decode($this->successResponse($this
             ->serviceDriver
             ->updateSaldoDriver($info["data"]["id_driver"],$info["data"]["saldo"],$info["data"]["type"]))

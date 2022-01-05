@@ -94,8 +94,8 @@ $router->group(['prefix' => 'api/v1/admin'], function () use ($router) {
     $router->get('/detailTransaction/{notrans}', 'AuthDriverController@getDetailTransaction');
     $router->post('promo', 'AuthAdminController@promo');
     $router->get('customerPromo', 'AuthAdminController@searchCustomerPromo');
-    $router->get('saldoStore/{id}', 'AuthAdminController@updateSaldoStore');
-    $router->get('saldoDriver/{id}', 'AuthAdminController@updateSaldoDriver');
+    $router->get('saldoStore/{id}/{type}', 'AuthAdminController@updateSaldoStore');
+    $router->get('saldoDriver/{id}/{type}', 'AuthAdminController@updateSaldoDriver');
     $router->get('dashboard', 'AuthAdminController@dashboard');
     $router->get('listBenefit', 'AuthAdminController@listBenefit');
     $router->get('saldo', 'AuthAdminController@getListRequestSaldo');

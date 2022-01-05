@@ -330,12 +330,12 @@ class TransactionController extends Controller
                 ->servicePromo
                 ->getPromoById($dataCustomer->id_promo))
                 ->original, true);
-
+ 
                 $date_now = new DateTime();
                 $date2    = new DateTime($promo["data"]["expired"]);
 
                 if ($date_now > $date2) {
-                    return response()->json([
+                   return response()->json([
                         'success' => true,
                         'message' => 'Success',
                         'data' => "kode promo sudah tidak dapat digunakan lagi",
