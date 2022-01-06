@@ -651,7 +651,7 @@ class TransactionController extends Controller
                 $transaction = json_decode(Transaction::whereId($id)->first());
                 $driver =json_decode($this->successResponse($this
                     ->serviceDriver
-                    ->statusWork(0, $id_driver))
+                    ->statusWork(1, $id_driver))
                     ->original,true);
                 if($driver) {
                     return response()->json([
@@ -928,7 +928,7 @@ class TransactionController extends Controller
         if($transaction){
             $driver =json_decode($this->successResponse($this
                 ->serviceDriver
-                ->statusWork(1, $transaction->id_driver))
+                ->statusWork(0, $transaction->id_driver))
                 ->original,true);
 
             $customer = json_decode($this->successResponse($this
