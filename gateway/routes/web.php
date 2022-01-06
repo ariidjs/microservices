@@ -52,8 +52,8 @@ $router->group(['prefix' => 'api/v1/product'], function () use ($router) {
 });
 
 $router->group(['prefix' => 'api/v1/driver'], function () use ($router) {
-    $router->get('', 'AuthAdminController@getDriverById');
-    $router->post('', 'AuthAdminControllerr@authDriver');
+    $router->get('', 'AuthDriverController@getDriverById');
+    $router->post('', 'AuthDriverController@authDriver');
     $router->post('/register', 'AuthDriverController@register');
     $router->post('/login/{phone}', 'AuthDriverController@login');
     $router->post('/withdrawordeposit', 'AuthDriverController@withdrawORDeposit');
