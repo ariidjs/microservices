@@ -417,21 +417,30 @@ class DriverController extends BaseController
     public function taxSaldo($id, $saldo)
     {
         $driver = Drivers::whereId($id)->first();
-        $update = Drivers::whereId($id)->update([
-            "saldo" => $driver->saldo - $saldo
-        ]);
 
-        if ($update) {
-            return response()->json([
-                'success' => true,
-                'message' => 'success',
-            ], 201);
-        } else {
+        if($driver){
+            $update = Drivers::whereId($id)->update([
+                "saldo" => $driver->saldo - $saldo
+            ]);
+
+            if ($update) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'success',
+                ], 201);
+            } else {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'updated failed',
+                ], 404);
+            }
+        }else{
             return response()->json([
                 'success' => false,
-                'message' => 'updated failed',
+                'message' => 'driver not found',
             ], 404);
         }
+
     }
 
     public function countDriver(){

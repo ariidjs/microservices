@@ -257,21 +257,30 @@ class StoreController extends Controller
     {
 
         $store = Stores::whereIdStore($id)->first();
-        $update = Stores::whereIdStore($id)->update([
-            "saldo" => $store["saldo"] - $saldo
-        ]);
 
-        if ($update) {
-            return response()->json([
-                'success' => true,
-                'message' => 'success',
-            ], 201);
-        } else {
+        if($store){
+            $update = Stores::whereIdStore($id)->update([
+                "saldo" => $store["saldo"] - $saldo
+            ]);
+
+            if ($update) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'success',
+                ], 201);
+            } else {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'updated failed',
+                ], 404);
+            }
+        }else{
             return response()->json([
                 'success' => false,
-                'message' => 'updated failed',
+                'message' => 'store not found',
             ], 404);
         }
+
     }
 
 

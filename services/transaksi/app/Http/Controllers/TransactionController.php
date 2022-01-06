@@ -801,7 +801,7 @@ class TransactionController extends Controller
     }
 
     public function validationCodeFromDriver($id,$kode){
-        $management = json_decode($this->successResponse($this
+     $management = json_decode($this->successResponse($this
         ->serviceManagement
         ->getManagement())
         ->original, true);
@@ -828,22 +828,21 @@ class TransactionController extends Controller
             "taxDriver"=>$taxStore,
         ];
 
-        return json_decode($this->successResponse($this
-        ->serviceBenefit
-        ->saveBenefit($data))
-        ->original,true)["data"];
+        // return json_decode($this->successResponse($this
+        // ->serviceBenefit
+        // ->saveBenefit($data))
+        // ->original,true)["data"];
 
 
         $responseStoreTax = json_decode($this->successResponse($this
             ->storeService
             ->taxStore($transaction['id_store'],$taxStoreAdmin))
-            ->original,true
-        );
-        $responseDriverTax = json_decode($this->successResponse($this
+            ->original,true);
+
+       return $responseDriverTax = json_decode($this->successResponse($this
             ->serviceDriver
             ->taxDriver($transaction['id_driver'],$taxDriverAdmin))
-            ->original,true
-        );
+            ->original,true);
 
 
         $detailTransaction =json_decode($this->successResponse($this
@@ -851,7 +850,7 @@ class TransactionController extends Controller
             ->getNotransaksi($transaction->notransaksi,$transaction->id_store))
             ->original,true)["data"];
 
-        return $detailTransaction;
+        // return $detailTransaction;
 
 
 
