@@ -29,7 +29,7 @@ return [
         'base_uri' =>  env('MANAGEMENT_BASE_URL'),
         'secret'   =>  env('DETAIL_TRANSACTION_SERVICE_SECRET'),
     ],
-    'benefit'   =>  [
+    'benefits'   =>  [
         'base_uri' =>  env('BENEFIT_BASE_URL'),
         'secret'   =>  env('DETAIL_TRANSACTION_SERVICE_SECRET'),
     ],

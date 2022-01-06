@@ -7,9 +7,7 @@ use App\Services\ProductService;
 use App\Services\DetailTransactionService;
 use App\Services\StoreService;
 use \Illuminate\Http\Request;
-use \Illuminate\Support\Facades\Hash;
 use \App\Models\Transaction;
-use \App\Models\Store;
 use App\Services\FcmService;
 use App\Services\ServiceBenefit;
 use App\Services\ServiceCustomer;
@@ -47,7 +45,7 @@ class TransactionController extends Controller
     private $TRANSACTION_DRIVER_FOUND = 4;
     private $TRANSACTION_DRIVER_IN_STORE = 5;
     private $TRANSACTION_DONE = 6;
-    private $serviceBenefit;
+    private $serviceBenefits;
     private $configFirebase;
     private $databaseFirebase;
     private $serviceCustomer;
@@ -76,7 +74,7 @@ class TransactionController extends Controller
         $this->serviceCustomer = $serviceCustomer;
         $this->serviceDriver = $serviceDriver;
         $this->serviceManagement = $serviceManagement;
-        $this->serviceBenefit = $serviceBenefit;
+        $this->serviceBenefits = $serviceBenefit;
         $this->servicePromo = $servicePromo;
         $factory = (new Factory)
             ->withServiceAccount(__DIR__ . '/firebaseKey.json')
@@ -828,10 +826,13 @@ class TransactionController extends Controller
             "taxDriver"=>$taxStore,
         ];
 
-        // return json_decode($this->successResponse($this
-        // ->serviceBenefit
-        // ->saveBenefit($data))
-        // ->original,true)["data"];
+
+        json_decode($this->successResponse($this
+        ->serviceBenefits
+        ->saveBenefit($data))
+        ->original,true);
+
+
 
 
         $responseStoreTax = json_decode($this->successResponse($this
@@ -839,7 +840,7 @@ class TransactionController extends Controller
             ->taxStore($transaction['id_store'],$taxStoreAdmin))
             ->original,true);
 
-       return $responseDriverTax = json_decode($this->successResponse($this
+      $responseDriverTax = json_decode($this->successResponse($this
             ->serviceDriver
             ->taxDriver($transaction['id_driver'],$taxDriverAdmin))
             ->original,true);
@@ -878,6 +879,7 @@ class TransactionController extends Controller
                 Transaction::whereId($id)->update([
                     "status"=>$this->TRANSACTION_DRIVER_IN_STORE
                 ]);
+
                 $dataFcmCustomer = [
                     "title"=>"customer notification",
                     "content"=>"Driver sudah sampai ditoko"

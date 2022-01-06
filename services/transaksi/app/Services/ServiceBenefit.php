@@ -21,12 +21,9 @@ class ServiceBenefit
 
     public function __construct()
     {
-        $this->baseUri = config('service.benefit.base_uri');
-        $this->secret = config('service.product.secret');
+        $this->baseUri = config('service.benefits.base_uri');
+        $this->secret = config('service.store.secret');
     }
-
-
-
     public function saveBenefit($data)
     {
         return $this->performRequest('POST', '/api/v1/benefit',$data);
