@@ -18,8 +18,8 @@ class CreateProductTable extends Migration
             $table->biginteger('id_store');
             $table->string('name_product');
             $table->enum('category',["makanan","minuman"]);
-            $table->string('price');
-            $table->string('price_promo');
+            $table->double('price');
+            $table->double('price_promo');
             $table->string('image1');
             $table->string('image2');
             $table->string('image3');

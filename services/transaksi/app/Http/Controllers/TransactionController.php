@@ -452,7 +452,7 @@ class TransactionController extends Controller
 
 
             $dataDriver  = collect($dataDriver)->filter(function($value,$key){
-                return $value["status"] == 1;
+                return $value["status"] == 0;
             });
             // return $dataDriver;
 
