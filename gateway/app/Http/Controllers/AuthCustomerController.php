@@ -226,4 +226,37 @@ class AuthCustomerController extends BaseController
 
 
     }
+
+    public function getListTransactionCustomer(Request $request){
+        $validation =$this->validationJWT($request);
+
+        $response = json_decode($this->successResponse($this
+        ->serviceTransaction
+        ->getListTransactionCustomer($validation["data"]["id"]))
+        ->original, true);
+
+        $customer = json_decode($this->successResponse($this
+            ->serviceCustomer
+            ->getCustomer($validation["data"]["id"]))
+            ->original, true);
+
+       $data = collect($response["data"])->map(function($item,$key) use($customer){
+            $store = json_decode($this->successResponse($this
+            ->serviceStore
+            ->getStore($item["id_store"]))
+            ->original, true);
+            $item["customer_name"] =$customer["data"]["name"];
+            $item["store_name"]= $store["data"]["store_name"];
+            return $item;
+        });
+
+        // $response["data"]["customer_name"]=$customer["data"]["name"];
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Success',
+            'data' => $data,
+            'customer'=>$customer["data"]
+        ], 200);
+    }
 }
