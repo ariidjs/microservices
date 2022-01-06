@@ -331,7 +331,7 @@ class AuthDriverController extends BaseController
     public function validationCode(Request $request, $idTransaction, $code)
     {
 
-        return $this->validationJWT($request);
+        $this->validationJWT($request);
 
         return json_decode($this->successResponse($this
             ->serviceTransaction
