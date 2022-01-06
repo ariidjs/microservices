@@ -481,9 +481,6 @@ class TransactionController extends Controller
             // return $dataDriver;
             $driver = $this->searchDriver($transaction->latitude, $transaction->longitude, $dataDriver->toArray());
 
-            return $driver;
-
-
             $driver = json_decode($this->successResponse($this
                 ->serviceDriver
                 ->getDriver($driver["id_driver"]))
