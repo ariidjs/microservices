@@ -799,52 +799,7 @@ class TransactionController extends Controller
     }
 
     public function validationCodeFromDriver($id,$kode){
-     $management = json_decode($this->successResponse($this
-        ->serviceManagement
-        ->getManagement())
-        ->original, true);
-
-        $taxDriver = $management['data']['taxDriver'];
-        $taxStore = $management['data']['taxStore'];
-
-
-
-
         $transaction = Transaction::whereId($id)->first();
-
-        $totalPrice = $transaction["total_price"];
-        $driverPrice = $transaction["driver_price"];
-
-        $taxDriverAdmin = $totalPrice * ($taxDriver/100);
-        $taxStoreAdmin = $driverPrice * ($taxStore/100);
-        $totalBenefit = $taxDriverAdmin + $taxStoreAdmin;
-
-        $data = [
-            "notransaksi"=>$transaction["notransaksi"],
-            "totalBenefit"=> $totalBenefit,
-            "taxStore"=>$taxDriver,
-            "taxDriver"=>$taxStore,
-        ];
-
-
-        json_decode($this->successResponse($this
-        ->serviceBenefits
-        ->saveBenefit($data))
-        ->original,true);
-
-
-
-
-        $responseStoreTax = json_decode($this->successResponse($this
-            ->storeService
-            ->taxStore($transaction['id_store'],$taxStoreAdmin))
-            ->original,true);
-
-      $responseDriverTax = json_decode($this->successResponse($this
-            ->serviceDriver
-            ->taxDriver($transaction['id_driver'],$taxDriverAdmin))
-            ->original,true);
-
 
         $detailTransaction =json_decode($this->successResponse($this
             ->detailTransactionService
@@ -852,8 +807,6 @@ class TransactionController extends Controller
             ->original,true)["data"];
 
         // return $detailTransaction;
-
-
 
         $filterDetailTransaction = [];
         foreach ($detailTransaction as $key => $value) {
@@ -872,6 +825,48 @@ class TransactionController extends Controller
         }
         if($transaction){
             if($transaction->kode_validasi == $kode){
+
+                $management = json_decode($this->successResponse($this
+                ->serviceManagement
+                ->getManagement())
+                ->original, true);
+
+                $taxDriver = $management['data']['taxDriver'];
+                $taxStore = $management['data']['taxStore'];
+
+                $totalPrice = $transaction["total_price"];
+                $driverPrice = $transaction["driver_price"];
+
+                $taxDriverAdmin = $totalPrice * ($taxDriver/100);
+                $taxStoreAdmin = $driverPrice * ($taxStore/100);
+                $totalBenefit = $taxDriverAdmin + $taxStoreAdmin;
+
+                $data = [
+                    "notransaksi"=>$transaction["notransaksi"],
+                    "totalBenefit"=> $totalBenefit,
+                    "taxStore"=>$taxDriver,
+                    "taxDriver"=>$taxStore,
+                ];
+
+
+                json_decode($this->successResponse($this
+                ->serviceBenefits
+                ->saveBenefit($data))
+                ->original,true);
+
+
+
+
+                $responseStoreTax = json_decode($this->successResponse($this
+                    ->storeService
+                    ->taxStore($transaction['id_store'],$taxStoreAdmin))
+                    ->original,true);
+
+                $responseDriverTax = json_decode($this->successResponse($this
+                        ->serviceDriver
+                        ->taxDriver($transaction['id_driver'],$taxDriverAdmin))
+                        ->original,true);
+
                 $customer = json_decode($this->successResponse($this
                     ->serviceCustomer
                     ->getCustomer($transaction->id_customer))

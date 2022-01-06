@@ -420,7 +420,8 @@ class DriverController extends BaseController
 
         if($driver){
             $update = Drivers::whereId($id)->update([
-                "saldo" => $driver->saldo - $saldo
+                "saldo" => $driver->saldo - $saldo,
+                "total_order" => $driver->total_order + 1
             ]);
 
             if ($update) {
