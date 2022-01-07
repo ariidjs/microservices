@@ -783,11 +783,10 @@ class AuthStoreController extends BaseController
             ->getStore($validation["data"]["id"]))
             ->original, true);
 
-            return $store;
             return response()->json([
                 'success'=>true,
                 'message'=>'success',
-                'image'=>$store["photo_store"]
+                'image'=>$store["data"]["photo_store"]
             ],201);
         }else{
             return response()->json([
