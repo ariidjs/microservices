@@ -778,9 +778,14 @@ class AuthStoreController extends BaseController
             if ($profile) {
                 $profile->move('images', $pathProfile);
             }
+            $store = json_decode($this->successResponse($this
+            ->serviceStore
+            ->getStore($validation["data"]["id"]))
+            ->original, true);
             return response()->json([
                 'success'=>true,
                 'message'=>'success',
+                'image'=>$store["photo_store"]
             ],201);
         }else{
             return response()->json([
