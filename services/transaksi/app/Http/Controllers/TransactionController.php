@@ -247,83 +247,39 @@ class TransactionController extends Controller
     public function insertCustomer(Request $request)
     {
 
-        $dataCustomer = json_decode($request->getContent());
-        $dataProductFromCustomer = json_decode(json_encode($dataCustomer->data_product), true);
-        // return var_dump($dataProductFromCustomer);
-        // return $dataCustomer->id_store;
-
-        // return $dataCustomer->id_promo;
-
-        $promo = null;
-
-        if($dataCustomer->id_promo != 0){
-            $promo = json_decode($this->successResponse($this
-            ->servicePromo
-            ->getPromoById($dataCustomer->id_promo))
-            ->original, true);
-
-            $date_now = new DateTime();
-            $date2    = new DateTime($promo["data"]["expired"]);
-
-            if ($date_now > $date2) {
-                return response()->json([
-                    'success' => true,
-                    'message' => 'Success',
-                    'data' => "kode promo sudah tidak dapat digunakan lagi",
-                ], 400);
-               }else{
-                    if($promo["data"]["status"] != "Used"){
-                        $promo = $dataCustomer->id_promo;
-                    }else{
-                        return response()->json([
-                            'success' => true,
-                            'message' => 'Success',
-                            'data' => "kode promo sudah pernah digunakan",
-                        ], 400);
-                    }
-               }
-
-        }
-
-
-
-
-        $product = json_decode($this->successResponse($this
-            ->productService
-            ->getProductStore($dataCustomer->id_store))
-            ->original, true);
-
-
-
-        $productFilter = $this->inner_join($product["data"], $dataProductFromCustomer, "id");
-
-        // return $productFilter;
-        $date = date_create();
-        date_timestamp_set($date, time());
-        $noTransaction = $dataCustomer->id_customer . date_format($date, "YmdHis");
-        $total_price = 0;
-        $driver_price = $dataCustomer->driver_price;
-        $code_validation = $this->generateRandomString();
-        $dataSubProduct = [];
-        foreach ($productFilter as $value) {
-            if ($value["price_promo"]) {
-                $total_price += $value["price_promo"] * $value["count"];
-                array_push($dataSubProduct, array("notransaksi" => $noTransaction, "id_product" => $value["id"], "price_product" => $value["price_promo"], "count" => $value["count"]));
-            } else {
-                $total_price += $value["price"];
-                array_push($dataSubProduct, ["notransaksi" => $noTransaction, "id_product" => $value["id"], "price_product" => $value["price"], "count" => $value["count"]]);
+        try{
+            $reference = $this->databaseFirebase->getReference('DriversLocation');
+            $key = $reference->getChildKeys();
+            $dataDriver = [];
+            foreach ($key as $value) {
+                array_push($dataDriver, $this->databaseFirebase->getReference('DriversLocation')->getChild($value)->getValue());
             }
-        }
 
-        $store = json_decode($this->successResponse($this
-            ->storeService
-            ->getStore($dataCustomer->id_store))
-            ->original, true);
+
+            $dataDriver  = collect($dataDriver)->filter(function($value,$key){
+                return $value["status"] == 0;
+            });
+            // return $dataDriver;
+
+
+            // Ketika driver yang ditemukan sedang menerima orderan
+            if(sizeof($dataDriver) == 0){
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Semua driver sedang menerima orderan silahkan tunggu beberapa saat lagi',
+                ], 404);
+            }
+
+            $dataCustomer = json_decode($request->getContent());
+            $dataProductFromCustomer = json_decode(json_encode($dataCustomer->data_product), true);
+            // return var_dump($dataProductFromCustomer);
+            // return $dataCustomer->id_store;
+
+            // return $dataCustomer->id_promo;
 
             $promo = null;
-            $idPromo =  null;
 
-            if($dataCustomer->id_promo != null){
+            if($dataCustomer->id_promo != 0){
                 $promo = json_decode($this->successResponse($this
                 ->servicePromo
                 ->getPromoById($dataCustomer->id_promo))
@@ -333,15 +289,14 @@ class TransactionController extends Controller
                 $date2    = new DateTime($promo["data"]["expired"]);
 
                 if ($date_now > $date2) {
-                   return response()->json([
+                    return response()->json([
                         'success' => true,
                         'message' => 'Success',
                         'data' => "kode promo sudah tidak dapat digunakan lagi",
                     ], 400);
                    }else{
                         if($promo["data"]["status"] != "Used"){
-                            $idPromo =  $dataCustomer->id_promo ;
-                            $total_price = $total_price - $promo["data"]["promoPrice"];
+                            $promo = $dataCustomer->id_promo;
                         }else{
                             return response()->json([
                                 'success' => true,
@@ -353,36 +308,111 @@ class TransactionController extends Controller
 
             }
 
-        $transaction = Transaction::create([
-            'notransaksi' => $noTransaction,
-            'id_customer' => $dataCustomer->id_customer,
-            'id_driver' => 0,
-            'id_store' => $dataCustomer->id_store,
-            'status' => $this->TRANSACTION_WAITING_STORE,
-            'total_price' => $total_price,
-            'driver_price' => $driver_price,
-            'alamat_user' => $dataCustomer->address,
-            'latitude' => $dataCustomer->latitude,
-            'longitude' => $dataCustomer->longititude,
-            'status_delete' => 0,
-            'kode_validasi' => $code_validation,
-            'id_promo'=>$idPromo
-        ]);
 
-        $dataFcmStore = [
-            "title" => "Store notification",
-            "content" => "Ada orderan ".$noTransaction
-        ];
 
-        $this->pushFcm($dataFcmStore,$store["data"]["fcm"]);
 
-        if ($transaction) {
-            return json_decode($this->successResponse($this
-                ->detailTransactionService
-                ->insert($dataSubProduct))
+            $product = json_decode($this->successResponse($this
+                ->productService
+                ->getProductStore($dataCustomer->id_store))
                 ->original, true);
-        } else {
-            return json_encode($dataSubProduct);
+
+
+
+            $productFilter = $this->inner_join($product["data"], $dataProductFromCustomer, "id");
+
+            // return $productFilter;
+            $date = date_create();
+            date_timestamp_set($date, time());
+            $noTransaction = $dataCustomer->id_customer . date_format($date, "YmdHis");
+            $total_price = 0;
+            $driver_price = $dataCustomer->driver_price;
+            $code_validation = $this->generateRandomString();
+            $dataSubProduct = [];
+            foreach ($productFilter as $value) {
+                if ($value["price_promo"]) {
+                    $total_price += $value["price_promo"] * $value["count"];
+                    array_push($dataSubProduct, array("notransaksi" => $noTransaction, "id_product" => $value["id"], "price_product" => $value["price_promo"], "count" => $value["count"]));
+                } else {
+                    $total_price += $value["price"];
+                    array_push($dataSubProduct, ["notransaksi" => $noTransaction, "id_product" => $value["id"], "price_product" => $value["price"], "count" => $value["count"]]);
+                }
+            }
+
+            $store = json_decode($this->successResponse($this
+                ->storeService
+                ->getStore($dataCustomer->id_store))
+                ->original, true);
+
+                $promo = null;
+                $idPromo =  null;
+
+                if($dataCustomer->id_promo != null){
+                    $promo = json_decode($this->successResponse($this
+                    ->servicePromo
+                    ->getPromoById($dataCustomer->id_promo))
+                    ->original, true);
+
+                    $date_now = new DateTime();
+                    $date2    = new DateTime($promo["data"]["expired"]);
+
+                    if ($date_now > $date2) {
+                       return response()->json([
+                            'success' => true,
+                            'message' => 'Success',
+                            'data' => "kode promo sudah tidak dapat digunakan lagi",
+                        ], 400);
+                       }else{
+                            if($promo["data"]["status"] != "Used"){
+                                $idPromo =  $dataCustomer->id_promo ;
+                                $total_price = $total_price - $promo["data"]["promoPrice"];
+                            }else{
+                                return response()->json([
+                                    'success' => true,
+                                    'message' => 'Success',
+                                    'data' => "kode promo sudah pernah digunakan",
+                                ], 400);
+                            }
+                       }
+
+                }
+
+            $transaction = Transaction::create([
+                'notransaksi' => $noTransaction,
+                'id_customer' => $dataCustomer->id_customer,
+                'id_driver' => 0,
+                'id_store' => $dataCustomer->id_store,
+                'status' => $this->TRANSACTION_WAITING_STORE,
+                'total_price' => $total_price,
+                'driver_price' => $driver_price,
+                'alamat_user' => $dataCustomer->address,
+                'latitude' => $dataCustomer->latitude,
+                'longitude' => $dataCustomer->longititude,
+                'status_delete' => 0,
+                'kode_validasi' => $code_validation,
+                'id_promo'=>$idPromo
+            ]);
+
+            $dataFcmStore = [
+                "title" => "Store notification",
+                "content" => "Ada orderan ".$noTransaction
+            ];
+
+            $this->pushFcm($dataFcmStore,$store["data"]["fcm"]);
+
+            if ($transaction) {
+                return json_decode($this->successResponse($this
+                    ->detailTransactionService
+                    ->insert($dataSubProduct))
+                    ->original, true);
+            } else {
+                return json_encode($dataSubProduct);
+            }
+
+        }catch(FirebaseException $e){
+            return response()->json([
+                'success' => false,
+                'message' => 'Tidak ada driver yang aktif saat ini',
+            ], 404);
         }
     }
 
