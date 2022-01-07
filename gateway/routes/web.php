@@ -79,6 +79,7 @@ $router->group(['prefix' => 'api/v1/customer'], function () use ($router) {
     $router->get('transaction', 'AuthCustomerController@getListTransactionCustomer');
     $router->get('/store', 'AuthCustomerController@getListStore');
     $router->get('detail', 'AuthCustomerController@getDetailOrder');
+    $router->get('transaction/cancel/{id}', 'AuthCustomerController@cancelTransaction');
 });
 
 $router->group(['prefix' => 'api/v1/admin'], function () use ($router) {

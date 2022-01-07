@@ -259,4 +259,12 @@ class AuthCustomerController extends BaseController
             'customer'=>$customer["data"]
         ], 200);
     }
+    public function cancelTransaction(Request $request,$id){
+        $this->validationJWT($request);
+
+        return json_decode($this->successResponse($this
+        ->serviceTransaction
+        ->cancelFromCustomer($id))
+        ->original, true);
+    }
 }

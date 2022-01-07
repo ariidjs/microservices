@@ -93,6 +93,9 @@ class ServiceTransaction
     public function getDetailCusotmerTransaksi($id){
         return $this->performRequest("GET", '/api/v1/transaksi/customer/detail/'.$id);
     }
+    public function cancelFromCustomer($id){
+        return $this->performRequest("GET", '/api/v1/transaksi/cancel/'.$id);
+    }
 
     // public function update($data,$id){
     //     return $this->performRequest("POST",'api/v1/store/'.$id,$data);

@@ -574,6 +574,25 @@ class TransactionController extends Controller
 
     }
 
+    public function cancelStatusCustomer(Request $request, $id)
+    {
+        $cancelTransaction = Transaction::whereId($id)->first();
+        if($cancelTransaction){
+            $cancelTransaction->update([
+                'status'=>$this->TRANSACTION_CANCEL
+            ]);
+            return response()->json([
+                "success"=>true,
+                "message"=>"Succes update data"
+            ],200);
+        }else{
+            return response()->json([
+                "success"=>false,
+                "message"=>"failed update data"
+            ],401);
+        }
+    }
+
     public function statusFromDriver(Request $request,$id){
         // return $id;
         $status = $request->input('status');
@@ -1355,7 +1374,7 @@ class TransactionController extends Controller
     }
 
     public function getDetaiTransactionCustomer($id){
-        $transaction = Transaction::whereIdCustomer($id)->where('status' ,"<" ,"6")->get();
+        $transaction = Transaction::whereIdCustomer($id)->where('status' ,"<" ,"6")->andWhere('status' ,">" ,"0")->get();
         if(sizeof($transaction) != 0){
             // return $transaction[sizeof($transaction)-1];
             $customer = json_decode($this->successResponse($this
