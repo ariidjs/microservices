@@ -593,7 +593,8 @@ class TransactionController extends Controller
             ]);
             $dataFcmCustomer = [
                 "title" => "Orderan anda sedang di proses oleh toko",
-                "content" => "Orderan anda telah diterima oleh toko silahkan menunngu proses pencarian driver"
+                "content" => "Orderan anda telah diterima oleh toko silahkan menunngu proses pencarian driver",
+                "status" =>$status
             ];
             $notifCustomer = $this->pushFcm($dataFcmCustomer, $customer["fcm"]);
             return response()->json([
@@ -677,7 +678,8 @@ class TransactionController extends Controller
                 "title"=>"Driver ditemukan",
                 "content"=>[
                     "title" => "Driver ditemukan",
-                    "driver" => $driver["data"]
+                    "driver" => $driver["data"],
+                    "status" => $status
                 ],
             ];
             $dataFcmStore = [
@@ -926,7 +928,8 @@ class TransactionController extends Controller
 
                 $dataFcmCustomer = [
                     "title"=>"customer notification",
-                    "content"=>"Driver sudah sampai ditoko"
+                    "content"=>"Driver sudah sampai ditoko",
+                    "status"=>$this->TRANSACTION_DRIVER_IN_STORE
                 ];
                 $transaction = $transaction = json_decode(Transaction::whereId($id)->first());
                 $notifCustomer = $this->pushFcm($dataFcmCustomer,$customer["fcm"]);
@@ -983,7 +986,8 @@ class TransactionController extends Controller
 
             $dataFcmCustomer = [
                 "title"=>"customer notification",
-                "content"=>"Pesanan anda telah selesai terimakasih telah berbelanja"
+                "content"=>"Pesanan anda telah selesai terimakasih telah berbelanja",
+                "status" =>$this->TRANSACTION_DONE
             ];
             $notifCustomer = $this->pushFcm($dataFcmCustomer,$customer["fcm"]);
             return response()->json([
