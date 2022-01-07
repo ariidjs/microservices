@@ -1404,7 +1404,7 @@ class TransactionController extends Controller
     }
 
     public function getDetaiTransactionCustomer($id){
-        $transaction = Transaction::whereIdCustomer($id)->where('status' ,"<" ,"6")->andWhere('status' ,">" ,"0")->get();
+        $transaction = Transaction::whereIdCustomer($id)->where('status' ,"<" ,"6")->where('status' ,">" ,"0")->get();
         if(sizeof($transaction) != 0){
             // return $transaction[sizeof($transaction)-1];
             $customer = json_decode($this->successResponse($this
