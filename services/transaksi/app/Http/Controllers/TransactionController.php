@@ -489,7 +489,11 @@ class TransactionController extends Controller
             if(sizeof($dataDriver) == 0){
                 $dataFcmCustomer = [
                     "title" => "Orderan anda sedang di proses oleh toko",
-                    "content" => "Orderan anda telah diterima oleh toko silahkan menunngu proses pencarian driver"
+                    "content"=>[
+                        "title" => "Orderan anda telah diterima oleh toko silahkan menunngu proses pencarian driver",
+                        "status" => $status
+                    ],
+
                 ];
                 $updated = Transaction::whereId($id)->update([
                     "status" => $this->TRANSACTION_ACCEPT_STORE
@@ -526,8 +530,10 @@ class TransactionController extends Controller
                 ]);
                 $dataFcmCustomer = [
                     "title" => "Store notification",
-                    "content" => "sedang mencari driver",
-                    "status" =>$status
+                    "content"=>[
+                        "title" => "sedang mencari driver",
+                        "status" => $status
+                    ],
                 ];
                 $dataFcmDriver = [
                     "title" => "Driver notification",
@@ -569,8 +575,10 @@ class TransactionController extends Controller
 
                 $dataFcm = [
                     "title" => "Store notification",
-                    "content" => "pesanan anda dibatalkan",
-                    "status" =>$status
+                    "content"=>[
+                        "title" => "pesanan anda dibatalkan",
+                        "status" => $status
+                    ],
                 ];
 
                 $notifCustomer = $this->pushFcm($dataFcm, $customer["fcm"]);
@@ -929,8 +937,10 @@ class TransactionController extends Controller
 
                 $dataFcmCustomer = [
                     "title"=>"customer notification",
-                    "content"=>"Driver sudah sampai ditoko",
-                    "status"=>$this->TRANSACTION_DRIVER_IN_STORE
+                    "content"=>[
+                        "title" => "Driver sudah sampai ditoko",
+                        "status" => $this->TRANSACTION_DRIVER_IN_STORE
+                    ],
                 ];
                 $transaction = $transaction = json_decode(Transaction::whereId($id)->first());
                 $notifCustomer = $this->pushFcm($dataFcmCustomer,$customer["fcm"]);
@@ -987,8 +997,10 @@ class TransactionController extends Controller
 
             $dataFcmCustomer = [
                 "title"=>"customer notification",
-                "content"=>"Pesanan anda telah selesai terimakasih telah berbelanja",
-                "status" =>$this->TRANSACTION_DONE
+                "content"=>[
+                    "title" => "Pesanan anda telah selesai terimakasih telah berbelanja",
+                    "status" =>$this->TRANSACTION_DONE
+                ]
             ];
             $notifCustomer = $this->pushFcm($dataFcmCustomer,$customer["fcm"]);
             return response()->json([
