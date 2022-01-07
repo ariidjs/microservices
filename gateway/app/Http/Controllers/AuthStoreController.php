@@ -782,6 +782,8 @@ class AuthStoreController extends BaseController
             ->serviceStore
             ->getStore($validation["data"]["id"]))
             ->original, true);
+
+            return $store;
             return response()->json([
                 'success'=>true,
                 'message'=>'success',
