@@ -151,12 +151,13 @@ class StoreController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'phone is register',
+                'status' => $checkPhone["status_delete"]
             ], 201);
         } else {
             return response()->json([
                 'success' => false,
                 'message' => 'phone not register',
-
+                'status' => null
             ], 201);
         }
     }
