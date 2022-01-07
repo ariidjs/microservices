@@ -1506,4 +1506,24 @@ class TransactionController extends Controller
         // return $data[sizeof($data)-1];
 
     }
+
+    public function getTotalPesanan($id){
+        $total_pesanan = Transaction::whereIdStore($id)->get();
+
+        if($total_pesanan){
+            $total_pesanan = $total_pesanan->count();
+            return response()->json([
+                "status" => true,
+                "message" => "Success",
+                "total_pesanan" => $total_pesanan
+            ],201);
+        }else{
+            return response()->json([
+                "status" => false,
+                "message" => "failed get data"
+            ],401);
+        }
+
+
+    }
 }

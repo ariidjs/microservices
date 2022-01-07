@@ -259,7 +259,6 @@ class ProductController extends Controller
 
 
 
-
         // return $response;
 
         $store = null;
@@ -268,7 +267,6 @@ class ProductController extends Controller
                 $store = $value;
             }
         };
-
 
         if ($store) {
             $product =  Product::where('id_store', $id)
@@ -286,6 +284,7 @@ class ProductController extends Controller
                         "latitude" => $store["latitude"],
                         "longititude" => $store["longititude"],
                         "address" => $store["address"],
+                        "saldo"=>$store["saldo"]
                     ],
                     'data' => $product
                 ], 201);

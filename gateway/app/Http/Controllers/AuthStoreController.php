@@ -265,10 +265,22 @@ class AuthStoreController extends BaseController
     public function getListProduct(Request $request)
     {
         $validation = $this->validationJWT($request);
-        return json_decode($this->successResponse($this
+        $listProduct = json_decode($this->successResponse($this
             ->serviceProduct
             ->getListProductStore($validation["data"]["id"]))
             ->original, true);
+
+
+
+        $total_pesanan = json_decode($this->successResponse($this
+        ->serviceTransaction
+        ->total_pesanan($validation["data"]["id"]))
+        ->original,true);
+
+        $listProduct["store"]["total_pesanan"] = $total_pesanan["total_pesanan"];
+
+        return $listProduct;
+
     }
 
     public function updateProduct(Request $request, $idProduct)

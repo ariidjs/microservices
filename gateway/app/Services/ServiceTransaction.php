@@ -97,6 +97,10 @@ class ServiceTransaction
         return $this->performRequest("GET", '/api/v1/transaksi/cancel/'.$id);
     }
 
+    public function total_pesanan($id){
+        return $this->performRequest("GET","/api/v1/transaksi/totalPesanan/".$id);
+    }
+
     // public function update($data,$id){
     //     return $this->performRequest("POST",'api/v1/store/'.$id,$data);
     // }
