@@ -526,7 +526,8 @@ class TransactionController extends Controller
                 ]);
                 $dataFcmCustomer = [
                     "title" => "Store notification",
-                    "content" => "sedang mencari driver"
+                    "content" => "sedang mencari driver",
+                    "status" =>$status
                 ];
                 $dataFcmDriver = [
                     "title" => "Driver notification",
@@ -568,7 +569,8 @@ class TransactionController extends Controller
 
                 $dataFcm = [
                     "title" => "Store notification",
-                    "content" => "pesanan anda dibatalkan"
+                    "content" => "pesanan anda dibatalkan",
+                    "status" =>$status
                 ];
 
                 $notifCustomer = $this->pushFcm($dataFcm, $customer["fcm"]);
@@ -594,7 +596,6 @@ class TransactionController extends Controller
             $dataFcmCustomer = [
                 "title" => "Orderan anda sedang di proses oleh toko",
                 "content" => "Orderan anda telah diterima oleh toko silahkan menunngu proses pencarian driver",
-                "status" =>$status
             ];
             $notifCustomer = $this->pushFcm($dataFcmCustomer, $customer["fcm"]);
             return response()->json([
