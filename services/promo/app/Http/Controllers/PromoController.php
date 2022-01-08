@@ -112,6 +112,8 @@ class PromoController extends Controller
 
     }
 
+
+
     public function getPromo($id){
         $promo = Promo::whereId($id)->first();
         if ($promo) {
@@ -128,6 +130,36 @@ class PromoController extends Controller
         }
 
 
+    }
+
+    public function getPromoCustomer($id){
+
+        $promo = Promo::whereIdcustomer($id)
+        ->whereStatus('unused')
+        ->get();
+
+        if($promo){
+            $filter = [];
+            foreach($promo as $value ){
+                $date = explode("/",$value["expired"]);
+                $date =$date[2].$date[1].$date[0];
+                $date2 = explode("/",date("m/d/Y"));
+                $date2 = $date2[2].$date2[1].$date2[0];
+                if($date  > $date2 ){
+                    array_push($filter,$value);
+                }
+            }
+            return response()->json([
+                "status"=>true,
+                "message"=>"success",
+                "data"=>$filter
+            ],201);
+        }else{
+            return response()->json([
+                "status"=>false,
+                "message"=>"not found",
+            ],401);
+        }
     }
 
 

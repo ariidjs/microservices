@@ -503,11 +503,12 @@ class AuthAdminController extends BaseController
             'idCustomer', 'promoName','promoDescription','promoPrice','date','expired'
         ]);
 
-        if(isset($customer["data"]["fcm"])){
-            $body["fcm"] = $customer["data"]["fcm"];
-        }else{
-            $body["fcm"] = "";
-        }
+        $body["fcm"] = "esCaxR9zRkChWoUiqKx-Ms:APA91bEFp5MS-o_rsGgJ9OieRG2ZRwISVFusKv7KsAjCN8vFBaTUPqfZC0Mf4L-ifktd3LSPx8mlYev0PruWcFif6o7SIKeW2b90Iljqi4EzADvZgJUjrdtEztCO8Ev04Ti9BYH6HceF";
+        // if(isset($customer["data"]["fcm"])){
+        //     $body["fcm"] = $customer["data"]["fcm"];
+        // }else{
+        //     $body["fcm"] = "esCaxR9zRkChWoUiqKx-Ms:APA91bEFp5MS-o_rsGgJ9OieRG2ZRwISVFusKv7KsAjCN8vFBaTUPqfZC0Mf4L-ifktd3LSPx8mlYev0PruWcFif6o7SIKeW2b90Iljqi4EzADvZgJUjrdtEztCO8Ev04Ti9BYH6HceF";
+        // }
 
         return json_decode($this->successResponse($this
         ->servicePromo

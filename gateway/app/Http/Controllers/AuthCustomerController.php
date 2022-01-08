@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Services\AuthServiceCustomer;
 use App\Services\ServiceCustomer;
 use App\Services\ServiceProduct;
+use App\Services\ServicePromo;
 use App\Services\ServiceStore;
 use App\Services\ServiceTransaction;
 use Illuminate\Http\Request;
@@ -21,16 +22,18 @@ class AuthCustomerController extends BaseController
     private $serviceProduct;
     private $serviceTransaction;
     private $serviceStore;
+    private $servicePromo;
     private $TIME_EXPIRE = 3;
     private $JWT_EXPIRED = false;
     private $key = "asjlkdnaskjndjkawqnbdjkwbqdjknasljkmmndasjkjdnijkwqbduiqwbdojkawqnd";
-    public function __construct(AuthServiceCustomer $authServiceCustomer, ServiceCustomer $serviceCustomer, ServiceProduct $serviceProduct, ServiceTransaction $serviceTransaction, ServiceStore $serviceStore)
+    public function __construct(AuthServiceCustomer $authServiceCustomer, ServiceCustomer $serviceCustomer, ServiceProduct $serviceProduct, ServiceTransaction $serviceTransaction, ServiceStore $serviceStore,ServicePromo $servicePromo)
     {
         $this->authServiceCustomer = $authServiceCustomer;
         $this->serviceCustomer = $serviceCustomer;
         $this->serviceProduct = $serviceProduct;
         $this->serviceTransaction = $serviceTransaction;
         $this->serviceStore = $serviceStore;
+        $this->servicePromo = $servicePromo;
     }
 
     private function auth($fcm)
@@ -266,5 +269,14 @@ class AuthCustomerController extends BaseController
         ->serviceTransaction
         ->cancelFromCustomer($id))
         ->original, true);
+    }
+
+    public function getListPromoCustomer(Request $request){
+        $validation = $this->validationJWT($request);
+
+        return json_decode($this->successResponse($this
+            ->servicePromo
+            ->getListPromoCustomer($validation["data"]["id"]))
+            ->original,true);
     }
 }

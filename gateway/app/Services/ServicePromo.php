@@ -32,5 +32,8 @@ class ServicePromo
     public function getListPromo(){
         return $this->performRequest("GET", '/api/v1/promo');
     }
+    public function getListPromoCustomer($id){
+        return $this->performRequest("GET",'/api/v1/promo/customer/'.$id);
+    }
 
 }
