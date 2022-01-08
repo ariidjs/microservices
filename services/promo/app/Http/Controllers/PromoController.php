@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Promo;
+use App\Services\FcmService;
 use App\Services\ServiceCustomer;
 use App\Traits\ApiResponser;
 use \Illuminate\Http\Request;
@@ -10,15 +11,18 @@ class PromoController extends Controller
 {
     use ApiResponser;
     private $ServiceCustomer;
+    private $fcmService;
+    private $AUTHKEYFCM = "key=AAAAC-0CIus:APA91bGZfiR7Q8hIO4W_gCTegqugpbiPnf8Ygnn72lyNtg1MoGt2Q3OkSNH_aOBefIjiEWcXl1VUbsLlWKAziWPBJiol_RBI1X2IDkfG9MY9YbR_wuHMO8FOTUFuSE-dYY8OjsLq6din";
     /**
      * Create a new controller instance.
      *
      * @return void
      */
-    public function __construct(ServiceCustomer $serviceCustomer)
+    public function __construct(ServiceCustomer $serviceCustomer,FcmService $fcmService)
     {
         //
         $this->serviceCustomer = $serviceCustomer;
+        $this->fcmService = $fcmService;
     }
 
     //
@@ -29,12 +33,23 @@ class PromoController extends Controller
             'idCustomer', 'promoName','promoDescription','promoPrice','date','expired'
         ]);
 
+        $fcm = $request->input("fcm");
+
+
+
         // return $data;
         $data['date'] = date('Y-m-d');
 
         $insert = Promo::create($data);
 
         if ($insert) {
+            $dataFcmCustomer = [
+                "title" => "Ada promo menarik buat kamu",
+                "content"=>[
+                    "title" => "Promo ".$data["promoName"],
+                ],
+            ];
+           $this->pushFcm($dataFcmCustomer, $fcm);
             return response()->json([
                 'success' => true,
                 'message' => 'success',
@@ -46,6 +61,27 @@ class PromoController extends Controller
                 'message' => 'failed'
             ], 400);
         }
+    }
+
+    private function pushFcm($data, $fcm)
+    {
+        $headers = [
+            'Authorization' => $this->AUTHKEYFCM,
+            'Content-Type' => 'application/json'
+        ];
+        $body = [
+            "data" => [
+                "title" => $data["title"],
+                "content" => $data["content"]
+            ],
+            "to" => $fcm
+        ];
+
+
+       return json_decode($this->successResponse($this
+            ->fcmService
+            ->pushNotification($body, $headers))
+            ->original, true);
     }
 
     public function getData(){

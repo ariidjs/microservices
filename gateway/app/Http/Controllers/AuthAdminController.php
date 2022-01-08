@@ -494,11 +494,20 @@ class AuthAdminController extends BaseController
 
     public function promo(Request $request){
 
+        $customer = json_decode($this->successResponse($this
+            ->serviceCustomer
+            ->getCustomer($request->input('idCustomer')))
+            ->original,true);
+
         $body = $request->only([
             'idCustomer', 'promoName','promoDescription','promoPrice','date','expired'
         ]);
 
-        // return $body;
+        if(isset($customer["data"]["fcm"])){
+            $body["fcm"] = $customer["data"]["fcm"];
+        }else{
+            $body["fcm"] = "";
+        }
 
         return json_decode($this->successResponse($this
         ->servicePromo

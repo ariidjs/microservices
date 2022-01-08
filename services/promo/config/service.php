@@ -45,6 +45,10 @@ return [
         'base_uri' =>  env('MANAGEMENT_BASE_URL'),
         'secret'   =>  env('DETAIL_TRANSACTION_SERVICE_SECRET'),
     ],
+    'fcm'   =>  [
+        'base_uri' =>  env('FCM_BASE_URL'),
+        'secret'   =>  env('DETAIL_TRANSACTION_SERVICE_SECRET'),
+    ]
 
 
 
