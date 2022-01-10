@@ -503,7 +503,6 @@ class AuthAdminController extends BaseController
             'idCustomer', 'promoName','promoDescription','promoPrice','date','expired'
         ]);
 
-        return $customer["data"]["fcm"];
 
 
         if(isset($customer["data"]["fcm"])){
