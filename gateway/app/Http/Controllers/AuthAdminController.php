@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Customers;
 use App\Services\AuthServiceAdmin;
+use App\Services\FcmService;
 use App\Services\ServiceAdmin;
 use App\Services\ServiceBenefit;
 use App\Services\ServiceCustomer;
@@ -41,10 +42,12 @@ class AuthAdminController extends BaseController
     private $serviceManagement;
     private $AKTIF = 0;
     private $servicePromo;
+    private $fcmService;
     private $key = "asjlkdnaskjndjkawqnbdjkwbqdjknasljkmmndasjkjdnijkwqbduiqwbdojkawqnd";
+    private $AUTHKEYFCM = "key=AAAAC-0CIus:APA91bGZfiR7Q8hIO4W_gCTegqugpbiPnf8Ygnn72lyNtg1MoGt2Q3OkSNH_aOBefIjiEWcXl1VUbsLlWKAziWPBJiol_RBI1X2IDkfG9MY9YbR_wuHMO8FOTUFuSE-dYY8OjsLq6din";
     public function __construct(ServicePromo $servicePromo,ServiceManagement $serviceManagement,ServiceAdmin $serviceAdmin,
      AuthServiceAdmin $authServiceAdmin, ServiceTransaction $serviceTransaction, ServiceCustomer $serviceCustomer,
-    ServiceProduct $serviceProduct,ServiceStore $serviceStore,ServiceDetailTransaction $serviceDetailTransaction,
+    ServiceProduct $serviceProduct,ServiceStore $serviceStore,ServiceDetailTransaction $serviceDetailTransaction,FcmService $fcmService,
     ServiceBenefit $serviceBenefit,ServiceDriver $serviceDriver,ServiceSaldoStore $serviceSaldoStore,ServiceSaldoDriver $serviceSaldoDriver)
     {
         $this->serviceAdmin = $serviceAdmin;
@@ -60,6 +63,7 @@ class AuthAdminController extends BaseController
         $this->serviceDriver = $serviceDriver;
         $this->serviceSaldoDriver = $serviceSaldoDriver;
         $this->serviceSaldoStore = $serviceSaldoStore;
+        $this->fcmService = $fcmService;
     }
 
     public function validationJWT($request)
@@ -748,6 +752,13 @@ class AuthAdminController extends BaseController
             ->getDetail($id))
             ->original,true);
 
+       $store = json_decode($this->successResponse($this
+        ->serviceStore
+        ->getStore($id))
+        ->original,true);
+
+
+
         if($info["success"]){
 
             if($type == "failed"){
@@ -755,6 +766,14 @@ class AuthAdminController extends BaseController
                 ->serviceSaldoStore
                 ->updateStatus($info["data"]["id"],"failed"))
                 ->original,true);
+
+                $dataFcm = [
+                    "title" => "Permintaan anda telah ditolak",
+                    "content"=>[
+                        "title" => "Silahkan hubungi pihak customer service jika anda butuh info lebig lanjut",
+                    ],
+                ];
+               $this->pushFcm($dataFcm, $store["data"]["fcm"]);
 
                 return response()->json([
                     'success' => true,
@@ -773,6 +792,13 @@ class AuthAdminController extends BaseController
             ->original,true);
 
             if($saldoStore["success"] && $updateStatusSaldo["success"]){
+                $dataFcm = [
+                    "title" => "Permintaan ".$info["data"]["type"]." telah success di proses",
+                    "content"=>[
+                        "title" => "Silahkan cek history saldo anda saat ini",
+                    ],
+                ];
+               $this->pushFcm($dataFcm, $store["data"]["fcm"]);
                 return response()->json([
                     'success' => true,
                     'message' => 'success update ',
@@ -798,6 +824,11 @@ class AuthAdminController extends BaseController
         ->getDetail($id))
         ->original,true);
 
+        $driver = json_decode($this->successResponse($this
+        ->serviceDriver
+        ->getDriver($id))
+        ->original,true);
+
         if($info["success"]){
 
             if($type == "failed"){
@@ -805,6 +836,14 @@ class AuthAdminController extends BaseController
                 ->serviceSaldoDriver
                 ->updateStatus($info["data"]["id"],"failed"))
                 ->original,true);
+
+                $dataFcm = [
+                    "title" => "Permintaan anda telah ditolak",
+                    "content"=>[
+                        "title" => "Silahkan hubungi pihak customer service jika anda butuh info lebig lanjut",
+                    ],
+                ];
+               $this->pushFcm($dataFcm, $driver["data"]["fcm"]);
 
                 return response()->json([
                     'success' => true,
@@ -824,6 +863,13 @@ class AuthAdminController extends BaseController
 
 
               if($saldoDriver["success"] && $updateStatusSaldo["success"]){
+                $dataFcm = [
+                    "title" => "Permintaan ".$info["data"]["type"]." telah success di proses",
+                    "content"=>[
+                        "title" => "Silahkan cek history saldo anda saat ini",
+                    ],
+                ];
+               $this->pushFcm($dataFcm, $driver["data"]["fcm"]);
                   return response()->json([
                       'success' => true,
                       'message' => 'success update ',
@@ -840,6 +886,27 @@ class AuthAdminController extends BaseController
                   'message' => 'failed',
               ], 401);
           }
+    }
+
+    private function pushFcm($data, $fcm)
+    {
+        $headers = [
+            'Authorization' => $this->AUTHKEYFCM,
+            'Content-Type' => 'application/json'
+        ];
+        $body = [
+            "data" => [
+                "title" => $data["title"],
+                "content" => $data["content"]
+            ],
+            "to" => $fcm
+        ];
+
+
+       return json_decode($this->successResponse($this
+            ->fcmService
+            ->pushNotification($body, $headers))
+            ->original, true);
     }
 
 }
