@@ -148,7 +148,7 @@ class StoreController extends Controller
             'owner_name', 'store_name', 'phone', 'description_store', 'latitude', 'longititude', 'address',
         ]);
 
-        $updated = Stores::whereId($id)->update($data);
+        $updated = Stores::whereIdStore($id)->update($data);
 
         if($updated){
             return response()->json([
