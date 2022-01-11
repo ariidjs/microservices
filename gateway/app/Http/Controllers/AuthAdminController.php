@@ -754,7 +754,7 @@ class AuthAdminController extends BaseController
 
        $store = json_decode($this->successResponse($this
         ->serviceStore
-        ->getStore($id))
+        ->getStore($info["data"]["id_store"]))
         ->original,true);
 
 
@@ -826,7 +826,7 @@ class AuthAdminController extends BaseController
 
         $driver = json_decode($this->successResponse($this
         ->serviceDriver
-        ->getDriver($id))
+        ->getDriver($info["data"]["id_driver"]))
         ->original,true);
 
         if($info["success"]){
