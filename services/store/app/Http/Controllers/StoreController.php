@@ -143,6 +143,27 @@ class StoreController extends Controller
         }
     }
 
+    public function updateStore(Request $request,$id){
+        $data = $request->only([
+            'owner_name', 'store_name', 'phone', 'description_store', 'latitude', 'longititude', 'address',
+        ]);
+
+        $updated = Stores::whereId($id)->update($data);
+
+        if($updated){
+            return response()->json([
+                'success' => true,
+                'message' => 'success'
+            ],201);
+        }else{
+            return response()->json([
+                'success' => false,
+                'message' => 'failed'
+            ],201);
+        }
+
+    }
+
     public function phoneNumberAvailable($phone)
     {
         $checkPhone = Stores::wherePhone($phone)->first();

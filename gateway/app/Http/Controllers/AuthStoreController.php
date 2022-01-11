@@ -507,24 +507,17 @@ class AuthStoreController extends BaseController
 
 
         $store_name = $request->input('store_name');
+        $owner_name = $request->input('owner_name');
         $phone = $request->input('phone');
-        $photo_store = $request->file('photo_store');
         $address = $request->input('address');
         $latitude = $request->input('latitude');
         $longititude = $request->input('longititude');
         $description_store = $request->input('description_store');
 
-
-        if ($photo_store) {
-            $fotoStore = time() . $photo_store->getClientOriginalName();
-        } else {
-            $fotoStore = null;
-        }
-
         $body = [
             'store_name' => $store_name,
+            'owner_name' => $owner_name,
             'phone' => $phone,
-            'photo_store' => $fotoStore,
             'address' => $address,
             'latitude' => $latitude,
             'longititude' => $longititude,
@@ -533,14 +526,10 @@ class AuthStoreController extends BaseController
 
         $response = json_decode($this->successResponse($this
             ->serviceStore
-            ->update($body, $validation["data"]["id"]))
+            ->updateStore($body, $validation["data"]["id"]))
             ->original, true);
 
         if ($response["success"]) {
-            if ($photo_store) {
-                $photo_store->move('images', $fotoStore);
-            }
-
             if ($validation["expired"]) {
                 $response["jwt"] = $validation["jwt"];
             } else {
@@ -591,8 +580,6 @@ class AuthStoreController extends BaseController
 
         if (isset($validation["data"]["role"])) {
             if ($validation["data"]["role"] == $this->SUPER_ADMIN || $validation["data"]["role"] == $this->ADMIN) {
-
-
                 if ($photo_ktp && $photo_store) {
                     $ktp = time() . $photo_ktp->getClientOriginalName();
                     $fotoStore = time() . $photo_store->getClientOriginalName();

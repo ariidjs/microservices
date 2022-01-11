@@ -25,6 +25,7 @@ $router->group(['prefix' => 'api/v1/store'], function () use ($router) {
     $router->get('logout/[{id}]', 'StoreController@logOut');
     $router->post('', 'StoreController@insert');
     $router->post('{id}', 'StoreController@updated');
+    $router->post('updated/{id}', 'StoreController@updateStore');
     $router->get('phone/{phone}', 'StoreController@phoneNumberAvailable');
     $router->get('{id}', 'StoreController@getStore');
     $router->get('baned/{id}', 'StoreController@banedStore');

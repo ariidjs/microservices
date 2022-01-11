@@ -33,6 +33,10 @@ class ServiceStore
     {
         return $this->performRequest("POST", 'api/v1/store/' . $id, $data);
     }
+    public function updateStore($data, $id)
+    {
+        return $this->performRequest("POST", 'api/v1/store/updated/' . $id, $data);
+    }
 
     public function statusOpen($status, $id)
     {
