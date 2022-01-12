@@ -333,7 +333,7 @@ class TransactionController extends Controller
                     $total_price += $value["price_promo"] * $value["count"];
                     array_push($dataSubProduct, array("notransaksi" => $noTransaction, "id_product" => $value["id"], "price_product" => $value["price_promo"], "count" => $value["count"]));
                 } else {
-                    $total_price += $value["price"];
+                    $total_price += $value["price"] * $value["count"];
                     array_push($dataSubProduct, ["notransaksi" => $noTransaction, "id_product" => $value["id"], "price_product" => $value["price"], "count" => $value["count"]]);
                 }
             }
