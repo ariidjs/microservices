@@ -185,7 +185,7 @@ class PromoController extends Controller
     }
 
     public function updateStatus($id){
-        $update = Promo::where($id)->update([
+        $update = Promo::whereId($id)->update([
             "status" => "Used"
         ]);
 
