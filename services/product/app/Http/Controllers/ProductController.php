@@ -284,7 +284,8 @@ class ProductController extends Controller
                         "latitude" => $store["latitude"],
                         "longititude" => $store["longititude"],
                         "address" => $store["address"],
-                        "saldo"=>$store["saldo"]
+                        "saldo"=>$store["saldo"],
+                        "status"=>$store["status_store"]
                     ],
                     'data' => $product
                 ], 201);
