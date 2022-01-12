@@ -394,7 +394,9 @@ class TransactionController extends Controller
 
             $dataFcmStore = [
                 "title" => "Store notification",
-                "content" => "Ada orderan ".$noTransaction
+                "content" => [
+                    "title"=>"Ada orderan ".$noTransaction
+                    ]
             ];
 
             $this->pushFcm($dataFcmStore,$store["data"]["fcm"]);
