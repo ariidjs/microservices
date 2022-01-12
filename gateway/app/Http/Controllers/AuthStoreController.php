@@ -186,12 +186,12 @@ class AuthStoreController extends BaseController
     }
 
 
-    public function deleteProduct(Request $request,$idProduct){
+    public function deleteProduct(Request $request,$idProduct,$status){
        $this->validationJWT($request);
 
         return json_decode($this->successResponse($this
         ->serviceProduct
-        ->changeStatusDeleteProduct($idProduct,1))
+        ->changeStatusDeleteProduct($idProduct,$status))
         ->original, true);
     }
 

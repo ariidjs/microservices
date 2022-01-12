@@ -270,7 +270,7 @@ class ProductController extends Controller
 
         if ($store) {
             $product =  Product::where('id_store', $id)
-                ->where('status_delete', 0)
+                ->where('status_delete',">=","0")
                 ->get();
             if ($product) {
                 return response()->json([
@@ -301,7 +301,6 @@ class ProductController extends Controller
             ], 404);
         }
     }
-
 
     public function getProductStoreFromAdmin($id)
     {
