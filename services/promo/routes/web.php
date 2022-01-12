@@ -18,6 +18,7 @@ $router->group(['prefix' => '/api/v1/promo'], function () use ($router) {
     $router->post('{id}', 'PromoController@update');
     $router->get('', 'PromoController@getData');
     $router->get('{id}', 'PromoController@getPromo');
+    $router->get('status/{id}', 'PromoController@updateStatus');
     $router->get('customer/{id}', 'PromoController@getPromoCustomer');
 });
 

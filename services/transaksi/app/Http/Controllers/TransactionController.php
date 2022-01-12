@@ -914,8 +914,12 @@ class TransactionController extends Controller
                 ->saveBenefit($data))
                 ->original,true);
 
-
-
+                if($transaction['id_promo'] != null){
+                    json_decode($this->successResponse($this
+                    ->servicePromo
+                    ->updateStatusPromo($transaction['id_promo']))
+                    ->original,true);
+                }
 
                 $responseStoreTax = json_decode($this->successResponse($this
                     ->storeService

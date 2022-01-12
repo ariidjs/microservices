@@ -184,6 +184,24 @@ class PromoController extends Controller
         }
     }
 
+    public function updateStatus($id){
+        $update = Promo::where($id)->update([
+            "status" => "Used"
+        ]);
+
+        if($update){
+            return response()->json([
+                "success"=>true,
+                "message"=>"success updated data"
+            ],201);
+        }else{
+            return response()->json([
+                "success"=>false,
+                "message"=>"failed updated data"
+            ],201);
+        }
+    }
+
     function inner_join(array $left, array $right)
     {
         $out = array();

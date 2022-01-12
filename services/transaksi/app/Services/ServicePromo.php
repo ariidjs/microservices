@@ -28,5 +28,8 @@ class ServicePromo
     public function getPromoById($id){
         return $this->performRequest("GET",'api/v1/promo/'.$id);
     }
+    public function updateStatusPromo($id){
+        return $this->performRequest("GET",'api/v1/promo/status/'.$id);
+    }
 
 }
