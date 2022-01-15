@@ -917,7 +917,6 @@ class AuthAdminController extends BaseController
             "oldPassword","newPassword"
         ]);
 
-        return $data;
 
        return $update = json_decode($this->successResponse($this
         ->serviceAdmin
