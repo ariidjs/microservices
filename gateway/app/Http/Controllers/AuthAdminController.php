@@ -645,6 +645,11 @@ class AuthAdminController extends BaseController
         ->getTotalBenefit())
         ->original,true);
 
+        $dashboard = json_decode($this->successResponse($this
+        ->serviceTransaction
+        ->chartDashboard())
+        ->original,true);
+
 
         return response()->json([
             'success' => true,
@@ -654,6 +659,7 @@ class AuthAdminController extends BaseController
                 "driver"=>$countDriver["data"],
                 "store"=>$countStore["data"],
                 "benefit"=>$totalBenefit["data"],
+                "chart"=>$dashboard["data"],
             ]
         ], 201);
 
