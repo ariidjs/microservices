@@ -101,6 +101,10 @@ class ServiceTransaction
         return $this->performRequest("GET","/api/v1/transaksi/totalPesanan/".$id);
     }
 
+    public function chartDashboard(){
+        return $this->performRequest("GET","/api/v1/transaksi/chart");
+    }
+
     // public function update($data,$id){
     //     return $this->performRequest("POST",'api/v1/store/'.$id,$data);
     // }

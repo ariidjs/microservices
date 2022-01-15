@@ -33,6 +33,7 @@ $router->group(['prefix' => 'api/v1/transaksi'], function () use ($router) {
     $router->get('listTransactionDone', 'TransactionController@getListTransactionDone');
     $router->get('cancel/{id}', 'TransactionController@cancelStatusCustomer');
     $router->get('totalPesanan/{id}', 'TransactionController@getTotalPesanan');
+    $router->get('chart', 'TransactionController@chartTransaksiByMonth');
     // $router->post('update[/{id}]','TransactionController@update');
     // $router->delete('[{id}]','TransactionController@delete');
 });
