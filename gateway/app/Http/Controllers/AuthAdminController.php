@@ -909,4 +909,21 @@ class AuthAdminController extends BaseController
             ->original, true);
     }
 
+    public function updatePassword(Request $request){
+        $validation = $this->validationJWT($request);
+
+
+        $data = $request->only([
+            "oldPassword","newPassword"
+        ]);
+
+       return $update = json_decode($this->successResponse($this
+        ->serviceAdmin
+        ->updatePassword($validation["data"]["id"],$data))
+        ->original, true);
+
+        return dd($data);
+
+    }
+
 }

@@ -20,6 +20,7 @@ $router->group(['prefix' => 'api/v1/admin'], function () use ($router) {
     $router->get('baned/{id}', 'AdminsController@banedAdmin');
     $router->get('me', 'AdminsController@me');
     $router->get('activation/[{id}]', 'AdminsController@active');
+    $router->post('updatepassword/{id}','AdminsController@updatePassword');
 });
 
 

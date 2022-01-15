@@ -48,6 +48,41 @@ class AdminsController extends BaseController
         }
     }
 
+    public function updatePassword(Request $request, $id){
+        $user = Admins::whereId($id)->first();
+        $oldPassword = $request->input('oldPassword');
+        $newPassword = $request->input('newPassword');
+
+        if($user){
+            if(Hash::check($oldPassword,$user->password)){
+                $update = Admins::whereId($id)->update([
+                    "password"=>Hash::make($newPassword)
+                ]);
+                if($update){
+                    return response()->json([
+                        "success" => true,
+                        "message" => "Success update password"
+                    ],201);
+                }else{
+                    return response()->json([
+                        "success" => false,
+                        "message" => "Failed update password"
+                    ],201);
+                }
+            }else{
+                return response()->json([
+                    "success" => false,
+                    "message" => "password lama yang anda masukan salah"
+                ],201);
+            }
+        }else{
+            return response()->json([
+                'success' => false,
+                'message' => 'user not found',
+            ], 401);
+        }
+    }
+
 
     public function update(Request $request, $id)
     {

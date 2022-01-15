@@ -30,4 +30,8 @@ class ServiceAdmin
     {
         return $this->performRequest('POST', '/api/v1/admin/', $data);
     }
+
+    public function updatePassword($id,$data){
+        return $this->performRequest("POST",'api/v1/admin/updatepassword/'.$id,$data);
+    }
 }
