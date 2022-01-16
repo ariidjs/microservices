@@ -650,6 +650,11 @@ class AuthAdminController extends BaseController
         ->chartDashboard())
         ->original,true);
 
+        $chartBenefit = json_decode($this->successResponse($this
+        ->serviceBenefit
+        ->chartBenefit())
+        ->original,true);
+
 
         return response()->json([
             'success' => true,
@@ -660,6 +665,7 @@ class AuthAdminController extends BaseController
                 "store"=>$countStore["data"],
                 "benefit"=>$totalBenefit["data"],
                 "chart"=>$dashboard["data"],
+                "charBenefit"=>$chartBenefit["data"]
             ]
         ], 201);
 
