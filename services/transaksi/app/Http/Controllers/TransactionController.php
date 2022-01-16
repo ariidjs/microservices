@@ -1552,16 +1552,15 @@ class TransactionController extends Controller
 
     public function chartTransaksiByMonth(){
         $data = DB::select("SELECT  count(created_at) as total,MONTH(created_at) as bulan,SUM(total_price) as price FROM transactions
+             WHERE created_at >='".date('Y')."-01-01' AND created_at   <= ' ".date('Y')."-12-31'
              GROUP BY  month(created_at)");
 
-        $newData = [];
-
-        foreach($data as $key => $value){
-            array_push($newData,$value);
-            $data[$key]->bulan = $this->convertMonth($value->bulan);
-        }
 
         if(isset($data)){
+            foreach($data as $key => $value){
+                $data[$key]->bulan = $this->convertMonth($value->bulan);
+            }
+
             return response()->json([
                 "status"=>true,
                 "message"=>"Success",

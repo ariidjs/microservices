@@ -935,10 +935,17 @@ class AuthAdminController extends BaseController
 
     public function chartDashboard(Request $request){
         $this->validationJWT($request);
-        return json_decode($this->successResponse($this
+        $chartBenefit = json_decode($this->successResponse($this
+            ->serviceBenefit
+            ->chartBenefit())
+            ->original,true);
+        $chartTransaksi = json_decode($this->successResponse($this
             ->serviceTransaction
             ->chartDashboard())
             ->original,true);
+
+        $chartTransaksi["benefit"] = $chartBenefit["data"];
+        return $chartTransaksi;
     }
 
 }

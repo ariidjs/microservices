@@ -36,4 +36,8 @@ class ServiceBenefit
         return $this->performRequest("GET", '/api/v1/benefit/totalBenefit');
     }
 
+    public function chartBenefit(){
+        return $this->performRequest("GET", '/api/v1/benefit/chart');
+    }
+
 }
