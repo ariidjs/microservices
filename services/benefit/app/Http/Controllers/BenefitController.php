@@ -64,7 +64,7 @@ class BenefitController extends Controller
     }
 
     public function getTotalBenefit(){
-        $total = Benefit::sum('totalBenefit');
+        $total = Benefit::where('created_at', '>=', date('Y').'-01-01')->where('created_at', '<=', date('Y')."-12-31")->sum('totalBenefit');
 
         return response()->json([
             'success' => true,
