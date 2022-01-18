@@ -544,9 +544,6 @@ class AuthAdminController extends BaseController
 
         $listCustomer = $this->inner_join($transaction["data"],$customer["data"]);
 
-
-
-
         foreach ($listCustomer as $key => $value) {
             // echo $distance.PHP_EOL;
             $jumlahTransaksi = $value["total_transaction"];

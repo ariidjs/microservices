@@ -18,7 +18,7 @@ class CreateCustomersTable extends Migration
             $table->string("name");
             $table->string("phone")->unique();
             $table->string("email")->unique();
-            $table->string("address")->default("");
+            $table->string("address")->default("")->nullable(true);
             $table->enum("level", ["Silver", "Gold", "Platinum"])->default("Silver");
             $table->string("image");
             $table->string("fcm")->default("");
