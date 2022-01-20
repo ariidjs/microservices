@@ -403,7 +403,11 @@ class StoreController extends Controller
 
         $result = Stores::whereIdStore($id)->first();
 
-        if($result["saldo"]  >= 5000){
+
+        if($status == 0){
+            $result->update([
+                "status_store" => 0
+            ]);
             if ($result) {
                 return response()->json([
                     'success' => true,
@@ -416,10 +420,27 @@ class StoreController extends Controller
                 ], 401);
             }
         }else{
-            return response()->json([
-                'success' => false,
-                'message' => 'saldo minimal untuk buka toko adalah 5000 rupiah',
-            ], 201);
+            if($result["saldo"]  >= 5000){
+                $result->update([
+                    "status_store" => 1
+                ]);
+                if ($result) {
+                    return response()->json([
+                        'success' => true,
+                        'message' => 'success',
+                    ], 201);
+                } else {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'failed',
+                    ], 401);
+                }
+            }else{
+                return response()->json([
+                    'success' => false,
+                    'message' => 'saldo minimal untuk buka toko adalah 5000 rupiah',
+                ], 201);
+            }
         }
 
 
