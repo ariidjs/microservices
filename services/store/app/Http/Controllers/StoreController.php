@@ -401,18 +401,28 @@ class StoreController extends Controller
     public function onOffStore($id, $status)
     {
 
-        $result = Stores::whereIdStore($id)->update(["status_store" => $status]);
-        if ($result) {
-            return response()->json([
-                'success' => true,
-                'message' => 'success',
-            ], 201);
-        } else {
+        $result = Stores::whereIdStore($id)->first();
+
+        if($result["saldo"]  >= 5000){
+            if ($result) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'success',
+                ], 201);
+            } else {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'failed',
+                ], 401);
+            }
+        }else{
             return response()->json([
                 'success' => false,
-                'message' => 'failed',
-            ], 401);
+                'message' => 'saldo minimal untuk buka toko adalah 5000 rupiah',
+            ], 201);
         }
+
+
     }
 
     public function ChangeStatusStore($id_store, $status)
