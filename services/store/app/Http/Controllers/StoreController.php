@@ -439,7 +439,7 @@ class StoreController extends Controller
                 return response()->json([
                     'success' => false,
                     'message' => 'saldo minimal untuk buka toko adalah 5000 rupiah',
-                ], 401);
+                ], 201);
             }
         }
 
