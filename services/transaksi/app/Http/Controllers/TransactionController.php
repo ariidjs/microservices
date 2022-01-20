@@ -945,7 +945,8 @@ class TransactionController extends Controller
                     "title"=>"customer notification",
                     "content"=>[
                         "title" => "Driver sudah sampai ditoko",
-                        "status" => $this->TRANSACTION_DRIVER_IN_STORE
+                        "status" => $this->TRANSACTION_DRIVER_IN_STORE,
+                        "id_driver" => $transaction["id_driver"]
                     ],
                 ];
                 $transaction = $transaction = json_decode(Transaction::whereId($id)->first());
