@@ -405,10 +405,10 @@ class StoreController extends Controller
 
 
         if($status == 0){
-            $result->update([
+            $update = Stores::whereIdStore($id)->update([
                 "status_store" => 0
             ]);
-            if ($result) {
+            if ($update) {
                 return response()->json([
                     'success' => true,
                     'message' => 'success',
@@ -421,10 +421,10 @@ class StoreController extends Controller
             }
         }else{
             if($result["saldo"]  >= 5000){
-                $result->update([
+                $update = Stores::whereIdStore($id)->update([
                     "status_store" => 1
                 ]);
-                if ($result) {
+                if ($update) {
                     return response()->json([
                         'success' => true,
                         'message' => 'success',
