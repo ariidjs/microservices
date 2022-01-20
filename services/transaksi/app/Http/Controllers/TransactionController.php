@@ -178,14 +178,14 @@ class TransactionController extends Controller
         $columnCoordinate = array_column($listDriver, "coordinate");
         $columnTotalOrder = array_column($listDriver, "total_order");
         $columnRating = array_column($listDriver, "rating");
-        $maxCoordinate = max($columnCoordinate);
+        $minCoordinate = min($columnCoordinate);
         $maxTotalOrder = max($columnTotalOrder);
         $maxRating = max($columnRating);
 
         foreach ($listDriver as $key => $value) {
             $rating = $value["rating"] / $maxRating;
             $totalOrder = $value["total_order"] / $maxTotalOrder;
-            $coordinate = $value["coordinate"] / $maxCoordinate;
+            $coordinate =  $minCoordinate / $value["coordinate"];
             $listDriver[$key]["total_order"] = $totalOrder;
             $listDriver[$key]["rating"] = $rating;
             $listDriver[$key]["coordinate"] = $coordinate;
