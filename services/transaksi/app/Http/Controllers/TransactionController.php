@@ -714,8 +714,6 @@ class TransactionController extends Controller
                     return response()->json([
                         'success'=>true,
                         'message'=>'success',
-                        // 'notifStore'=>$notifStore,
-                        // 'notifCustomer'=>$notifCustomer,
                         'transaction'=>[
                             "id"=> $transaction->id,
                             "notransaksi"=>$transaction->notransaksi,
@@ -754,8 +752,13 @@ class TransactionController extends Controller
 
         }
 
+
         if($status == $this->TRANSACTION_WAITING_DRIVER){
-            return $this->statusFromStore($request,$id);
+            $this->statusFromStore($request,$id);
+            return response()->json([
+                'success'=>true,
+                'message'=>'pesanan berhasil ditolak',
+            ],201);
         }
 
     }
