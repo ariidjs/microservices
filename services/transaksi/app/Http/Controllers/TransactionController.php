@@ -471,6 +471,35 @@ class TransactionController extends Controller
         ->getCustomer($transaction->id_customer))
         ->original,true)["data"];
 
+        if ($status == $this->TRANSACTION_CANCEL) {
+            $updated = Transaction::whereId($id)->update([
+                "status" => $this->TRANSACTION_CANCEL
+            ]);
+
+            $dataFcm = [
+                "title" => "Store notification",
+                "content"=>[
+                    "title" => "pesanan anda dibatalkan",
+                    "status" => $status
+                ],
+            ];
+
+            $notifCustomer = $this->pushFcm($dataFcm, $customer["fcm"]);
+
+            if ($updated) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'success',
+                    'notifCustomer' => $notifCustomer,
+                ], 201);
+            } else {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'failed',
+                ], 404);
+            }
+        }
+
 
         try{
             $reference = $this->databaseFirebase->getReference('DriversLocation');
@@ -570,34 +599,6 @@ class TransactionController extends Controller
                 }
             }
 
-            if ($status == $this->TRANSACTION_CANCEL) {
-                $updated = Transaction::whereId($id)->update([
-                    "status" => $this->TRANSACTION_CANCEL
-                ]);
-
-                $dataFcm = [
-                    "title" => "Store notification",
-                    "content"=>[
-                        "title" => "pesanan anda dibatalkan",
-                        "status" => $status
-                    ],
-                ];
-
-                $notifCustomer = $this->pushFcm($dataFcm, $customer["fcm"]);
-
-                if ($updated) {
-                    return response()->json([
-                        'success' => true,
-                        'message' => 'success',
-                        'notifCustomer' => $notifCustomer,
-                    ], 201);
-                } else {
-                    return response()->json([
-                        'success' => false,
-                        'message' => 'failed',
-                    ], 404);
-                }
-            }
         }catch(FirebaseException $e){
             // Ketika driver tidak ada yang aktif
             $updated = Transaction::whereId($id)->update([
