@@ -151,6 +151,31 @@ class CustomerController extends BaseController
         }
     }
 
+    public function updateCustomer(Request $request, $id)
+    {
+        $name = $request->input('name');
+        $email = $request->input('email');
+        $address = $request->input('address');
+
+        $update = Customers::whereId($id)->update([
+            "name" => $name,
+            "email" => $email,
+            "address" => $address
+        ]);
+        if ($update) {
+            return response()->json([
+                'success' => true,
+                'message' => 'success',
+                'data' => $update
+            ], 201);
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'update data gagal',
+            ], 401);
+        }
+    }
+
     public function delete($id)
     {
         $delete = Customers::whereId($id)->update(["status_delete" => $this->DELETE]);
@@ -249,6 +274,26 @@ class CustomerController extends BaseController
             'message' => 'login success',
             'data' => $count
         ], 201);
+    }
+
+    public function updateImageCustomer(Request $request,$id){
+        $image = $request->input("image");
+
+        $update = Customers::whereId($id)->update([
+            'image'=>$image
+        ]);
+
+        if($update){
+            return response()->json([
+                'success' => true,
+                'message' => 'success'
+            ], 201);
+        }else{
+            return response()->json([
+                'success' => false,
+                'message' => 'failed'
+            ], 401);
+        }
     }
 
 }

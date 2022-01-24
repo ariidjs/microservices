@@ -279,4 +279,65 @@ class AuthCustomerController extends BaseController
             ->getListPromoCustomer($validation["data"]["id"]))
             ->original,true);
     }
+
+    public function updatePhotoProfile(Request $request){
+        $validation = $this->validationJWT($request);
+        $image = $request->file('image');
+
+        if ($image) {
+            $pathimage = time() . $image->getClientOriginalName();
+        }
+
+        $body = [
+            'image' => $pathimage,
+        ];
+
+        $response = json_decode($this->successResponse($this
+            ->serviceCustomer
+            ->updateProfile($validation["data"]["id"],$body))
+            ->original, true);
+
+        if($response["success"]){
+            if ($image) {
+                $image->move('images', $pathimage);
+            }
+            $customer = json_decode($this->successResponse($this
+            ->serviceCustomer
+            ->getCustomer($validation["data"]["id"]))
+            ->original, true);
+
+            return response()->json([
+                'success'=>true,
+                'message'=>'success',
+                'image'=>$customer["data"]["image"]
+            ],201);
+        }else{
+            return response()->json([
+                'success'=>false,
+                'message'=>'failed',
+            ],401);
+        }
+    }
+
+    public function updateCustomer(Request $request){
+        $validation = $this->validationJWT($request);
+
+        $name = $request->input('name');
+        $email = $request->input('email');
+        $address = $request->input('address');
+
+        $data = [
+            "name"=>$name,
+            "email"=>$email,
+            "address"=>$address,
+        ];
+
+        return json_decode($this->successResponse($this
+        ->serviceCustomer
+        ->updateCustomer($validation["data"]["id"],$data))
+        ->original,true);
+
+
+
+    }
 }

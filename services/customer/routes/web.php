@@ -24,6 +24,8 @@ $router->group(['prefix' => '/api/v1/customer'], function () use ($router) {
     $router->get('/phone/[{phone}]', 'CustomerController@phoneNumberAvailable');
     $router->delete('/[{id}]', 'CustomerController@delete');
     $router->get('', 'CustomerController@getListCustomer');
+    $router->post('update/{id}', 'CustomerController@updateCustomer');
+    $router->post('updateImage/{id}', 'CustomerController@updateImageCustomer');
 
 });
 

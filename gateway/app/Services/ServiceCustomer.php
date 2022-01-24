@@ -48,5 +48,13 @@ class ServiceCustomer
         return $this->performRequest("POST",'/api/v1/customer/'.$id,$data);
     }
 
+    public function updateProfile($id,$data){
+        return $this->performRequest("POST",'/api/v1/customer/updateImage/'.$id,$data);
+    }
+
+    public function updateCustomer($id,$data){
+        return $this->performRequest("POST",'/api/v1/customer/update/'.$id,$data);
+    }
+
 
 }
