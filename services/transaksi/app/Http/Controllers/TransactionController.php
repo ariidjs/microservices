@@ -104,9 +104,11 @@ class TransactionController extends Controller
         ->getManagement())
         ->original, true);
 
-        $distanceRange = explode(",", $management["data"]["distance"]);
-        $total_orderRange = explode(",", $management["data"]["total_order"]);
-        $ratingRange = explode(",", $management["data"]["rating"]);
+        $distanceRange = explode(",", trim($management["data"]["distance"]));
+        $total_orderRange = explode(",",trim($management["data"]["total_order"]));
+        $ratingRange = explode(",",trim($management["data"]["rating"]));
+
+
 
         // return response()->json([
         //     'success' => true,
@@ -127,21 +129,29 @@ class TransactionController extends Controller
         //     'data' => $management
         // ], 200);
 
+        // foreach ($listDriver as $key => $value) {
+        //     # code...
+        //     $distance = $this->haversineGreatCircleDistance($latitude, $longitude, explode(",", $value["coordinate"])[0], explode(",", $value["coordinate"])[1]);
+        //     $listDriver[$key]["distance"] = $distance;
+        // }
+
+        // return $listDriver;
+
 
         foreach ($listDriver as $key => $value) {
             //        convert coordinate
             $distance = $this->haversineGreatCircleDistance($latitude, $longitude, explode(",", $value["coordinate"])[0], explode(",", $value["coordinate"])[1]);
             // echo $distance.PHP_EOL;
             if ($distance <= $distanceRange[0]) {
-                $listDriver[$key]["coordinate"] = 1;
+                $listDriver[$key]["coordinate"] = 0.2;
             } else if ($distance > $distanceRange[0] && $distance <= $distanceRange[1]) {
-                $listDriver[$key]["coordinate"] = 0.8;
+                $listDriver[$key]["coordinate"] = 0.4;
             } else if ($distance > $distanceRange[1] && $distance <= $distanceRange[2]) {
                 $listDriver[$key]["coordinate"] = 0.6;
             } else if ($distance > $distanceRange[2] && $distance <= $distanceRange[3]) {
-                $listDriver[$key]["coordinate"] = 0.4;
+                $listDriver[$key]["coordinate"] = 0.8;
             } else if ($distance > $distanceRange[3]) {
-                $listDriver[$key]["coordinate"] = 0.2;
+                $listDriver[$key]["coordinate"] = 1;
             }
 
             //convert total__order
@@ -165,7 +175,7 @@ class TransactionController extends Controller
             if ($rating <= $ratingRange[0]) {
                 $listDriver[$key]["rating"] = 0.2;
             } else if ($rating > $ratingRange[0] && $rating <= $ratingRange[1]) {
-                $listDriver[$key]["rating"] = 04;
+                $listDriver[$key]["rating"] = 0.4;
             } else if ($rating > $ratingRange[1] && $rating <= $ratingRange[2]) {
                 $listDriver[$key]["rating"] = 0.6;
             } else if ($rating > $ratingRange[2] && $rating <= $ratingRange[3]) {
@@ -174,6 +184,8 @@ class TransactionController extends Controller
                 $listDriver[$key]["rating"] = 1;
             }
         }
+        // return $listDriver;
+
 
         $columnCoordinate = array_column($listDriver, "coordinate");
         $columnTotalOrder = array_column($listDriver, "total_order");
@@ -181,6 +193,9 @@ class TransactionController extends Controller
         $minCoordinate = min($columnCoordinate);
         $maxTotalOrder = max($columnTotalOrder);
         $maxRating = max($columnRating);
+
+        // return $minCoordinate;
+
 
         foreach ($listDriver as $key => $value) {
             $rating = $value["rating"] / $maxRating;
@@ -195,7 +210,6 @@ class TransactionController extends Controller
             $totalSAW = ($value["coordinate"] * 0.5) + ($value["total_order"] * 0.25) + ($value["rating"] * 0.25);
             $listDriver[$key]["saw"] = $totalSAW;
         }
-
         $maxSaw = max(array_column($listDriver, "saw"));
 
         $result = array();
@@ -212,20 +226,23 @@ class TransactionController extends Controller
         $longitudeFrom,
         $latitudeTo,
         $longitudeTo,
+        $unit = "K",
         $earthRadius = 6371000
     ) {
-        // convert from degrees to radians
-        $latFrom = deg2rad($latitudeFrom);
-        $lonFrom = deg2rad($longitudeFrom);
-        $latTo = deg2rad($latitudeTo);
-        $lonTo = deg2rad($longitudeTo);
+        $theta = $longitudeFrom - $longitudeTo;
+        $dist = sin(deg2rad($latitudeFrom)) * sin(deg2rad($latitudeTo)) +  cos(deg2rad($latitudeFrom)) * cos(deg2rad($latitudeTo)) * cos(deg2rad($theta));
+        $dist = acos($dist);
+        $dist = rad2deg($dist);
+        $miles = $dist * 60 * 1.1515;
+        $unit = strtoupper($unit);
 
-        $latDelta = $latTo - $latFrom;
-        $lonDelta = $lonTo - $lonFrom;
-
-        $angle = 2 * asin(sqrt(pow(sin($latDelta / 2), 2) +
-            cos($latFrom) * cos($latTo) * pow(sin($lonDelta / 2), 2)));
-        return $angle * $earthRadius;
+        if ($unit == "K") {
+            return round(($miles * 1.609344),3) * 1000;
+        } else if ($unit == "N") {
+            return ($miles * 0.8684);
+        } else {
+            return $miles;
+        }
     }
 
 
@@ -524,12 +541,24 @@ class TransactionController extends Controller
                         "title" => "Orderan anda telah diterima oleh toko silahkan menunngu proses pencarian driver",
                         "status" => $status
                     ],
-
+                ];
+                $dataFcmStore = [
+                    "title" => "Driver tidak ditemukan",
+                    "content"=>[
+                        "title" => "Driver saat ini sedang tidak tersedia silahkan coba beberapa saat lagi",
+                        "status" => $status
+                    ],
                 ];
                 $updated = Transaction::whereId($id)->update([
                     "status" => $this->TRANSACTION_ACCEPT_STORE
                 ]);
-                $notifCustomer = $this->pushFcm($dataFcmCustomer, $customer["fcm"]);
+
+                $store =json_decode($this->successResponse($this
+                ->storeService
+                ->getStore($transaction->id_store))
+                ->original,true)["data"];
+                $this->pushFcm($dataFcmCustomer, $customer["fcm"]);
+                $this->pushFcm($dataFcmStore, $store["fcm"]);
                 return response()->json([
                     'success' => false,
                     'message' => 'Semua driver sedang menerima orderan silahkan tunggu beberapa saat lagi',
@@ -586,6 +615,7 @@ class TransactionController extends Controller
                         'success' => true,
                         'message' => 'success',
                         'notifDriver' => $notifDriver,
+                        'driver'=> $driver,
                         'notifCustomer' => $notifCustomer,
 
                     ], 201);
@@ -755,11 +785,11 @@ class TransactionController extends Controller
 
 
         if($status == $this->TRANSACTION_WAITING_DRIVER){
-            $this->statusFromStore($request,$id);
-            return response()->json([
-                'success'=>true,
-                'message'=>'pesanan berhasil ditolak',
-            ],201);
+            return $this->statusFromStore($request,$id);
+            // return response()->json([
+            //     'success'=>true,
+            //     'message'=>'pesanan berhasil ditolak',
+            // ],201);
         }
 
     }
