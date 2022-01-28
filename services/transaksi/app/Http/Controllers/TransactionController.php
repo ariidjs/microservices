@@ -1279,7 +1279,7 @@ class TransactionController extends Controller
 
         $customer = json_decode($this->successResponse($this
         ->serviceCustomer
-        ->getCustomer($list["id_customer"]))
+        ->getCustomer($list->id_customer))
         ->original,true)["data"];
 
         $list["data"]["phoneCustomer"] = $customer["phone"];
