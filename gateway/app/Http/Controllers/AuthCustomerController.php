@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\RSA as ControllersRSA;
 use App\Services\AuthServiceCustomer;
 use App\Services\ServiceCustomer;
 use App\Services\ServiceProduct;
@@ -11,8 +12,10 @@ use App\Services\ServiceTransaction;
 use Illuminate\Http\Request;
 use Laravel\Lumen\Routing\Controller as BaseController;
 use \App\Traits\ApiResponser;
+use Exception;
 use Firebase\JWT\JWT;
 use Firebase\JWT\ExpiredException;
+use phpseclib3\Crypt\RSA;
 
 class AuthCustomerController extends BaseController
 {
@@ -25,6 +28,7 @@ class AuthCustomerController extends BaseController
     private $servicePromo;
     private $TIME_EXPIRE = 3;
     private $JWT_EXPIRED = false;
+    private $RSAencrypt;
     private $key = "asjlkdnaskjndjkawqnbdjkwbqdjknasljkmmndasjkjdnijkwqbduiqwbdojkawqnd";
     public function __construct(AuthServiceCustomer $authServiceCustomer, ServiceCustomer $serviceCustomer, ServiceProduct $serviceProduct, ServiceTransaction $serviceTransaction, ServiceStore $serviceStore,ServicePromo $servicePromo)
     {
@@ -35,6 +39,8 @@ class AuthCustomerController extends BaseController
         $this->serviceStore = $serviceStore;
         $this->servicePromo = $servicePromo;
     }
+
+
 
     private function auth($fcm)
     {
@@ -129,8 +135,69 @@ class AuthCustomerController extends BaseController
         }
     }
 
+    private function encRSA($M){
+        $data[0] =1;
+        for($i=0;$i<=35;$i++){
+            $rest[$i]=pow($M,1)%119;
+            if($data[$i]>119){
+                $data[$i+1]=$data[$i]*$rest[$i]%119;
+            }else{
+                $data[$i+1]=$data[$i]*$rest[$i];
+            }
+        }
+        $get=$data[35]%119;
+        return $get;
+    }
+
+    private function decRSA($E){
+
+        $data[0] =1;
+        for($i=0;$i<=11;$i++){
+            $rest[$i]=pow($E,1)%119;
+            if($data[$i]>119){
+                $data[$i+1]=$data[$i]*$rest[$i]%119;
+            }else{
+                $data[$i+1]=$data[$i]*$rest[$i];
+            }
+        }
+        $get=$data[11]%119;
+        return $get;
+    }
+
     public function login(Request $request, $phone)
     {
+        // $kalimat = "Bebas lahasxcasdasd";
+        // $enc="";
+        // for($i=0;$i<strlen($kalimat);$i++){
+        //     $m=ord($kalimat[$i]);
+        //     if($m<119){
+        //         $enc=$enc.chr($this->encRSA($m));
+        //     }else{
+        //         $enc=$enc.$kalimat[$i];
+
+        //     }
+        // }
+
+        // $dec="";
+        // for($i=0;$i<strlen($enc);$i++){
+        //     $m=ord($enc[$i]);
+        //     if($m<119){
+        //         $dec=$dec.chr($this->decRSA($m));
+        //     }else{
+        //         $dec=$dec.$enc[$i];
+
+        //     }
+        // }
+
+        // return response()->json([
+        //     "status"=>true,
+        //     "data"=>[
+        //         // "a"=>$a,
+        //         // "b"=>$b,
+        //         "enc"=>$enc,
+        //         "desc"=>$dec
+        //     ]
+        // ],201);
 
         $response = json_decode($this->successResponse($this
             ->authServiceCustomer

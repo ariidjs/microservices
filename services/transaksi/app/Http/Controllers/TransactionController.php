@@ -1276,6 +1276,14 @@ class TransactionController extends Controller
     public function getListTransactionStore(Request $request,$idStore)
     {
         $list = Transaction::whereIdStore($idStore)->get();
+
+        $customer = json_decode($this->successResponse($this
+        ->serviceCustomer
+        ->getCustomer($list["id_customer"]))
+        ->original,true)["data"];
+
+        $list["data"]["phoneCustomer"] = $customer["phone"];
+
         if ($list) {
             return response()->json([
                 'success' => true,
