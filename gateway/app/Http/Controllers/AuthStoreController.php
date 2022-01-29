@@ -728,7 +728,7 @@ class AuthStoreController extends BaseController
         }
     }
 
-    public function getDetailTransaction(Request $request,$notrans,$id_store,$id_driver,$id_customer){
+    public function getDetailTransaction(Request $request,$notrans,$id_driver){
         $this->validationJWT($request);
 
         // return $notrans;
