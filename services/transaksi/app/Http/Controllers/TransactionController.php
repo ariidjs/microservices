@@ -93,11 +93,9 @@ class TransactionController extends Controller
     public function searchDriver($latitude, $longitude, $listDriver)
     {
 
-        // $listDriver = array(
-        //     array("id_driver"=>1,"rating"=>4,"total_order"=>4,"coordinate"=>"-0.8948229819361365,100.36756917663485","fcm"=>"fQWvUY-8SL2mdFNPYy95_d:APA91bGWmptRIa2x9pE8yZN4v64eFvPQYDvHAA0hCctAddQpifS-bHMkjFl3G9xHv5JtXLnygsOMcNa36ysYLLlvvpmQC4T-jw8T5OfoPZwMvw_KejiKkVn8pTww35jiG8AjrUAhD4KK"),
-        //     array("id_driver"=>2,"rating"=>3,"total_order"=>3,"coordinate"=>"-0.8923167624595327,100.36766181489392","fcm"=>"sadddddddddddddddddddddd"),
-        //     array("id_driver"=>3,"rating"=>5,"total_order"=>41,"coordinate"=>"-0.9237285327683936, 100.37486082016031","fcm"=>"saddddddddddddddddddddddddddddd"),
-        // );
+        $c1 = 0.25;
+        $c2 = 0.5;
+        $c3 = 0.25;
 
         $management = json_decode($this->successResponse($this
         ->serviceManagement
@@ -108,31 +106,11 @@ class TransactionController extends Controller
         $total_orderRange = explode(",",trim($management["data"]["total_order"]));
         $ratingRange = explode(",",trim($management["data"]["rating"]));
 
-
-
-        // return response()->json([
-        //     'success' => true,
-        //     'message' => 'success',
-        //     'distance'=>$distanceRange,
-        //     'total_order'=>$total_orderRange,
-        //     'rating'=>$ratingRange,
-        // ], 201);
-
-
-
-
-        // return $distance;
-
-        // return response()->json([
-        //     'success' => true,
-        //     'message' => 'Success',
-        //     'data' => $management
-        // ], 200);
-
         // foreach ($listDriver as $key => $value) {
-        //     # code...
-        //     $distance = $this->haversineGreatCircleDistance($latitude, $longitude, explode(",", $value["coordinate"])[0], explode(",", $value["coordinate"])[1]);
-        //     $listDriver[$key]["distance"] = $distance;
+        //     $distance = $this->haversineGreatCircleDistance($latitude,
+        //      $longitude,explode(",", $value["coordinate"])[0],
+        //      explode(",", $value["coordinate"])[1]);
+        //     $listDriver[$key]["jarak"] = $distance;
         // }
 
         // return $listDriver;
@@ -140,7 +118,10 @@ class TransactionController extends Controller
 
         foreach ($listDriver as $key => $value) {
             //        convert coordinate
-            $distance = $this->haversineGreatCircleDistance($latitude, $longitude, explode(",", $value["coordinate"])[0], explode(",", $value["coordinate"])[1]);
+            $distance = $this->haversineGreatCircleDistance($latitude,
+            $longitude, explode(",", $value["coordinate"])[0],
+            explode(",", $value["coordinate"])[1]);
+
             // echo $distance.PHP_EOL;
             if ($distance <= $distanceRange[0]) {
                 $listDriver[$key]["coordinate"] = 0.2;
@@ -206,10 +187,15 @@ class TransactionController extends Controller
             $listDriver[$key]["coordinate"] = $coordinate;
         }
 
+        // return $listDriver;
+
         foreach ($listDriver as $key => $value) {
-            $totalSAW = ($value["coordinate"] * 0.5) + ($value["total_order"] * 0.25) + ($value["rating"] * 0.25);
+            $totalSAW = ($value["coordinate"] * $c2) + ($value["total_order"] * $c3) + ($value["rating"] * $c1);
             $listDriver[$key]["saw"] = $totalSAW;
         }
+
+        // return $listDriver;
+
         $maxSaw = max(array_column($listDriver, "saw"));
 
         $result = array();
@@ -237,7 +223,7 @@ class TransactionController extends Controller
         $unit = strtoupper($unit);
 
         if ($unit == "K") {
-            return round(($miles * 1.609344),3) * 1000;
+            return round(($miles * 1.609344),3);
         } else if ($unit == "N") {
             return ($miles * 0.8684);
         } else {
@@ -571,7 +557,7 @@ class TransactionController extends Controller
 
             // return var_dump($ref);
             // return $dataDriver;
-            $driver = $this->searchDriver($transaction->latitude, $transaction->longitude, $dataDriver->toArray());
+            return $driver = $this->searchDriver($transaction->latitude, $transaction->longitude, $dataDriver->toArray());
 
             $driver = json_decode($this->successResponse($this
                 ->serviceDriver
