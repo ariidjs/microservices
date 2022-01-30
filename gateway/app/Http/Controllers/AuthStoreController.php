@@ -16,6 +16,7 @@ use \App\Traits\ApiResponser;
 use Carbon\Carbon;
 use DateTime;
 use DateTimeZone;
+use Exception;
 use Firebase\JWT\ExpiredException;
 use Firebase\JWT\JWT;
 
@@ -54,10 +55,11 @@ class AuthStoreController extends BaseController
         $this->serviceDriver = $serviceDriver;
     }
 
-    private function auth($fcm)
+    private function auth($fcm,$id)
     {
         $body = [
-            "fcm" => $fcm
+            "fcm" => $fcm,
+            "id"=>$id
         ];
         return json_decode($this->successResponse($this
             ->authServiceStore
@@ -65,21 +67,21 @@ class AuthStoreController extends BaseController
             ->original, true);
     }
 
-    public function authStore(Request $request)
-    {
-        $data = $this->auth($request->input("fcm"));
-        if ($data['success']) {
-            $payload = array(
-                "id" => $data['data']['id'],
-                "owner_name" => $data['data']['owner_name'],
-                "store_name" => $data['data']['store_name'],
-                "exp" => (round(microtime(true) * 1000) + ($this->TIME_EXPIRE * 60000))
-            );
-            $jwt = JWT::encode($payload, $this->key);
-            $data['jwt'] = $jwt;
-            return $data;
-        }
-    }
+    // public function authStore(Request $request)
+    // {
+    //     $data = $this->auth($request->input("fcm"));
+    //     if ($data['success']) {
+    //         $payload = array(
+    //             "id" => $data['data']['id'],
+    //             "owner_name" => $data['data']['owner_name'],
+    //             "store_name" => $data['data']['store_name'],
+    //             "exp" => (round(microtime(true) * 1000) + ($this->TIME_EXPIRE * 60000))
+    //         );
+    //         $jwt = JWT::encode($payload, $this->key);
+    //         $data['jwt'] = $jwt;
+    //         return $data;
+    //     }
+    // }
 
     public function getListTransaction(Request $request){
         $validation = $this->validationJWT($request);
@@ -385,7 +387,7 @@ class AuthStoreController extends BaseController
                 "id" => $response['data']['id_store'],
                 "owner_name" => $response['data']['owner_name'],
                 "store_name" => $response['data']['store_name'],
-                "exp" => (round(microtime(true) * 1000) + ($this->TIME_EXPIRE * 60000))
+                "time" => date('d-m-Y H:i', strtotime("+3 min"))
             );
             $jwt = JWT::encode($payload, $this->key);
             $response['data']['jwt'] = $jwt;
@@ -412,28 +414,28 @@ class AuthStoreController extends BaseController
         $jwt = str_replace('Bearer ', '', $jwt);
         $fcm = $request->header('fcm');
 
-        try {
-            $data = JWT::decode($jwt, $this->key, array('HS256'));
-            return [
-                "expired" => $this->JWT_EXPIRED,
-                "jwt" => $jwt,
-                "data" => (array)$data
-            ];
-        } catch (ExpiredException $ex) {
-            $data = $this->auth($fcm);
-            $payload = array(
-                "id" => $data['data']['id_store'],
-                "owner_name" => $data['data']['owner_name'],
-                "store_name" => $data['data']['store_name'],
-                "exp" => (round(microtime(true) * 1000) + ($this->TIME_EXPIRE * 60000))
-            );
-            $jwt = JWT::encode($payload, $this->key);
-            return [
-                "expired" => !$this->JWT_EXPIRED,
-                "data" => $payload,
-                "jwt" => $jwt
-            ];
-        }
+            $data = (array)JWT::decode($jwt, $this->key, array('HS256'));
+            if (time() >= strtotime($data["time"])) {
+                $data = $this->auth($fcm,$data["id"]);
+                $payload = array(
+                    "id" => $data['data']['id_store'],
+                    "owner_name" => $data['data']['owner_name'],
+                    "store_name" => $data['data']['store_name'],
+                    "time" => date('d-m-Y H:i', strtotime("+3 min"))
+                );
+                $jwt = JWT::encode($payload, $this->key);
+                return [
+                    "expired" => !$this->JWT_EXPIRED,
+                    "data" => $payload,
+                    "jwt" => $jwt
+                ];
+            }else{
+                return [
+                    "expired" => $this->JWT_EXPIRED,
+                    "jwt" => $jwt,
+                    "data" => $data
+                ];
+            }
     }
 
     public function withdrawORDeposit(Request $request)
@@ -544,7 +546,7 @@ class AuthStoreController extends BaseController
     {
 
 
-        $validation = $this->validationJWT($request);
+      $validation = $this->validationJWT($request);
 
         // return $validation["data"]["id"];
         return json_decode($this->successResponse($this

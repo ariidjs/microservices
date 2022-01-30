@@ -12,6 +12,7 @@ use App\Services\ServiceTransaction;
 use Illuminate\Http\Request;
 use Laravel\Lumen\Routing\Controller as BaseController;
 use \App\Traits\ApiResponser;
+use Exception;
 use Firebase\JWT\ExpiredException;
 use Firebase\JWT\JWT;
 use Illuminate\Support\Facades\Mail;
@@ -108,9 +109,6 @@ class AuthDriverController extends BaseController
             "j_kelamin" => $j_kelamin
         ];
 
-//        return $this->successResponse($this
-//            ->serviceDriver
-//            ->register($body));
         return json_decode($this->successResponse($this
             ->serviceDriver
             ->register($body))
@@ -138,7 +136,7 @@ class AuthDriverController extends BaseController
                 $payload = array(
                     "id" => $data['data']['id'],
                     "email" => $data['data']['email'],
-                    "exp" => (round(microtime(true) * 1000) + ($this->TIME_EXPIRE * 60000))
+                    "time" => date('d-m-Y H:i', strtotime("+3 min"))
                 );
                 $jwt = JWT::encode($payload, $this->key);
                 $data['jwt'] = $jwt;
@@ -154,10 +152,21 @@ class AuthDriverController extends BaseController
     {
         $validation = $this->validationJWT($request);
         $id_driver = $validation['data']['id'];
-        return json_decode($this->successResponse($this
+
+       $benefitByday = json_decode($this->successResponse($this
+        ->serviceTransaction
+        ->getBenefitByday($id_driver))
+        ->original,true);
+
+
+        $response = json_decode($this->successResponse($this
             ->serviceDriver
             ->getDriver($id_driver))
             ->original, true);
+
+        $response["data"]["benefit"] = $benefitByday["data"];
+
+        return $response;
     }
 
     public function getHistorySaldo(Request $request)
@@ -249,10 +258,11 @@ class AuthDriverController extends BaseController
         }
     }
 
-    private function auth($fcm)
+    private function auth($fcm,$id)
     {
         $body = [
-            "fcm" => $fcm
+            "fcm" => $fcm,
+            "id"=>$id
         ];
 
         return json_decode($this->successResponse($this
@@ -266,19 +276,14 @@ class AuthDriverController extends BaseController
         $jwt = request()->header('Authorization');
         $jwt = str_replace('Bearer ', '', $jwt);
         $fcm = $request->header('fcm');
-        try {
-            $data = JWT::decode($jwt, $this->key, array('HS256'));
-            return [
-                "expired" => $this->JWT_EXPIRED,
-                "jwt" => $jwt,
-                "data" => (array)$data
-            ];
-        } catch (ExpiredException $ex) {
-            $data = $this->auth($fcm);
+
+        $data = (array)JWT::decode($jwt, $this->key, array('HS256'));
+        if (time() >= strtotime($data["time"])) {
+            $data = $this->auth($fcm,$data["id"]);
             $payload = array(
                 "id" => $data['data']['id'],
                 "email" => $data['data']['email'],
-                "exp" => (round(microtime(true) * 1000) + ($this->TIME_EXPIRE * 60000))
+                "time" => date('d-m-Y H:i', strtotime("+3 min"))
             );
             $jwt = JWT::encode($payload, $this->key);
             return [
@@ -286,9 +291,14 @@ class AuthDriverController extends BaseController
                 "data" => $payload,
                 "jwt" => $jwt
             ];
+        }else{
+            return [
+                "expired" => $this->JWT_EXPIRED,
+                "jwt" => $jwt,
+                "data" => $data
+            ];
         }
     }
-
 
 
     public function statusDriver(Request $request, $status)

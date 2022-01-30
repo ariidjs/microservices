@@ -551,12 +551,7 @@ class TransactionController extends Controller
                 ], 404);
             }
 
-            // return $dataDriver;
-            // return var_dump($dataDriver);
-            // return $ref;
 
-            // return var_dump($ref);
-            // return $dataDriver;
             $driver = $this->searchDriver($transaction->latitude, $transaction->longitude, $dataDriver->toArray());
 
             $driver = json_decode($this->successResponse($this
@@ -1637,4 +1632,16 @@ class TransactionController extends Controller
         }
 
     }
+
+    public function getBenefitDriver($id){
+        $total = Transaction::where('created_at', 'like', '%' . date('Y-m-d') . '%')->where('id_driver', '=',$id )->sum('driver_price');
+
+        return response()->json([
+            "status"=>true,
+            "message"=>"sukses",
+            "data"=>$total
+        ],201);
+    }
+
+
 }

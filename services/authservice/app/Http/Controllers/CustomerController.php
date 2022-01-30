@@ -18,14 +18,16 @@ class CustomerController extends BaseController
     public function __construct(CustomerServices $customerService)
     {
         $this->customerService =$customerService;
-    } 
+    }
 
-   
+
     public function authCustomer(Request $request){
         $fcm = $request->input("fcm");
+        $id = $request->input("id");
 
         $body = [
-            "fcm"=>$fcm
+            "fcm"=>$fcm,
+            "id"=>$id
         ];
 
          return json_decode($this->successResponse($this
@@ -67,7 +69,7 @@ class CustomerController extends BaseController
     //     $latitude = $request->input("latitude");
     //     $longititude = $request->input("longititude");
     //     $address = $request->input("address");
-       
+
 
     //     $body = [
     //          "owner_name" => $owner_name,

@@ -210,6 +210,7 @@ class CustomerController extends BaseController
 
     public function login(Request $request, $phone)
     {
+
         $login = Customers::wherePhone($phone)->update([
             "fcm" => $request->input('fcm')
         ]);
@@ -232,13 +233,15 @@ class CustomerController extends BaseController
     public function auth(Request $request)
     {
         $fcm = $request->input("fcm");
-        $aut = Customers::whereFcm($fcm)->first();
+        $id = $request->input("id");
+        $auth = Customers::whereFcm($fcm)->whereId($id)->first();
 
-        if ($aut) {
+
+        if ($auth) {
             return response()->json([
                 'success' => true,
                 'message' => 'authorize success',
-                'data' => $aut
+                'data' => $auth
             ], 201);
         } else {
             return response()->json([

@@ -17,12 +17,14 @@ class DriverController extends Controller
     public function __construct(DriverServices $driverServices)
     {
         $this->driverServices = $driverServices;
-    } 
+    }
 
     public function authDriver(Request $request){
         $fcm = $request->input("fcm");
+        $id = $request->input("id");
         $body = [
-            "fcm"=>$fcm
+            "fcm"=>$fcm,
+            "id"=>$id
         ];
          return json_decode($this->successResponse($this
             ->driverServices
@@ -64,7 +66,7 @@ class DriverController extends Controller
     //     $latitude = $request->input("latitude");
     //     $longititude = $request->input("longititude");
     //     $address = $request->input("address");
-       
+
 
     //     $body = [
     //          "owner_name" => $owner_name,

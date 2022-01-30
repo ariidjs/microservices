@@ -42,10 +42,11 @@ class AuthCustomerController extends BaseController
 
 
 
-    private function auth($fcm)
+    private function auth($fcm,$id)
     {
         $body = [
-            "fcm" => $fcm
+            "fcm" => $fcm,
+            "id" => $id,
         ];
 
         return json_decode($this->successResponse($this
@@ -112,25 +113,26 @@ class AuthCustomerController extends BaseController
         $jwt = request()->header('Authorization');
         $jwt = str_replace('Bearer ', '', $jwt);
         $fcm = $request->header('fcm');
-        try {
-            $data = JWT::decode($jwt, $this->key, array('HS256'));
-            return [
-                "expired" => $this->JWT_EXPIRED,
-                "jwt" => $jwt,
-                "data" => (array)$data
-            ];
-        } catch (ExpiredException $ex) {
-            $data = $this->auth($fcm);
+
+        $data = (array)JWT::decode($jwt, $this->key, array('HS256'));
+        if (time() >= strtotime($data["time"])) {
+            $data = $this->auth($fcm,$data["id"]);
             $payload = array(
                 "id" => $data['data']['id'],
                 "email" => $data['data']['email'],
-                "exp" => (round(microtime(true) * 1000) + ($this->TIME_EXPIRE * 60000))
+                "time" => date('d-m-Y H:i', strtotime("+3 min"))
             );
             $jwt = JWT::encode($payload, $this->key);
             return [
                 "expired" => !$this->JWT_EXPIRED,
                 "data" => $payload,
                 "jwt" => $jwt
+            ];
+        }else{
+            return [
+                "expired" => $this->JWT_EXPIRED,
+                "jwt" => $jwt,
+                "data" => $data
             ];
         }
     }
@@ -219,7 +221,7 @@ class AuthCustomerController extends BaseController
                 $payload = array(
                     "id" => $login['data']['id'],
                     "name" => $login['data']['name'],
-                    "exp" => (round(microtime(true) * 1000) + ($this->TIME_EXPIRE * 60000))
+                    "time" => date('d-m-Y H:i', strtotime("+3 min"))
                 );
                 $jwt = JWT::encode($payload, $this->key);
                 $login['data']['jwt'] = $jwt;

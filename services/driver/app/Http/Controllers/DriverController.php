@@ -274,7 +274,8 @@ class DriverController extends BaseController
     public function auth(Request $request)
     {
         $fcm = $request->input("fcm");
-        $aut = Drivers::whereFcm($fcm)->first();
+        $id = $request->input("id");
+        $aut = Drivers::whereFcm($fcm)->whereId($id)->first();
 
         if ($aut) {
             return response()->json([

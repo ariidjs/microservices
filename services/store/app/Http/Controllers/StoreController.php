@@ -220,7 +220,8 @@ class StoreController extends Controller
     public function auth(Request $request)
     {
         $fcm = $request->input("fcm");
-        $aut = Stores::whereFcm($fcm)->first();
+        $id = $request->input("id");
+        $aut = Stores::whereFcm($fcm)->whereIdStore($id)->first();
 
         if ($aut) {
             return response()->json([

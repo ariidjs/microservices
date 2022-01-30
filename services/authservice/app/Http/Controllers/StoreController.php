@@ -25,13 +25,15 @@ class StoreController extends BaseController
         $this->driverServices = $driverServices;
         $this->adminServices = $adminServices;
         $this->customerService =$customerService;
-    } 
+    }
 
     public function authStore(Request $request){
         $fcm = $request->input("fcm");
+        $id = $request->input("id");
 
         $body = [
-            "fcm"=>$fcm
+            "fcm"=>$fcm,
+            "id"=>$id
         ];
 
          return json_decode($this->successResponse($this
@@ -40,18 +42,7 @@ class StoreController extends BaseController
             ->original,true);
     }
 
-    public function authAdmin(Request $request){
-        $fcm = $request->input("fcm");
 
-        $body = [
-            "fcm"=>$fcm
-        ];
-
-         return json_decode($this->successResponse($this
-            ->adminServices
-            ->auth($body))
-            ->original,true);
-    }
 
     public function authCustomer(Request $request){
         $fcm = $request->input("fcm");
@@ -109,7 +100,7 @@ class StoreController extends BaseController
     //     $latitude = $request->input("latitude");
     //     $longititude = $request->input("longititude");
     //     $address = $request->input("address");
-       
+
 
     //     $body = [
     //          "owner_name" => $owner_name,
