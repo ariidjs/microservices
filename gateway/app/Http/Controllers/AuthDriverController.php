@@ -153,7 +153,7 @@ class AuthDriverController extends BaseController
         $validation = $this->validationJWT($request);
         $id_driver = $validation['data']['id'];
 
-       $benefitByday = json_decode($this->successResponse($this
+        $benefitByday = json_decode($this->successResponse($this
         ->serviceTransaction
         ->getBenefitByday($id_driver))
         ->original,true);
