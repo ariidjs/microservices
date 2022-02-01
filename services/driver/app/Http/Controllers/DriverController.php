@@ -105,28 +105,20 @@ class DriverController extends BaseController
     public function updated(Request $request, $id)
     {
         $name = $request->input("name_driver");
-        $photo_profile = $request->file("photo_profile");
-        $rating = $request->input("rating");
-        $saldo = $request->input("saldo");
-        $status = $request->input("status");
+        $email = $request->input("email");
+        $phone = $request->input("phone");
+        $nomor_stnk = $request->input("nomor_stnk");
+        $nik = $request->input("nik");
+        $plat_kendaraan = $request->input("plat_kendaraan");
 
-        if ($photo_profile) {
-            $avatar = time() . $photo_profile->getClientOriginalName();
-            $photo_profile->move('../../gateway/public/images', $avatar);
-
-            $updated = Drivers::whereId($id)->update([
-                "name_driver" => $name,
-                "photo_profile" => $avatar,
-                "saldo" => $saldo,
-                "status" => $status,
-            ]);
-        } else {
-            $updated = Drivers::whereId($id)->update([
-                "name_driver" => $name,
-                "saldo" => $saldo,
-                "status" => $status,
-            ]);
-        }
+        $updated = Drivers::whereId($id)->update([
+            "name_driver" => $name,
+            "email" => $email,
+            "phone" => $phone,
+            "nomor_stnk" => $nomor_stnk,
+            "plat_kendaraan" => $plat_kendaraan,
+            "nik" => $nik,
+        ]);
 
         if ($updated) {
             return response()->json([
