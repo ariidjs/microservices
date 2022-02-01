@@ -650,6 +650,30 @@ class AuthAdminController extends BaseController
         return $listCustomer;
     }
 
+    public function activationStore(Request $request, $id_store, $status)
+    {
+        return "hello";
+        $validation = $this->validationJWT($request);
+        if ($validation["data"]["role"] == "admin" || $validation["data"]["role"] == "super_admin") {
+            if ($status == $this->ACTIVE) {
+                return json_decode($this->successResponse($this
+                    ->serviceStore
+                    ->changeStatusAktivation($id_store, $this->ACTIVE))
+                    ->original, true);
+            } else {
+                return json_decode($this->successResponse($this
+                    ->serviceStore
+                    ->changeStatusAktivation($id_store, $this->DELETE))
+                    ->original, true);
+            }
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'authentifikasi failed',
+            ], 400);
+        }
+    }
+
     public function getDetailTransactionAdmin(Request $request,$notrans){
         $this->validationJWT($request);
 
