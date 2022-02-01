@@ -750,7 +750,7 @@ class AuthAdminController extends BaseController
         $longititude = $request->input("longititude");
         $address = $request->input("address");
 
-        $validation = $this->validationJWT($request);
+        $this->validationJWT($request);
 
         $body = [
             "owner_name" => $owner_name,
@@ -765,101 +765,10 @@ class AuthAdminController extends BaseController
             "address" => $address,
         ];
 
-       return  $response = json_decode($this->successResponse($this
+        return  json_decode($this->successResponse($this
         ->serviceStore
         ->update($body, $id))
         ->original, true);
-
-        // if (isset($validation["data"]["role"])) {
-        //     if ($validation["data"]["role"] == $this->SUPER_ADMIN || $validation["data"]["role"] == $this->ADMIN) {
-        //         if ($photo_ktp && $photo_store) {
-        //             $ktp = time() . $photo_ktp->getClientOriginalName();
-        //             $fotoStore = time() . $photo_store->getClientOriginalName();
-        //             $body = [
-        //                 "owner_name" => $owner_name,
-        //                 "store_name" => $store_name,
-        //                 "phone" => $phone,
-        //                 "email" => $email,
-        //                 "fcm" => $fcm,
-        //                 "description_store" => $description_store,
-        //                 "nik_ktp" => $nik_ktp,
-        //                 "photo_ktp" => $ktp,
-        //                 "latitude" => $latitude,
-        //                 "longititude" => $longititude,
-        //                 "address" => $address,
-        //                 "photo_store" => $fotoStore
-        //             ];
-        //         } else if ($photo_ktp) {
-        //             $ktp = time() . $photo_ktp->getClientOriginalName();
-        //             $body = [
-        //                 "owner_name" => $owner_name,
-        //                 "store_name" => $store_name,
-        //                 "phone" => $phone,
-        //                 "email" => $email,
-        //                 "fcm" => $fcm,
-        //                 "description_store" => $description_store,
-        //                 "nik_ktp" => $nik_ktp,
-        //                 "photo_ktp" => $ktp,
-        //                 "latitude" => $latitude,
-        //                 "longititude" => $longititude,
-        //                 "address" => $address,
-        //             ];
-        //         } else if ($photo_store) {
-        //             $fotoStore = time() . $photo_store->getClientOriginalName();
-        //             $body = [
-        //                 "owner_name" => $owner_name,
-        //                 "store_name" => $store_name,
-        //                 "phone" => $phone,
-        //                 "email" => $email,
-        //                 "fcm" => $fcm,
-        //                 "description_store" => $description_store,
-        //                 "nik_ktp" => $nik_ktp,
-        //                 "latitude" => $latitude,
-        //                 "longititude" => $longititude,
-        //                 "address" => $address,
-        //                 "photo_store" => $fotoStore
-        //             ];
-        //         } else {
-        //             $body = [
-        //                 "owner_name" => $owner_name,
-        //                 "store_name" => $store_name,
-        //                 "phone" => $phone,
-        //                 "email" => $email,
-        //                 "fcm" => $fcm,
-        //                 "description_store" => $description_store,
-        //                 "nik_ktp" => $nik_ktp,
-        //                 "latitude" => $latitude,
-        //                 "longititude" => $longititude,
-        //                 "address" => $address,
-        //             ];
-        //         }
-
-        //         $response = json_decode($this->successResponse($this
-        //             ->serviceStore
-        //             ->update($body, $id))
-        //             ->original, true);
-
-        //         if ($response["success"]) {
-        //             if ($photo_store) {
-        //                 $photo_store->move('images', $fotoStore);
-        //             }
-        //             if ($photo_ktp) {
-        //                 $photo_ktp->move('images', $ktp);
-        //             }
-        //             return $response;
-        //         }
-        //     } else {
-        //         return response()->json([
-        //             'success' => false,
-        //             'message' => 'authentification failed',
-        //         ], 404);
-        //     }
-        // } else {
-        //     return response()->json([
-        //         'success' => false,
-        //         'message' => 'not found',
-        //     ], 404);
-        // }
     }
 
     public function listBenefit(){
