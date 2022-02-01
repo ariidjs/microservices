@@ -26,7 +26,7 @@ $router->group(['prefix' => 'api/v1/store'], function () use ($router) {
     $router->post('/updated', 'AuthStoreController@updateStore');
     $router->post('/withdrawordeposit', 'AuthStoreController@withdrawORDeposit');
     $router->post('/deposit', 'AuthStoreController@deposit');
-    $router->post('{id}', 'AuthStoreController@updateStoreFromAdmin');
+    $router->post('{id}', 'AuthAdminController@updateStoreFromAdmin');
     $router->post('', 'AuthStoreController@authStore');
     $router->get('/phone/{phone}', 'AuthStoreController@checkPhone');
     $router->post('/login/{phone}', 'AuthStoreController@login');
