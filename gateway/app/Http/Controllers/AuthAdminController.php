@@ -744,8 +744,6 @@ class AuthAdminController extends BaseController
         $fcm = $request->input("fcm");
         $description_store = $request->input("description_store");
         $nik_ktp = $request->input("nik_ktp");
-        $photo_ktp = $request->file("photo_ktp");
-        $photo_store = $request->file("photo_store");
         $latitude = $request->input("latitude");
         $longititude = $request->input("longititude");
         $address = $request->input("address");
