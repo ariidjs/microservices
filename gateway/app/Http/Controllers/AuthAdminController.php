@@ -553,6 +553,16 @@ class AuthAdminController extends BaseController
 
         $listCustomer = $this->inner_join($transaction["data"],$customer["data"]);
 
+        // $listCustomer = array(
+        //     array("id_customer"=>2,"level"=>"Platinum","total_transaction"=>45,"total_price"=>2740000),
+        //     array("id_customer"=>4,"level"=>"Gold","total_transaction"=>1,"total_price"=>45000),
+        //     array("id_customer"=>5,"level"=>"Silver","total_transaction"=>1,"total_price"=>20000),
+        // );
+
+        $c1 = 0.25;
+        $c2 = 0.5;
+        $c3 = 0.25;
+
         foreach ($listCustomer as $key => $value) {
             // echo $distance.PHP_EOL;
             $jumlahTransaksi = $value["total_transaction"];
@@ -571,11 +581,11 @@ class AuthAdminController extends BaseController
             //convert total__order
             $level = $value["level"];
             // echo $totalOrder.PHP_EOL;
-            if ($level == $levelRange[0]) {
+            if ($level == trim($levelRange[0])) {
                 $listCustomer[$key]["levelSaw"] = 0.7;
-            } else if ($level == $levelRange[1]) {
+            } else if ($level == trim($levelRange[1])) {
                 $listCustomer[$key]["levelSaw"] = 0.8;
-            } else if ($level == $levelRange[2]) {
+            } else if ($level == trim($levelRange[2])) {
                 $listCustomer[$key]["levelSaw"] = 0.9;
             }
 
@@ -604,7 +614,10 @@ class AuthAdminController extends BaseController
         $maxlevel = max($columnlevel);
         $maxTotalPrice = max($columnTotalPrice);
 
-        // return $levelRange;
+        // return $columnlevel;
+
+        // return $listCustomer;
+
 
         foreach ($listCustomer as $key => $value) {
             $totalPrice = $value["total_priceSaw"] / $maxTotalPrice;
@@ -615,10 +628,18 @@ class AuthAdminController extends BaseController
             $listCustomer[$key]["total_transactionSaw"] = $jumlahTransaksi;
         }
 
+        // return $listCustomer;
+
+
         foreach ($listCustomer as $key => $value) {
-            $totalSAW = ($value["total_transactionSaw"] * 0.5) + ($value["levelSaw"] * 0.25) + ($value["total_priceSaw"] * 0.25);
+            $totalSAW = ($value["total_transactionSaw"] * $c1)
+            +($value["levelSaw"] * $c3)+
+             ($value["total_priceSaw"] * $c2);
             $listCustomer[$key]["saw"] = $totalSAW;
         }
+
+        // return $listCustomer;
+
 
         usort($listCustomer,function($a,$b){
             if ($a['saw'] == $b['saw']) {
@@ -627,6 +648,16 @@ class AuthAdminController extends BaseController
             return ($a['saw'] > $b['saw']) ? -1 : 1;
         });
         return $listCustomer;
+    }
+
+    public function getDetailTransactionAdmin(Request $request,$notrans){
+        $this->validationJWT($request);
+
+        // return $notrans;
+        return json_decode($this->successResponse($this
+            ->serviceTransaction
+            ->getDetailTransaction($notrans))
+            ->original, true);
     }
 
     public function dashboard(){
