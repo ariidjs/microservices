@@ -521,6 +521,15 @@ class AuthAdminController extends BaseController
         ->original,true);
     }
 
+    public function getListDriver(Request $request)
+    {
+        $this->validationJWT($request);
+        return json_decode($this->successResponse($this
+            ->serviceDriver
+            ->getListDriverFromAdmin())
+            ->original, true);
+    }
+
     public function searchCustomerPromo(){
 
         $customer = json_decode($this->successResponse($this

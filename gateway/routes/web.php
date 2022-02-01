@@ -90,7 +90,7 @@ $router->group(['prefix' => 'api/v1/admin'], function () use ($router) {
     $router->get('store/{idStore}', 'AuthAdminController@getInfoStore');
     $router->get('driver/{idDriver}', 'AuthAdminController@getInfoDriver');
     $router->get('listPromo', 'AuthAdminController@getListPromo');
-    $router->get('driver', 'AuthDriverController@getListDriverFromAdmin');
+    $router->get('driver', 'AuthAdminController@getListDriver');
     $router->post('', 'AuthAdminController@register');
     $router->post('login', 'AuthAdminController@login');
     $router->get('/promoCustomer', 'AuthAdminController@getPromo');
