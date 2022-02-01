@@ -42,6 +42,8 @@ class AuthAdminController extends BaseController
     private $serviceManagement;
     private $AKTIF = 0;
     private $servicePromo;
+    private $ACTIVE = 1;
+    private $PENDING = 0;
     private $fcmService;
     private $key = "asjlkdnaskjndjkawqnbdjkwbqdjknasljkmmndasjkjdnijkwqbduiqwbdojkawqnd";
     private $AUTHKEYFCM = "key=AAAAC-0CIus:APA91bGZfiR7Q8hIO4W_gCTegqugpbiPnf8Ygnn72lyNtg1MoGt2Q3OkSNH_aOBefIjiEWcXl1VUbsLlWKAziWPBJiol_RBI1X2IDkfG9MY9YbR_wuHMO8FOTUFuSE-dYY8OjsLq6din";
