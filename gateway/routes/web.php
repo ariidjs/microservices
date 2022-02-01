@@ -35,7 +35,7 @@ $router->group(['prefix' => 'api/v1/store'], function () use ($router) {
     $router->post('/confirmorder/{idTransaction}', 'AuthStoreController@confirmOrder');
     $router->get('/admin', 'AuthStoreController@getListStoreFromAdmin');
     $router->get('', 'AuthStoreController@getStore');
-    $router->get('/{id_store}/activation/{status}', 'AuthStoreController@activation');
+    $router->get('/{id_store}/activation/{status}', 'AuthAdminController@activation');
     $router->get('product/delete/{idProduct}/{status}', 'AuthStoreController@deleteProduct');
     $router->get('/detailTransaction/{notrans}/{id_driver}', 'AuthStoreController@getDetailTransaction');
 });
