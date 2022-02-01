@@ -664,7 +664,7 @@ class AuthAdminController extends BaseController
             } else {
                 return json_decode($this->successResponse($this
                     ->serviceStore
-                    ->changeStatusAktivation($id_store, $this->DELETE))
+                    ->changeStatusAktivation($id_store, $this->PENDING))
                     ->original, true);
             }
         } else {
