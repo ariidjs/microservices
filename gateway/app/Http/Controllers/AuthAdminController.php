@@ -652,7 +652,6 @@ class AuthAdminController extends BaseController
 
     public function activationStore(Request $request, $id_store, $status)
     {
-        return "hello";
         $validation = $this->validationJWT($request);
         if ($validation["data"]["role"] == "admin" || $validation["data"]["role"] == "super_admin") {
             if ($status == $this->ACTIVE) {
