@@ -518,7 +518,7 @@ class AuthAdminController extends BaseController
         $levelRange = explode(",", $management["data"]["level_pelanggan"]);
         $totalTransaksiRange = explode(",", $management["data"]["total_transaksi"]);
 
-       return $listCustomer = $this->inner_join($transaction["data"],$customer["data"]);
+       $listCustomer = $this->inner_join($transaction["data"],$customer["data"]);
 
         // $listCustomer = array(
         //     array("id_customer"=>2,"level"=>"Platinum","total_transaction"=>45,"total_price"=>2740000),
