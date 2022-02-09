@@ -504,7 +504,7 @@ class AuthAdminController extends BaseController
         ->getLisCustomer())
         ->original,true);
 
-        return $transaction = json_decode($this->successResponse($this
+      $transaction = json_decode($this->successResponse($this
         ->serviceTransaction
         ->getInfoDetailTransaction())
         ->original,true);
@@ -518,7 +518,7 @@ class AuthAdminController extends BaseController
         $levelRange = explode(",", $management["data"]["level_pelanggan"]);
         $totalTransaksiRange = explode(",", $management["data"]["total_transaksi"]);
 
-        $listCustomer = $this->inner_join($transaction["data"],$customer["data"]);
+       return $listCustomer = $this->inner_join($transaction["data"],$customer["data"]);
 
         // $listCustomer = array(
         //     array("id_customer"=>2,"level"=>"Platinum","total_transaction"=>45,"total_price"=>2740000),
@@ -636,10 +636,15 @@ class AuthAdminController extends BaseController
                         'promoName','promoDescription','promoPrice','date','expired'
                 ]);
                 $body['idCustomer'] = $listCustomer[0]["id_customer"];
-                return json_decode($this->successResponse($this
+                json_decode($this->successResponse($this
                 ->servicePromo
                 ->savePromo($body))
                 ->original,true);
+
+                return response()->json([
+                    "message" =>"success",
+                    "status"=>true,
+                ],201);
             }
         }else{
             return response()->json([
