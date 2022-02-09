@@ -499,14 +499,12 @@ class AuthAdminController extends BaseController
     }
 
     public function promo(Request $request){
-
-
         $customer = json_decode($this->successResponse($this
         ->serviceCustomer
         ->getLisCustomer())
         ->original,true);
 
-        $transaction = json_decode($this->successResponse($this
+        return $transaction = json_decode($this->successResponse($this
         ->serviceTransaction
         ->getInfoDetailTransaction())
         ->original,true);

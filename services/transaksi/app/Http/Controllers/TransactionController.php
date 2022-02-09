@@ -1408,9 +1408,15 @@ class TransactionController extends Controller
     }
 
     public function getListTransactionDone(){
+        // $data = DB::select("SELECT  count(created_at) as total,MONTH(created_at) as bulan,SUM(totalBenefit) as price
+        // FROM benefit
+        // WHERE created_at >='".date('Y')."-01-01' AND created_at   <= ' ".date('Y')."-12-31'
+        // GROUP BY  month(created_at)");
         $transaction = DB::table('transactions')
         ->select(DB::raw('count(*) as total_transaction, id_customer,sum(total_price) as total_price'))
         ->where('status', '=', 6)
+        ->where('created_at', '>=', date('Y-m').'-01')
+        ->where('created_at', '<=',  date('Y-m').'-28')
         ->groupBy('id_customer')
         ->get();
 
