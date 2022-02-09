@@ -500,44 +500,11 @@ class AuthAdminController extends BaseController
 
     public function promo(Request $request){
 
+
         $customer = json_decode($this->successResponse($this
-            ->serviceCustomer
-            ->getCustomer($request->input('idCustomer')))
-            ->original,true);
-
-        $body = $request->only([
-            'idCustomer', 'promoName','promoDescription','promoPrice','date','expired'
-        ]);
-
-
-
-        if(isset($customer["data"]["fcm"])){
-            $body["fcm"] = $customer["data"]["fcm"];
-        }else{
-            $body["fcm"] = "";
-        }
-
-        return json_decode($this->successResponse($this
-        ->servicePromo
-        ->savePromo($body))
+        ->serviceCustomer
+        ->getLisCustomer())
         ->original,true);
-    }
-
-    public function getListDriver(Request $request)
-    {
-        $this->validationJWT($request);
-        return json_decode($this->successResponse($this
-            ->serviceDriver
-            ->getListDriverFromAdmin())
-            ->original, true);
-    }
-
-    public function searchCustomerPromo(){
-
-        $customer = json_decode($this->successResponse($this
-                ->serviceCustomer
-                ->getLisCustomer())
-                ->original,true);
 
         $transaction = json_decode($this->successResponse($this
         ->serviceTransaction
@@ -609,47 +576,223 @@ class AuthAdminController extends BaseController
 
         // return $listCustomer;
 
-        $columnJumlahTransaksi = array_column($listCustomer, "total_transactionSaw");
-        $columnlevel = array_column($listCustomer, "levelSaw");
-        $columnTotalPrice = array_column($listCustomer, "total_priceSaw");
-        $maxJumlahTransaksi = max($columnJumlahTransaksi);
-        $maxlevel = max($columnlevel);
-        $maxTotalPrice = max($columnTotalPrice);
+        if(sizeof($listCustomer) > 0){
+            $columnJumlahTransaksi = array_column($listCustomer, "total_transactionSaw");
+            $columnlevel = array_column($listCustomer, "levelSaw");
+            $columnTotalPrice = array_column($listCustomer, "total_priceSaw");
+            $maxJumlahTransaksi = max($columnJumlahTransaksi);
+            $maxlevel = max($columnlevel);
+            $maxTotalPrice = max($columnTotalPrice);
 
-        // return $columnlevel;
+            // return $columnlevel;
 
-        // return $listCustomer;
-
-
-        foreach ($listCustomer as $key => $value) {
-            $totalPrice = $value["total_priceSaw"] / $maxTotalPrice;
-            $level = $value["levelSaw"] / $maxlevel;
-            $jumlahTransaksi = $value["total_transactionSaw"] / $maxJumlahTransaksi;
-            $listCustomer[$key]["levelSaw"] = $level;
-            $listCustomer[$key]["total_priceSaw"] = $totalPrice;
-            $listCustomer[$key]["total_transactionSaw"] = $jumlahTransaksi;
-        }
-
-        // return $listCustomer;
+            // return $listCustomer;
 
 
-        foreach ($listCustomer as $key => $value) {
-            $totalSAW = ($value["total_transactionSaw"] * $c1)
-            +($value["levelSaw"] * $c3)+
-             ($value["total_priceSaw"] * $c2);
-            $listCustomer[$key]["saw"] = $totalSAW;
-        }
-
-        // return $listCustomer;
-
-
-        usort($listCustomer,function($a,$b){
-            if ($a['saw'] == $b['saw']) {
-                return 0;
+            foreach ($listCustomer as $key => $value) {
+                $totalPrice = $value["total_priceSaw"] / $maxTotalPrice;
+                $level = $value["levelSaw"] / $maxlevel;
+                $jumlahTransaksi = $value["total_transactionSaw"] / $maxJumlahTransaksi;
+                $listCustomer[$key]["levelSaw"] = $level;
+                $listCustomer[$key]["total_priceSaw"] = $totalPrice;
+                $listCustomer[$key]["total_transactionSaw"] = $jumlahTransaksi;
             }
-            return ($a['saw'] > $b['saw']) ? -1 : 1;
-        });
+
+            // return $listCustomer;
+
+
+            foreach ($listCustomer as $key => $value) {
+                $totalSAW = ($value["total_transactionSaw"] * $c1)
+                +($value["levelSaw"] * $c3)+
+                ($value["total_priceSaw"] * $c2);
+                $listCustomer[$key]["saw"] = $totalSAW;
+            }
+
+            // return $listCustomer;
+            usort($listCustomer,function($a,$b){
+                if ($a['saw'] == $b['saw']) {
+                    return 0;
+                }
+                return ($a['saw'] > $b['saw']) ? -1 : 1;
+            });
+
+            if(sizeof($listCustomer) > 1){
+                for($i=0;$i<2;$i++){
+                    $body = $request->only([
+                            'promoName','promoDescription','promoPrice','date','expired'
+                    ]);
+                    $body['idCustomer'] = $listCustomer[$i]["id_customer"];
+
+                    json_decode($this->successResponse($this
+                    ->servicePromo
+                    ->savePromo($body))
+                    ->original,true);
+                }
+
+                return response()->json([
+                    "message" =>"success",
+                    "status"=>true,
+                ],201);
+            }else{
+                $body = $request->only([
+                        'promoName','promoDescription','promoPrice','date','expired'
+                ]);
+                $body['idCustomer'] = $listCustomer[0]["id_customer"];
+                return json_decode($this->successResponse($this
+                ->servicePromo
+                ->savePromo($body))
+                ->original,true);
+            }
+        }else{
+            return response()->json([
+                "message" =>"data tidak ditemukan",
+                "status"=>false,
+                "data"=>null
+            ],201);
+        }
+    }
+
+    public function getListDriver(Request $request)
+    {
+        $this->validationJWT($request);
+        return json_decode($this->successResponse($this
+            ->serviceDriver
+            ->getListDriverFromAdmin())
+            ->original, true);
+    }
+
+    public function searchCustomerPromo(Request $request){
+        $customer = json_decode($this->successResponse($this
+                ->serviceCustomer
+                ->getLisCustomer())
+                ->original,true);
+
+        $transaction = json_decode($this->successResponse($this
+        ->serviceTransaction
+        ->getInfoDetailTransaction())
+        ->original,true);
+
+        $management = json_decode($this->successResponse($this
+        ->serviceManagement
+        ->getManagement())
+        ->original, true);
+
+        $jumlahTransaksiRange = explode(",", $management["data"]["jumlah_transaksi"]);
+        $levelRange = explode(",", $management["data"]["level_pelanggan"]);
+        $totalTransaksiRange = explode(",", $management["data"]["total_transaksi"]);
+
+        $listCustomer = $this->inner_join($transaction["data"],$customer["data"]);
+
+        // return $listCustomer;
+
+        // $listCustomer = array(
+        //     array("id_customer"=>2,"level"=>"Platinum","total_transaction"=>45,"total_price"=>2740000),
+        //     array("id_customer"=>4,"level"=>"Gold","total_transaction"=>1,"total_price"=>45000),
+        //     array("id_customer"=>5,"level"=>"Silver","total_transaction"=>1,"total_price"=>20000),
+        // );
+
+        $c1 = 0.25;
+        $c2 = 0.5;
+        $c3 = 0.25;
+
+        foreach ($listCustomer as $key => $value) {
+            // echo $distance.PHP_EOL;
+            $jumlahTransaksi = $value["total_transaction"];
+            if ($jumlahTransaksi <= $jumlahTransaksiRange[0]) {
+                $listCustomer[$key]["total_transactionSaw"] = 0.2;
+            } else if ($jumlahTransaksi > $jumlahTransaksiRange[0] && $jumlahTransaksi <= $jumlahTransaksiRange[1]) {
+                $listCustomer[$key]["total_transactionSaw"] = 0.4;
+            } else if ($jumlahTransaksi > $jumlahTransaksiRange[1] && $jumlahTransaksi <= $jumlahTransaksiRange[2]) {
+                $listCustomer[$key]["total_transactionSaw"] = 0.6;
+            } else if ($jumlahTransaksi > $jumlahTransaksiRange[2] && $jumlahTransaksi <= $jumlahTransaksiRange[3]) {
+                $listCustomer[$key]["total_transactionSaw"] = 0.8;
+            } else if ($jumlahTransaksi > $jumlahTransaksiRange[3]) {
+                $listCustomer[$key]["total_transactionSaw"] = 1;
+            }
+
+            //convert total__order
+            $level = $value["level"];
+            // echo $totalOrder.PHP_EOL;
+            if ($level == trim($levelRange[0])) {
+                $listCustomer[$key]["levelSaw"] = 0.7;
+            } else if ($level == trim($levelRange[1])) {
+                $listCustomer[$key]["levelSaw"] = 0.8;
+            } else if ($level == trim($levelRange[2])) {
+                $listCustomer[$key]["levelSaw"] = 0.9;
+            }
+
+            // convert rating
+            $total_price = $value["total_price"];
+            // echo $rating.PHP_EOL;
+            if ($total_price <= $totalTransaksiRange[0]) {
+                $listCustomer[$key]["total_priceSaw"] = 0.2;
+            } else if ($total_price > $totalTransaksiRange[0] && $total_price <= $totalTransaksiRange[1]) {
+                $listCustomer[$key]["total_priceSaw"] = 0.4;
+            } else if ($total_price > $totalTransaksiRange[1] && $total_price <= $totalTransaksiRange[2]) {
+                $listCustomer[$key]["total_priceSaw"] = 0.6;
+            } else if ($total_price > $totalTransaksiRange[2] && $total_price <= $totalTransaksiRange[3]) {
+                $listCustomer[$key]["total_priceSaw"] = 0.8;
+            } else if ($total_price > $totalTransaksiRange[3]) {
+                $listCustomer[$key]["total_priceSaw"] = 1;
+            }
+        }
+
         return $listCustomer;
+
+        if(sizeof($listCustomer) > 0){
+            $columnJumlahTransaksi = array_column($listCustomer, "total_transactionSaw");
+            $columnlevel = array_column($listCustomer, "levelSaw");
+            $columnTotalPrice = array_column($listCustomer, "total_priceSaw");
+            $maxJumlahTransaksi = max($columnJumlahTransaksi);
+            $maxlevel = max($columnlevel);
+            $maxTotalPrice = max($columnTotalPrice);
+
+            // return $columnlevel;
+
+            // return $listCustomer;
+
+
+            foreach ($listCustomer as $key => $value) {
+                $totalPrice = $value["total_priceSaw"] / $maxTotalPrice;
+                $level = $value["levelSaw"] / $maxlevel;
+                $jumlahTransaksi = $value["total_transactionSaw"] / $maxJumlahTransaksi;
+                $listCustomer[$key]["levelSaw"] = $level;
+                $listCustomer[$key]["total_priceSaw"] = $totalPrice;
+                $listCustomer[$key]["total_transactionSaw"] = $jumlahTransaksi;
+            }
+
+            // return $listCustomer;
+
+
+            foreach ($listCustomer as $key => $value) {
+                $totalSAW = ($value["total_transactionSaw"] * $c1)
+                +($value["levelSaw"] * $c3)+
+                 ($value["total_priceSaw"] * $c2);
+                $listCustomer[$key]["saw"] = $totalSAW;
+            }
+
+            // return $listCustomer;
+
+
+            usort($listCustomer,function($a,$b){
+                if ($a['saw'] == $b['saw']) {
+                    return 0;
+                }
+                return ($a['saw'] > $b['saw']) ? -1 : 1;
+            });
+            $body = $request->only([
+                'idCustomer', 'promoName','promoDescription','promoPrice','date','expired'
+            ]);
+            return $listCustomer;
+        }else{
+            return response()->json([
+                "message" =>"data tidak ditemukan",
+                "status"=>false,
+                "data"=>null
+            ],201);
+        }
+
+
     }
 
     public function activationStore(Request $request, $id_store, $status)

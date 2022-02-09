@@ -43,13 +43,13 @@ class PromoController extends Controller
         $insert = Promo::create($data);
 
         if ($insert) {
-            $dataFcmCustomer = [
-                "title" => "Ada promo menarik buat kamu",
-                "content"=>[
-                    "title" => "Promo ".$data["promoName"],
-                ],
-            ];
-           $this->pushFcm($dataFcmCustomer, $fcm);
+        //     $dataFcmCustomer = [
+        //         "title" => "Ada promo menarik buat kamu",
+        //         "content"=>[
+        //             "title" => "Promo ".$data["promoName"],
+        //         ],
+        //     ];
+        //    $this->pushFcm($dataFcmCustomer, $fcm);
             return response()->json([
                 'success' => true,
                 'message' => 'success',
