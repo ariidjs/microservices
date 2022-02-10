@@ -462,6 +462,7 @@ class TransactionController extends Controller
 
     public function statusFromStore(Request $request, $id)
     {
+
         // $latitude = $request->input('latitude');
         // $longititude = $request->input('longititude');
         $status = $request->input('status');
@@ -558,6 +559,10 @@ class TransactionController extends Controller
                 ->serviceDriver
                 ->getDriver($driver["id_driver"]))
                 ->original, true)["data"];
+
+
+            $this->databaseFirebase->getReference('DriversLocation/'.$driver["id_driver"])->update(["status"=>2]);
+
 
             $store = json_decode($this->successResponse($this
                 ->storeService
