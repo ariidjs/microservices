@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Laravel\Lumen\Auth\Authorizable;
 
-class Drivers extends Model implements AuthenticatableContract, AuthorizableContract
+class Rating extends Model implements AuthenticatableContract, AuthorizableContract
 {
     use Authenticatable, Authorizable, HasFactory;
 
@@ -19,8 +19,7 @@ class Drivers extends Model implements AuthenticatableContract, AuthorizableCont
      * @var array
      */
     protected $fillable = [
-        'name_driver', 'email', 'phone',
-        'nomor_stnk', 'plat_kendaraan', 'nik', 'photo_profile', 'photo_stnk', 'photo_ktp', 'rating', 'saldo', 'status', 'fcm','j_kelamin','total_order','total_rating'
+       'id_driver','rating'
     ];
 
     /**
@@ -28,5 +27,9 @@ class Drivers extends Model implements AuthenticatableContract, AuthorizableCont
      *
      * @var array
      */
-    protected $hidden = [];
+    protected $hidden = [
+        'status_delete'
+    ];
+
+
 }

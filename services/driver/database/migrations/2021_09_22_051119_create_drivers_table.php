@@ -31,6 +31,7 @@ class CreateDriversTable extends Migration
             $table->integer("status")->default(0);
             $table->integer("status_delete")->default(0);
             $table->string("fcm")->default('');
+            $table->integer("total_rating")->default(1);
             $table->timestamps();
         });
     }

@@ -13,6 +13,16 @@ class DriverController extends BaseController
     private $DELETE = -1;
     private $ACTIVE = 1;
     private $PENDING = 0;
+    private $databaseFirebase;
+
+    private function __construct(){
+        $factory = (new Factory)
+        ->withServiceAccount(__DIR__ . '/firebaseKey.json')
+        ->withDatabaseUri('https://proyek-akhir-1b6f2-default-rtdb.asia-southeast1.firebasedatabase.app/');
+
+    $this->auth = $factory->createAuth();
+    $this->databaseFirebase = $factory->createDatabase();
+    }
 
     public function insert(Request $request)
     {
@@ -445,6 +455,40 @@ class DriverController extends BaseController
             'message' => 'login success',
             'data' => $count
         ], 201);
+    }
+
+    public function updateRatingDriver(Request $request){
+        $id = $request->input("id_driver");
+        $rating = $request->input("rating");
+        $drivers = Drivers::whereId($id)->first();
+
+        if($drivers){
+
+            $ratingNew = ($drivers->rating+$rating) / ($drivers->total_rating + 1);
+
+            $update = Drivers::whereId($id)->update([
+                "rating" => $ratingNew,
+                "total_rating" => $drivers->total_rating + 1
+            ]);
+
+            if ($update) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'success',
+                ], 201);
+            } else {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'updated failed',
+                ], 404);
+            }
+        }else{
+            return response()->json([
+                'success' => false,
+                'message' => 'id not found',
+            ], 404);
+        }
+
     }
 
 
