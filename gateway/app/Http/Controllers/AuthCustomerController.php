@@ -188,17 +188,16 @@ class AuthCustomerController extends BaseController
                 ->login($phone, $body))
                 ->original, true);
 
-            if($login["success"]){
-                $payload = array(
-                    "id" => $login['data']['id'],
-                    "name" => $login['data']['name'],
-                    "time" => date('d-m-Y H:i', strtotime("+3 min"))
-                );
-                $jwt = JWT::encode($payload, $this->key);
-                $login['data']['jwt'] = $jwt;
-                return $login;
-
-            }
+            // if($login["success"]){
+            //     $payload = array(
+            //         "id" => $login['data']['id'],
+            //         "name" => $login['data']['name'],
+            //         "time" => date('d-m-Y H:i', strtotime("+3 min"))
+            //     );
+            //     $jwt = JWT::encode($payload, $this->key);
+            //     $login['data']['jwt'] = $jwt;
+            //     return $login;
+            // }
         }else{
             return response()->json([
                 'success' => false,
