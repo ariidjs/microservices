@@ -118,7 +118,7 @@ class AuthDriverController extends BaseController
 
     public function login(Request $request, $phone)
     {
-        $response = json_decode($this->successResponse($this
+       return $response = json_decode($this->successResponse($this
             ->authServiceDriver
             ->checkPhone($phone))
             ->original, true);
