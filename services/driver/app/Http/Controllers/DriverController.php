@@ -152,23 +152,19 @@ class DriverController extends BaseController
 
     public function phoneNumberAvailable($phone)
     {
-        return "hello";
-        // return response()->json([
-        //     'success' => true,
-        //     'message' => 'phone is sad register',
-        // ], 200);
-        // $checkPhone = Drivers::wherePhone($phone)->first();
-        // if ($checkPhone) {
-        //     return response()->json([
-        //         'success' => true,
-        //         'message' => 'phone is register',
-        //     ], 200);
-        // } else {
-        //     return response()->json([
-        //         'success' => false,
-        //         'message' => 'phone not register',
-        //     ], 200);
-        // }
+        $checkPhone = Drivers::wherePhone($phone)->first();
+
+        if ($checkPhone) {
+            return response()->json([
+                'success' => true,
+                'message' => 'phone is register',
+            ], 200);
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'phone not register',
+            ], 200);
+        }
     }
 
     public function getDrivers($id)
