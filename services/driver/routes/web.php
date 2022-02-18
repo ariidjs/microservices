@@ -14,7 +14,6 @@
 */
 
 $router->group(['prefix' => 'api/v1/driver/'], function () use ($router) {
-    // $router->post('updaterating', 'DriverController@updateRatingDriver');
     $router->get('count', 'DriverController@countDriver');
     $router->get('admin', 'DriverController@getListDriversFromAdmin');
     $router->post('auth', 'DriverController@auth');
@@ -30,6 +29,7 @@ $router->group(['prefix' => 'api/v1/driver/'], function () use ($router) {
     $router->get('', 'DriverController@getListDriver');
     $router->get('{id_driver}/activation/{status}', 'DriverController@ChangeStatusUser');
     $router->get('{id}/status/{status}', 'DriverController@driverWork');
+    // $router->post('updaterating', 'DriverController@updateRatingDriver');
 });
 
 
