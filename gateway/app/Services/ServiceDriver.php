@@ -36,6 +36,10 @@ class ServiceDriver
         return $this->performRequest("GET", 'api/v1/driver/' . $id . '/status/' . $status);
     }
 
+    public function checkPhone($phone){
+        return $this->performRequest("GET",'/api/v1/driver/phone/'.$phone);
+    }
+
     public function getListDriverFromAdmin()
     {
         return $this->performRequest("GET", 'api/v1/driver/admin');
