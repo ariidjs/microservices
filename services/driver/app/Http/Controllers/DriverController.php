@@ -153,7 +153,6 @@ class DriverController extends BaseController
     public function phoneNumberAvailable($phone)
     {
         $checkPhone = Drivers::wherePhone($phone)->first();
-
         if ($checkPhone) {
             return response()->json([
                 'success' => true,
