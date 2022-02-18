@@ -210,13 +210,12 @@ class CustomerController extends BaseController
 
     public function login(Request $request, $phone)
     {
+        $data = Customers::wherePhone($phone)->first();
 
-        $login = Customers::wherePhone($phone)->update([
+        $data = $data->update([
             "fcm" => $request->input('fcm')
         ]);
-
-        $data = Customers::wherePhone($phone)->first();
-        if ($login) {
+        if ($data) {
             return response()->json([
                 'success' => true,
                 'message' => 'login success',
