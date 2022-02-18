@@ -199,6 +199,11 @@ class AuthCustomerController extends BaseController
                 return $login;
 
             }
+        }else{
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed',
+            ], 401);
         }
 
     }
