@@ -7,7 +7,7 @@ use App\Services\ProductService;
 use App\Services\DetailTransactionService;
 use App\Services\StoreService;
 use \Illuminate\Http\Request;
-use \App\Models\Transaction;
+use \App\Models\Rating;
 use App\Services\FcmService;
 use App\Services\ServiceBenefit;
 use App\Services\ServiceCustomer;
@@ -85,15 +85,42 @@ class RatingController extends Controller
         // $this->databaseFirebase = $databaseFirebase;
     }
 
-    private function insert(Request $request){
+    public function insert(Request $request){
+        // return "hello";
         $id_driver = $request->input("id_driver");
+        $id_customer = $request->input("id_customer");
         $rating = $request->input("rating");
+
+        $data = [
+            "id_driver" => $id_driver,
+            "rating" => $rating,
+            "id_customer" => $id_customer
+        ];
 
         $driver = json_decode($this->successResponse($this
                 ->serviceDriver
-                ->getDriver($id_driver))
+                ->updateRatingDriver($data))
                 ->original, true);
+        if($driver["success"]){
+            $response = Rating::create($data);
 
+            if($response){
+                return response()->json([
+                    'success' => true,
+                    'message' => 'success',
+                ], 201);
+            }else{
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Failed',
+                ], 401);
+            }
+        }else{
+            return response()->json([
+                'success' => false,
+                'message' => 'failed',
+            ], 401);
+        }
 
     }
 

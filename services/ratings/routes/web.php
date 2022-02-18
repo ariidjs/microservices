@@ -13,20 +13,11 @@
 |
 */
 
-$router->get('/', function () use ($router) {
-    return $router->app->version();
-});
 
 $router->group(['prefix' => 'api/v1/rating'], function () use ($router) {
     $router->post('', 'RatingController@insert');
 });
 
-
-$router->group(['prefix'=>'category'],function() use($router){
-   $router->post('','CategoryController@insert');
-    // $router->get('[{id}]','SaldoController@getRiwayatSaldo');
-    // $router->get('store/[{id}]','ProductController@getProductStore');
-    // $router->post('list','ProductController@getListProduct');
-    // $router->post('update[/{id}]','ProductController@update');
-    // $router->delete('[{id}]','ProductController@delete');
+$router->get('/', function () use ($router) {
+    return $router->app->version();
 });

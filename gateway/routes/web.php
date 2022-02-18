@@ -83,6 +83,7 @@ $router->group(['prefix' => 'api/v1/customer'], function () use ($router) {
     $router->get('promo', 'AuthCustomerController@getListPromoCustomer');
     $router->post('updateImage', 'AuthCustomerController@updatePhotoProfile');
     $router->post('update', 'AuthCustomerController@updateCustomer');
+    $router->post('rating', 'AuthCustomerController@updateRatingDriver');
 });
 
 $router->group(['prefix' => 'api/v1/admin'], function () use ($router) {

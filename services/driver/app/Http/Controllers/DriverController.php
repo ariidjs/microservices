@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Drivers;
 use \Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
+use Kreait\Firebase\Factory;
 use Laravel\Lumen\Routing\Controller as BaseController;
 
 
@@ -15,14 +16,19 @@ class DriverController extends BaseController
     private $PENDING = 0;
     private $databaseFirebase;
 
-    private function __construct(){
-        $factory = (new Factory)
-        ->withServiceAccount(__DIR__ . '/firebaseKey.json')
-        ->withDatabaseUri('https://proyek-akhir-1b6f2-default-rtdb.asia-southeast1.firebasedatabase.app/');
+    public function __construct(
 
-    $this->auth = $factory->createAuth();
-    $this->databaseFirebase = $factory->createDatabase();
+    ) {
+
+        $factory = (new Factory)
+            ->withServiceAccount(__DIR__ . '/firebaseKey.json')
+            ->withDatabaseUri('https://proyek-akhir-1b6f2-default-rtdb.asia-southeast1.firebasedatabase.app/');
+
+        $this->auth = $factory->createAuth();
+        $this->databaseFirebase = $factory->createDatabase();
+        // $this->databaseFirebase = $databaseFirebase;
     }
+
 
     public function insert(Request $request)
     {
@@ -404,6 +410,9 @@ class DriverController extends BaseController
         // return "hello";
         $result = Drivers::whereId($id)->update(["status" => $status]);
         if ($result) {
+
+            $reference = $this->databaseFirebase->getReference('DriversLocation');
+
             return response()->json([
                 'success' => true,
                 'message' => 'success',
@@ -458,13 +467,15 @@ class DriverController extends BaseController
     }
 
     public function updateRatingDriver(Request $request){
+
+
         $id = $request->input("id_driver");
         $rating = $request->input("rating");
         $drivers = Drivers::whereId($id)->first();
 
         if($drivers){
 
-            $ratingNew = ($drivers->rating+$rating) / ($drivers->total_rating + 1);
+            $ratingNew = ($drivers->rating+$rating) / 2;
 
             $update = Drivers::whereId($id)->update([
                 "rating" => $ratingNew,
@@ -472,6 +483,7 @@ class DriverController extends BaseController
             ]);
 
             if ($update) {
+                $this->databaseFirebase->getReference('DriversLocation/'.$id)->update(["rating"=>$ratingNew]);
                 return response()->json([
                     'success' => true,
                     'message' => 'success',

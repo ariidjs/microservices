@@ -56,5 +56,9 @@ return [
     'fcm'   =>  [
         'base_uri' =>  env('FCM_BASE_URL'),
         'secret'   =>  env('DETAIL_TRANSACTION_SERVICE_SECRET'),
-    ]
+    ],
+    'rating'   =>  [
+        'base_uri' =>  env('RATING_BASE_URL'),
+        'secret'   =>  env('DETAIL_TRANSACTION_SERVICE_SECRET'),
+    ],
 ];

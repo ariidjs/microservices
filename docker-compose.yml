@@ -31,6 +31,7 @@ services:
           - promo.service
           - management.service
           - benefit.service
+          - ratings.service
 
   gateway:
     build:
@@ -263,6 +264,22 @@ services:
     tty: true
     volumes:
       - ./services/benefit/:/var/www/services/benefit
+      - ./docker/php/local.ini:/usr/local/etc/php/conf.d/local.ini
+    networks:
+      - app-network
+  ratings:
+    build:
+      context: services/ratings
+      dockerfile: Dockerfile
+    image: php:7.4-fpm
+    restart: unless-stopped
+    env_file: './services/ratings/.env.example'
+    working_dir: /var/www/services/ratings
+    depends_on:
+      - mysqldb
+    tty: true
+    volumes:
+      - ./services/ratings/:/var/www/services/ratings
       - ./docker/php/local.ini:/usr/local/etc/php/conf.d/local.ini
     networks:
       - app-network

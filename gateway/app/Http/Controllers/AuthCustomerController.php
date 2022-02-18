@@ -8,6 +8,7 @@ use App\Services\ServiceCustomer;
 use App\Services\ServiceProduct;
 use App\Services\ServicePromo;
 use App\Services\ServiceStore;
+use App\Services\ServiceRating;
 use App\Services\ServiceTransaction;
 use Illuminate\Http\Request;
 use Laravel\Lumen\Routing\Controller as BaseController;
@@ -26,11 +27,12 @@ class AuthCustomerController extends BaseController
     private $serviceTransaction;
     private $serviceStore;
     private $servicePromo;
+    private $serviceRating;
     private $TIME_EXPIRE = 3;
     private $JWT_EXPIRED = false;
     private $RSAencrypt;
     private $key = "asjlkdnaskjndjkawqnbdjkwbqdjknasljkmmndasjkjdnijkwqbduiqwbdojkawqnd";
-    public function __construct(AuthServiceCustomer $authServiceCustomer, ServiceCustomer $serviceCustomer, ServiceProduct $serviceProduct, ServiceTransaction $serviceTransaction, ServiceStore $serviceStore,ServicePromo $servicePromo)
+    public function __construct(AuthServiceCustomer $authServiceCustomer, ServiceCustomer $serviceCustomer, ServiceProduct $serviceProduct, ServiceTransaction $serviceTransaction, ServiceStore $serviceStore,ServicePromo $servicePromo,ServiceRating $serviceRating)
     {
         $this->authServiceCustomer = $authServiceCustomer;
         $this->serviceCustomer = $serviceCustomer;
@@ -38,6 +40,7 @@ class AuthCustomerController extends BaseController
         $this->serviceTransaction = $serviceTransaction;
         $this->serviceStore = $serviceStore;
         $this->servicePromo = $servicePromo;
+        $this->serviceRating = $serviceRating;
     }
 
 
@@ -168,38 +171,6 @@ class AuthCustomerController extends BaseController
 
     public function login(Request $request, $phone)
     {
-        // $kalimat = "Bebas lahasxcasdasd";
-        // $enc="";
-        // for($i=0;$i<strlen($kalimat);$i++){
-        //     $m=ord($kalimat[$i]);
-        //     if($m<119){
-        //         $enc=$enc.chr($this->encRSA($m));
-        //     }else{
-        //         $enc=$enc.$kalimat[$i];
-
-        //     }
-        // }
-
-        // $dec="";
-        // for($i=0;$i<strlen($enc);$i++){
-        //     $m=ord($enc[$i]);
-        //     if($m<119){
-        //         $dec=$dec.chr($this->decRSA($m));
-        //     }else{
-        //         $dec=$dec.$enc[$i];
-
-        //     }
-        // }
-
-        // return response()->json([
-        //     "status"=>true,
-        //     "data"=>[
-        //         // "a"=>$a,
-        //         // "b"=>$b,
-        //         "enc"=>$enc,
-        //         "desc"=>$dec
-        //     ]
-        // ],201);
 
         $response = json_decode($this->successResponse($this
             ->authServiceCustomer
@@ -408,5 +379,24 @@ class AuthCustomerController extends BaseController
 
 
 
+    }
+
+    public function updateRatingDriver(Request $request){
+
+        $validation = $this->validationJWT($request);
+        $id_driver = $request->input("id_driver");
+        $id_customer = $validation["data"]["id"];
+        $rating = $request->input("rating");
+
+        $data = [
+            "id_driver" => $id_driver,
+            "rating" => $rating,
+            "id_customer" => $id_customer
+        ];
+
+        return json_decode($this->successResponse($this
+                ->serviceRating
+                ->updateRating($data))
+                ->original, true);
     }
 }
