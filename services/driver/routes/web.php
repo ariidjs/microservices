@@ -14,7 +14,7 @@
 */
 
 $router->group(['prefix' => 'api/v1/driver/'], function () use ($router) {
-    $router->post('updaterating', 'DriverController@updateRatingDriver');
+    // $router->post('updaterating', 'DriverController@updateRatingDriver');
     $router->get('count', 'DriverController@countDriver');
     $router->get('admin', 'DriverController@getListDriversFromAdmin');
     $router->post('auth', 'DriverController@auth');
