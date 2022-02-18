@@ -33,7 +33,10 @@ class DriverController extends Controller
     }
 
     public function checkPhone($phone){
-        return "hello auth";
+               return response()->json([
+            'success' => true,
+            'message' => 'from auth',
+        ], 200);
         // return json_decode($this->successResponse($this
         //     ->driverServices
         //     ->checkPhone($phone))
