@@ -310,13 +310,12 @@ class StoreController extends Controller
 
     public function login(Request $request, $phone)
     {
-
-        $login = Stores::wherePhone($phone)->update([
-            "fcm" => $request->input('fcm')
-        ]);
-
-        $data = Stores::wherePhone($phone)->first();
+        $login = Stores::wherePhone($phone)->first();
+        $data = $login;
         if ($login) {
+            $login->update([
+                "fcm" => $request->input('fcm')
+            ]);
             return response()->json([
                 'success' => true,
                 'message' => 'login success',
