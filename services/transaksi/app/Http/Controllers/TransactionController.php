@@ -251,11 +251,11 @@ class TransactionController extends Controller
     {
 
         try{
-            $reference = $this->databaseFirebase->getReference('DriversLocation');
+            $reference = $this->databaseFirebase->getReference('DriversData');
             $key = $reference->getChildKeys();
             $dataDriver = [];
             foreach ($key as $value) {
-                array_push($dataDriver, $this->databaseFirebase->getReference('DriversLocation')->getChild($value)->getValue());
+                array_push($dataDriver, $this->databaseFirebase->getReference('DriversData')->getChild($value)->getValue());
             }
 
 
@@ -506,11 +506,11 @@ class TransactionController extends Controller
 
 
         try{
-            $reference = $this->databaseFirebase->getReference('DriversLocation');
+            $reference = $this->databaseFirebase->getReference('DriversData');
             $key = $reference->getChildKeys();
             $dataDriver = [];
             foreach ($key as $value) {
-                array_push($dataDriver, $this->databaseFirebase->getReference('DriversLocation')->getChild($value)->getValue());
+                array_push($dataDriver, $this->databaseFirebase->getReference('DriversData')->getChild($value)->getValue());
             }
 
 
@@ -561,7 +561,7 @@ class TransactionController extends Controller
                 ->original, true)["data"];
 
 
-            $this->databaseFirebase->getReference('DriversLocation/'.$driver["id_driver"])->update(["status"=>2]);
+            $this->databaseFirebase->getReference('DriversData/'.$driver["id_driver"])->update(["status"=>2]);
 
 
             $store = json_decode($this->successResponse($this

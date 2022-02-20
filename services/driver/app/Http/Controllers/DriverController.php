@@ -411,7 +411,7 @@ class DriverController extends BaseController
         $result = Drivers::whereId($id)->update(["status" => $status]);
         if ($result) {
 
-            $reference = $this->databaseFirebase->getReference('DriversLocation');
+            $reference = $this->databaseFirebase->getReference('DriversData');
 
             return response()->json([
                 'success' => true,
@@ -483,7 +483,7 @@ class DriverController extends BaseController
             ]);
 
             if ($update) {
-                $this->databaseFirebase->getReference('DriversLocation/'.$id)->update(["rating"=>$ratingNew]);
+                $this->databaseFirebase->getReference('DriversData/'.$id)->update(["rating"=>$ratingNew]);
                 return response()->json([
                     'success' => true,
                     'message' => 'success',
