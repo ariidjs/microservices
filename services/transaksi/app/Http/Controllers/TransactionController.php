@@ -260,7 +260,9 @@ class TransactionController extends Controller
 
 
             $dataDriver  = collect($dataDriver)->filter(function($value,$key){
-                return $value["status"] == 0;
+                if(isset($value["status"])){
+                    return $value["status"] == 0;
+                }
             });
             // return $dataDriver;
 
@@ -515,7 +517,9 @@ class TransactionController extends Controller
 
 
             $dataDriver  = collect($dataDriver)->filter(function($value,$key){
-                return $value["status"] == 0;
+                if(isset($value["status"])){
+                    return $value["status"] == 0;
+                }
             });
             // return $dataDriver;
 
