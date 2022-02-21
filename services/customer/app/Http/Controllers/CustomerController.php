@@ -215,7 +215,7 @@ class CustomerController extends BaseController
 
         if ($data) {
             $info = $data;
-            $data->update([
+            Customers::wherePhone($phone)->update([
                 "fcm" => $request->input('fcm')
             ]);
             return response()->json([

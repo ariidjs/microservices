@@ -313,7 +313,7 @@ class StoreController extends Controller
         $login = Stores::wherePhone($phone)->first();
         $data = $login;
         if ($login) {
-            $login->update([
+            Stores::wherePhone($phone)->update([
                 "fcm" => $request->input('fcm')
             ]);
             return response()->json([
