@@ -214,15 +214,24 @@ class CustomerController extends BaseController
 
 
         if ($data) {
-            $info = $data;
-            Customers::wherePhone($phone)->update([
+
+           $updated = Customers::wherePhone($phone)->update([
                 "fcm" => $request->input('fcm')
             ]);
-            return response()->json([
-                'success' => true,
-                'message' => 'login success',
-                'data' => $info
-            ], 201);
+
+            if($updated){
+                return response()->json([
+                    'success' => true,
+                    'message' => 'login success',
+                    'data' => $data
+                ], 201);
+            }else{
+                return response()->json([
+                    'success' => false,
+                    'message' => 'login failed',
+                ], 404);
+            }
+
         } else {
             return response()->json([
                 'success' => false,
