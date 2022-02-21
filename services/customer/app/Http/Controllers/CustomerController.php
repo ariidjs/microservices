@@ -220,6 +220,7 @@ class CustomerController extends BaseController
             ]);
 
             if($updated){
+                $data["fcm"] = $request->input('fcm');
                 return response()->json([
                     'success' => true,
                     'message' => 'login success',
