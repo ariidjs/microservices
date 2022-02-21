@@ -516,6 +516,7 @@ class TransactionController extends Controller
             }
 
 
+
             $dataDriver  = collect($dataDriver)->filter(function($value,$key){
                 if(isset($value["status"])){
                     return $value["status"] == 0;
@@ -557,15 +558,16 @@ class TransactionController extends Controller
             }
 
 
-            $driver = $this->searchDriver($transaction->latitude, $transaction->longitude, $dataDriver->toArray());
+           $driver = $this->searchDriver($transaction->latitude, $transaction->longitude, $dataDriver->toArray());
 
-            $driver = json_decode($this->successResponse($this
+          $driver = json_decode($this->successResponse($this
                 ->serviceDriver
                 ->getDriver($driver["id_driver"]))
                 ->original, true)["data"];
 
 
-            $this->databaseFirebase->getReference('DriversData/'.$driver["id_driver"])->update(["status"=>2]);
+
+           $this->databaseFirebase->getReference('DriversData/'.$driver["id"])->update(["status"=>2]);
 
 
             $store = json_decode($this->successResponse($this
