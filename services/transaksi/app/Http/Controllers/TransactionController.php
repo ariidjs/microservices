@@ -398,7 +398,7 @@ class TransactionController extends Controller
             ]);
 
             $dataFcmStore = [
-                "title" => "Store notification",
+                "title" => "Store notification1",
                 "content" => [
                     "title"=>"Ada orderan ".$noTransaction
                     ]
