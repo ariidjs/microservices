@@ -518,6 +518,12 @@ class AuthAdminController extends BaseController
         $levelRange = explode(",", $management["data"]["level_pelanggan"]);
         $totalTransaksiRange = explode(",", $management["data"]["total_transaksi"]);
 
+        return response()->json([
+            "message" =>"data tidak ditemukan",
+            "transactions"=>$transaction,
+            "customer"=>$customer
+        ],201);
+
        return $listCustomer = $this->inner_join($transaction["data"],$customer["data"]);
 
         // $listCustomer = array(
