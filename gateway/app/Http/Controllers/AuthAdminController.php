@@ -572,7 +572,7 @@ class AuthAdminController extends BaseController
             }
         }
 
-        return $listCustomer;
+        //return $listCustomer;
 
         if(sizeof($listCustomer) > 0){
             $columnJumlahTransaksi = array_column($listCustomer, "total_transactionSaw");
