@@ -106,6 +106,7 @@ class TransactionController extends Controller
         $total_orderRange = explode(",",trim($management["data"]["total_order"]));
         $ratingRange = explode(",",trim($management["data"]["rating"]));
 
+        // check algoritmah haversigne untuk mengambil jarak 2 titik
         // foreach ($listDriver as $key => $value) {
         //     $distance = $this->haversineGreatCircleDistance($latitude,
         //      $longitude,explode(",", $value["coordinate"])[0],
@@ -139,15 +140,15 @@ class TransactionController extends Controller
             $totalOrder = $value["total_order"];
             // echo $totalOrder.PHP_EOL;
             if ($totalOrder <= $total_orderRange[0]) {
-                $listDriver[$key]["total_order"] = 1;
+                $listDriver[$key]["total_order"] = 0.2;
             } else if ($totalOrder > $total_orderRange[0] && $totalOrder <= $total_orderRange[1]) {
-                $listDriver[$key]["total_order"] = 0.8;
+                $listDriver[$key]["total_order"] = 0.4;
             } else if ($totalOrder > $total_orderRange[1] && $totalOrder <= $total_orderRange[2]) {
                 $listDriver[$key]["total_order"] = 0.6;
             } else if ($totalOrder > $total_orderRange[2] && $totalOrder <= $total_orderRange[3]) {
-                $listDriver[$key]["total_order"] = 0.4;
+                $listDriver[$key]["total_order"] = 0.8;
             } else if ($totalOrder > $total_orderRange[3]) {
-                $listDriver[$key]["total_order"] = 0.2;
+                $listDriver[$key]["total_order"] = 1;
             }
 
             // convert rating
@@ -172,7 +173,7 @@ class TransactionController extends Controller
         $columnTotalOrder = array_column($listDriver, "total_order");
         $columnRating = array_column($listDriver, "rating");
         $minCoordinate = min($columnCoordinate);
-        $maxTotalOrder = max($columnTotalOrder);
+        $minTotalOrder = min($columnTotalOrder);
         $maxRating = max($columnRating);
 
         // return $minCoordinate;
@@ -180,7 +181,7 @@ class TransactionController extends Controller
 
         foreach ($listDriver as $key => $value) {
             $rating = $value["rating"] / $maxRating;
-            $totalOrder = $value["total_order"] / $maxTotalOrder;
+            $totalOrder = $minTotalOrder/ $value["total_order"];
             $coordinate =  $minCoordinate / $value["coordinate"];
             $listDriver[$key]["total_order"] = $totalOrder;
             $listDriver[$key]["rating"] = $rating;
@@ -204,6 +205,13 @@ class TransactionController extends Controller
                 $result = $value;
             }
         }
+
+        // usort($listDriver, function($a, $b)
+        //      {
+        //          if ($a["saw"] == $b["saw"])
+        //              return (0);
+        //          return (($a["saw"] < $b["saw"]) ? 1 : -1);
+        //      });
         return $result;
     }
 
@@ -223,7 +231,7 @@ class TransactionController extends Controller
         $unit = strtoupper($unit);
 
         if ($unit == "K") {
-            return round(($miles * 1.609344),3);
+            return round(($miles * 1.609344*1000),3);
         } else if ($unit == "N") {
             return ($miles * 0.8684);
         } else {
@@ -558,7 +566,7 @@ class TransactionController extends Controller
             }
 
 
-           $driver = $this->searchDriver($transaction->latitude, $transaction->longitude, $dataDriver->toArray());
+           return $driver = $this->searchDriver($transaction->latitude, $transaction->longitude, $dataDriver->toArray());
 
           $driver = json_decode($this->successResponse($this
                 ->serviceDriver
