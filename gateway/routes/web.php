@@ -123,5 +123,5 @@ $router->group(['prefix' => 'api/v1/management'], function () use ($router) {
 
 
 $router->get('/', function () use ($router) {
-    return 'hello world';
+    return 'hello worlds';
 });
