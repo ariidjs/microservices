@@ -123,5 +123,5 @@ $router->group(['prefix' => 'api/v1/management'], function () use ($router) {
 
 
 $router->get('/', function () use ($router) {
-    return $router->app->version();
+    return 'hello world';
 });
