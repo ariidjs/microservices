@@ -613,6 +613,7 @@ class AuthAdminController extends BaseController
                 }
                 return ($a['saw'] > $b['saw']) ? -1 : 1;
             });
+            return $listCustomer;
 
             if(sizeof($listCustomer) > 1){
                 for($i=0;$i<2;$i++){
