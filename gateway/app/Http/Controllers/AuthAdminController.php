@@ -572,7 +572,7 @@ class AuthAdminController extends BaseController
             }
         }
 
-        //return $listCustomer;
+    
 
         if(sizeof($listCustomer) > 0){
             $columnJumlahTransaksi = array_column($listCustomer, "total_transactionSaw");
@@ -584,7 +584,7 @@ class AuthAdminController extends BaseController
 
             // return $columnlevel;
 
-            // return $listCustomer;
+        
 
 
             foreach ($listCustomer as $key => $value) {
@@ -596,7 +596,7 @@ class AuthAdminController extends BaseController
                 $listCustomer[$key]["total_transactionSaw"] = $jumlahTransaksi;
             }
 
-            // return $listCustomer;
+    
 
 
             foreach ($listCustomer as $key => $value) {
@@ -606,7 +606,6 @@ class AuthAdminController extends BaseController
                 $listCustomer[$key]["saw"] = $totalSAW;
             }
 
-            // return $listCustomer;
             usort($listCustomer,function($a,$b){
                 if ($a['saw'] == $b['saw']) {
                     return 0;
