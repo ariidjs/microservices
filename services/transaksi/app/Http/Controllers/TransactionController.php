@@ -530,7 +530,7 @@ class TransactionController extends Controller
                     return $value["status"] == 0;
                 }
             });
-            return $dataDriver;
+            // return $dataDriver;
 
 
             // Ketika driver yang ditemukan sedang menerima orderan
