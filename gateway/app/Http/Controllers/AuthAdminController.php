@@ -615,7 +615,7 @@ class AuthAdminController extends BaseController
             //return $listCustomer;
 
             if(sizeof($listCustomer) > 1){
-                for($i=0;$i<2;$i++){
+                for($i=0;$i<1;$i++){
                     $body = $request->only([
                             'promoName','promoDescription','promoPrice','date','expired'
                     ]);
