@@ -475,44 +475,44 @@ class TransactionController extends Controller
 
         // $latitude = $request->input('latitude');
         // $longititude = $request->input('longititude');
-        $status = $request->input('status');
+        // $status = $request->input('status');
 
-        // return $status;
-        $transaction = json_decode(Transaction::whereId($id)->first());
+        // // return $status;
+        // $transaction = json_decode(Transaction::whereId($id)->first());
 
-        $customer = json_decode($this->successResponse($this
-        ->serviceCustomer
-        ->getCustomer($transaction->id_customer))
-        ->original,true)["data"];
+        // $customer = json_decode($this->successResponse($this
+        // ->serviceCustomer
+        // ->getCustomer($transaction->id_customer))
+        // ->original,true)["data"];
 
-        if ($status == $this->TRANSACTION_CANCEL) {
-            $updated = Transaction::whereId($id)->update([
-                "status" => $this->TRANSACTION_CANCEL
-            ]);
+        // if ($status == $this->TRANSACTION_CANCEL) {
+        //     $updated = Transaction::whereId($id)->update([
+        //         "status" => $this->TRANSACTION_CANCEL
+        //     ]);
 
-            $dataFcm = [
-                "title" => "Store notification",
-                "content"=>[
-                    "title" => "pesanan anda dibatalkan",
-                    "status" => $status
-                ],
-            ];
+        //     $dataFcm = [
+        //         "title" => "Store notification",
+        //         "content"=>[
+        //             "title" => "pesanan anda dibatalkan",
+        //             "status" => $status
+        //         ],
+        //     ];
 
-            $notifCustomer = $this->pushFcm($dataFcm, $customer["fcm"]);
+        //     $notifCustomer = $this->pushFcm($dataFcm, $customer["fcm"]);
 
-            if ($updated) {
-                return response()->json([
-                    'success' => true,
-                    'message' => 'success',
-                    'notifCustomer' => $notifCustomer,
-                ], 201);
-            } else {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'failed',
-                ], 404);
-            }
-        }
+        //     if ($updated) {
+        //         return response()->json([
+        //             'success' => true,
+        //             'message' => 'success',
+        //             'notifCustomer' => $notifCustomer,
+        //         ], 201);
+        //     } else {
+        //         return response()->json([
+        //             'success' => false,
+        //             'message' => 'failed',
+        //         ], 404);
+        //     }
+        // }
 
 
         try{
@@ -525,48 +525,48 @@ class TransactionController extends Controller
 
 
 
-            $dataDriver  = collect($dataDriver)->filter(function($value,$key){
-                if(isset($value["status"])){
-                    return $value["status"] == 0;
-                }
-            });
+            // $dataDriver  = collect($dataDriver)->filter(function($value,$key){
+            //     if(isset($value["status"])){
+            //         return $value["status"] == 0;
+            //     }
+            // });
             // return $dataDriver;
 
 
             // Ketika driver yang ditemukan sedang menerima orderan
-            if(sizeof($dataDriver) == 0){
-                $dataFcmCustomer = [
-                    "title" => "Orderan anda sedang di proses oleh toko",
-                    "content"=>[
-                        "title" => "Orderan anda telah diterima oleh toko silahkan menunngu proses pencarian driver",
-                        "status" => $status
-                    ],
-                ];
-                $dataFcmStore = [
-                    "title" => "Driver tidak ditemukan",
-                    "content"=>[
-                        "title" => "Driver saat ini sedang tidak tersedia silahkan coba beberapa saat lagi",
-                        "status" => $status
-                    ],
-                ];
-                $updated = Transaction::whereId($id)->update([
-                    "status" => $this->TRANSACTION_ACCEPT_STORE
-                ]);
+            // if(sizeof($dataDriver) == 0){
+            //     $dataFcmCustomer = [
+            //         "title" => "Orderan anda sedang di proses oleh toko",
+            //         "content"=>[
+            //             "title" => "Orderan anda telah diterima oleh toko silahkan menunngu proses pencarian driver",
+            //             "status" => $status
+            //         ],
+            //     ];
+            //     $dataFcmStore = [
+            //         "title" => "Driver tidak ditemukan",
+            //         "content"=>[
+            //             "title" => "Driver saat ini sedang tidak tersedia silahkan coba beberapa saat lagi",
+            //             "status" => $status
+            //         ],
+            //     ];
+            //     $updated = Transaction::whereId($id)->update([
+            //         "status" => $this->TRANSACTION_ACCEPT_STORE
+            //     ]);
 
-                $store =json_decode($this->successResponse($this
-                ->storeService
-                ->getStore($transaction->id_store))
-                ->original,true)["data"];
-                $this->pushFcm($dataFcmCustomer, $customer["fcm"]);
-                $this->pushFcm($dataFcmStore, $store["fcm"]);
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Semua driver sedang menerima orderan silahkan tunggu beberapa saat lagi',
-                ], 404);
-            }
+            //     $store =json_decode($this->successResponse($this
+            //     ->storeService
+            //     ->getStore($transaction->id_store))
+            //     ->original,true)["data"];
+            //     $this->pushFcm($dataFcmCustomer, $customer["fcm"]);
+            //     $this->pushFcm($dataFcmStore, $store["fcm"]);
+            //     return response()->json([
+            //         'success' => false,
+            //         'message' => 'Semua driver sedang menerima orderan silahkan tunggu beberapa saat lagi',
+            //     ], 404);
+            // }
 
 
-           return $driver = $this->searchDriver($transaction->latitude, $transaction->longitude, $dataDriver->toArray());
+           return $driver = $this->searchDriver("-0.8939681304964777", "100.36711201071739", $dataDriver->toArray());
 
           $driver = json_decode($this->successResponse($this
                 ->serviceDriver
