@@ -200,19 +200,19 @@ class TransactionController extends Controller
         $maxSaw = max(array_column($listDriver, "saw"));
 
         $result = array();
-        // foreach ($listDriver as $key => $value) {
-        //     if ($value['saw'] == $maxSaw) {
-        //         $result = $value;
-        //     }
-        // }
+        foreach ($listDriver as $key => $value) {
+            if ($value['saw'] == $maxSaw) {
+                $result = $value;
+            }
+        }
 
-        usort($listDriver, function($a, $b)
-             {
-                 if ($a["saw"] == $b["saw"])
-                     return (0);
-                 return (($a["saw"] < $b["saw"]) ? 1 : -1);
-             });
-        return $listDriver;
+        // usort($listDriver, function($a, $b)
+        //      {
+        //          if ($a["saw"] == $b["saw"])
+        //              return (0);
+        //          return (($a["saw"] < $b["saw"]) ? 1 : -1);
+        //      });
+        return $result;
     }
 
     function haversineGreatCircleDistance(
