@@ -119,8 +119,8 @@ class TransactionController extends Controller
 
         foreach ($listDriver as $key => $value) {
             //        convert coordinate
-            $distance = $this->haversineGreatCircleDistance("-0.8939681304964777",
-            "100.36711201071739", explode(",", $value["coordinate"])[0],
+            $distance = $this->haversineGreatCircleDistance($latitude,
+            $longitude, explode(",", $value["coordinate"])[0],
             explode(",", $value["coordinate"])[1]);
 
             // echo $distance.PHP_EOL;
@@ -472,15 +472,13 @@ class TransactionController extends Controller
 
     public function statusFromStore(Request $request, $id)
     {
-
         $reference = $this->databaseFirebase->getReference('DriversData');
-            $key = $reference->getChildKeys();
-            $dataDriver = [];
-            foreach ($key as $value) {
-                array_push($dataDriver, $this->databaseFirebase->getReference('DriversData')->getChild($value)->getValue());
-            }
-      return  $driver = $this->searchDriver($transaction->latitude, $transaction->longitude, $dataDriver->toArray());
-
+        $key = $reference->getChildKeys();
+        $dataDriver = [];
+        foreach ($key as $value) {
+            array_push($dataDriver, $this->databaseFirebase->getReference('DriversData')->getChild($value)->getValue());
+        }
+       return $driver = $this->searchDriver("-0.8939681304964777","100.36711201071739", $dataDriver);
         // $latitude = $request->input('latitude');
         // $longititude = $request->input('longititude');
         $status = $request->input('status');
