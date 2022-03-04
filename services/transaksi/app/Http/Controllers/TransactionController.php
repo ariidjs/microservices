@@ -212,7 +212,7 @@ class TransactionController extends Controller
                      return (0);
                  return (($a["saw"] < $b["saw"]) ? 1 : -1);
              });
-        return $result;
+        return $listDriver;
     }
 
     function haversineGreatCircleDistance(
