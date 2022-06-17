@@ -119,8 +119,9 @@ $router->group(['prefix' => 'api/v1/management'], function () use ($router) {
     $router->post('', 'AuthAdminController@updateManagementSystem');
 });
 
-
-
+$router->group(['prefix' => 'api/v1/uploadImage'], function () use ($router) {
+    $router->post('/test', 'AuthDriverController@uploadImageTest');
+});
 
 $router->get('/', function () use ($router) {
     return $router->app->version();
