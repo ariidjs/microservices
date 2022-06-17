@@ -121,6 +121,7 @@ $router->group(['prefix' => 'api/v1/management'], function () use ($router) {
 
 $router->group(['prefix' => 'api/v1/uploadImage'], function () use ($router) {
     $router->post('/test', 'AuthDriverController@uploadImageTest');
+    $router->post('/withHeader', 'AuthDriverController@uploadImageTest2');
 });
 
 $router->get('/', function () use ($router) {

@@ -137,6 +137,27 @@ class AuthDriverController extends BaseController
 
     }
 
+    public function uploadImageTest2(Request $request)
+    {
+        $this->validationJWT($request);
+        $image = $request->file("image");
+
+        if ($image) {
+            $imageUpload = time() . $image->getClientOriginalName();
+            $image->move('images', $imageUpload);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Success Uploading Image!',
+                'url' => url(). '/images/'. $imageUpload
+            ], 200);
+        }else {
+            return response()->json([
+                'success' => false,
+                'message' => 'Please attach a file!'
+            ], 404);
+        }
+    }
 
     public function login(Request $request, $phone)
     {
