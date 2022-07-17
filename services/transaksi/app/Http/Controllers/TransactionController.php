@@ -98,13 +98,13 @@ class TransactionController extends Controller
         $c3 = 0.25;
 
         $management = json_decode($this->successResponse($this
-        ->serviceManagement
-        ->getManagement())
-        ->original, true);
+            ->serviceManagement
+            ->getManagement())
+            ->original, true);
 
         $distanceRange = explode(",", trim($management["data"]["distance"]));
-        $total_orderRange = explode(",",trim($management["data"]["total_order"]));
-        $ratingRange = explode(",",trim($management["data"]["rating"]));
+        $total_orderRange = explode(",", trim($management["data"]["total_order"]));
+        $ratingRange = explode(",", trim($management["data"]["rating"]));
 
         // check algoritmah haversigne untuk mengambil jarak 2 titik
         // foreach ($listDriver as $key => $value) {
@@ -119,9 +119,12 @@ class TransactionController extends Controller
 
         foreach ($listDriver as $key => $value) {
             //        convert coordinate
-            $distance = $this->haversineGreatCircleDistance($latitude,
-            $longitude, explode(",", $value["coordinate"])[0],
-            explode(",", $value["coordinate"])[1]);
+            $distance = $this->haversineGreatCircleDistance(
+                $latitude,
+                $longitude,
+                explode(",", $value["coordinate"])[0],
+                explode(",", $value["coordinate"])[1]
+            );
 
             // echo $distance.PHP_EOL;
             if ($distance <= $distanceRange[0]) {
@@ -181,7 +184,7 @@ class TransactionController extends Controller
 
         foreach ($listDriver as $key => $value) {
             $rating = $value["rating"] / $maxRating;
-            $totalOrder = $minTotalOrder/ $value["total_order"];
+            $totalOrder = $minTotalOrder / $value["total_order"];
             $coordinate =  $minCoordinate / $value["coordinate"];
             $listDriver[$key]["total_order"] = $totalOrder;
             $listDriver[$key]["rating"] = $rating;
@@ -231,7 +234,7 @@ class TransactionController extends Controller
         $unit = strtoupper($unit);
 
         if ($unit == "K") {
-            return round(($miles * 1.609344*1000),3);
+            return round(($miles * 1.609344 * 1000), 3);
         } else if ($unit == "N") {
             return ($miles * 0.8684);
         } else {
@@ -258,7 +261,7 @@ class TransactionController extends Controller
     public function insertCustomer(Request $request)
     {
 
-        try{
+        try {
             $reference = $this->databaseFirebase->getReference('DriversData');
             $key = $reference->getChildKeys();
             $dataDriver = [];
@@ -267,8 +270,8 @@ class TransactionController extends Controller
             }
 
 
-            $dataDriver  = collect($dataDriver)->filter(function($value,$key){
-                if(isset($value["status"])){
+            $dataDriver  = collect($dataDriver)->filter(function ($value, $key) {
+                if (isset($value["status"])) {
                     return $value["status"] == 0;
                 }
             });
@@ -276,7 +279,7 @@ class TransactionController extends Controller
 
 
             // Ketika driver yang ditemukan sedang menerima orderan
-            if(sizeof($dataDriver) == 0){
+            if (sizeof($dataDriver) == 0) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Semua driver sedang menerima orderan silahkan tunggu beberapa saat lagi',
@@ -292,11 +295,11 @@ class TransactionController extends Controller
 
             $promo = null;
 
-            if($dataCustomer->id_promo != 0){
+            if ($dataCustomer->id_promo != 0) {
                 $promo = json_decode($this->successResponse($this
-                ->servicePromo
-                ->getPromoById($dataCustomer->id_promo))
-                ->original, true);
+                    ->servicePromo
+                    ->getPromoById($dataCustomer->id_promo))
+                    ->original, true);
 
                 $date_now = new DateTime();
                 $date2    = new DateTime($promo["data"]["expired"]);
@@ -307,18 +310,17 @@ class TransactionController extends Controller
                         'message' => 'Success',
                         'data' => "kode promo sudah tidak dapat digunakan lagi",
                     ], 400);
-                   }else{
-                        if($promo["data"]["status"] != "Used"){
-                            $promo = $dataCustomer->id_promo;
-                        }else{
-                            return response()->json([
-                                'success' => true,
-                                'message' => 'Success',
-                                'data' => "kode promo sudah pernah digunakan",
-                            ], 400);
-                        }
-                   }
-
+                } else {
+                    if ($promo["data"]["status"] != "Used") {
+                        $promo = $dataCustomer->id_promo;
+                    } else {
+                        return response()->json([
+                            'success' => true,
+                            'message' => 'Success',
+                            'data' => "kode promo sudah pernah digunakan",
+                        ], 400);
+                    }
+                }
             }
 
 
@@ -356,38 +358,37 @@ class TransactionController extends Controller
                 ->getStore($dataCustomer->id_store))
                 ->original, true);
 
-                $promo = null;
-                $idPromo =  null;
+            $promo = null;
+            $idPromo =  null;
 
-                if($dataCustomer->id_promo != null){
-                    $promo = json_decode($this->successResponse($this
+            if ($dataCustomer->id_promo != null) {
+                $promo = json_decode($this->successResponse($this
                     ->servicePromo
                     ->getPromoById($dataCustomer->id_promo))
                     ->original, true);
 
-                    $date_now = new DateTime();
-                    $date2    = new DateTime($promo["data"]["expired"]);
+                $date_now = new DateTime();
+                $date2    = new DateTime($promo["data"]["expired"]);
 
-                    if ($date_now > $date2) {
-                       return response()->json([
+                if ($date_now > $date2) {
+                    return response()->json([
+                        'success' => true,
+                        'message' => 'Success',
+                        'data' => "kode promo sudah tidak dapat digunakan lagi",
+                    ], 400);
+                } else {
+                    if ($promo["data"]["status"] != "Used") {
+                        $idPromo =  $dataCustomer->id_promo;
+                        $total_price = $total_price - $promo["data"]["promoPrice"];
+                    } else {
+                        return response()->json([
                             'success' => true,
                             'message' => 'Success',
-                            'data' => "kode promo sudah tidak dapat digunakan lagi",
+                            'data' => "kode promo sudah pernah digunakan",
                         ], 400);
-                       }else{
-                            if($promo["data"]["status"] != "Used"){
-                                $idPromo =  $dataCustomer->id_promo ;
-                                $total_price = $total_price - $promo["data"]["promoPrice"];
-                            }else{
-                                return response()->json([
-                                    'success' => true,
-                                    'message' => 'Success',
-                                    'data' => "kode promo sudah pernah digunakan",
-                                ], 400);
-                            }
-                       }
-
+                    }
                 }
+            }
 
             $transaction = Transaction::create([
                 'notransaksi' => $noTransaction,
@@ -402,17 +403,17 @@ class TransactionController extends Controller
                 'longitude' => $dataCustomer->longititude,
                 'status_delete' => 0,
                 'kode_validasi' => $code_validation,
-                'id_promo'=>$idPromo
+                'id_promo' => $idPromo
             ]);
 
             $dataFcmStore = [
                 "title" => "Store notification1",
                 "content" => [
-                    "title"=>"Ada orderan ".$noTransaction
-                    ]
+                    "title" => "Ada orderan " . $noTransaction
+                ]
             ];
 
-            $this->pushFcm($dataFcmStore,$store["data"]["fcm"]);
+            $this->pushFcm($dataFcmStore, $store["data"]["fcm"]);
 
             if ($transaction) {
                 return json_decode($this->successResponse($this
@@ -422,8 +423,7 @@ class TransactionController extends Controller
             } else {
                 return json_encode($dataSubProduct);
             }
-
-        }catch(FirebaseException $e){
+        } catch (FirebaseException $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Tidak ada driver yang aktif saat ini',
@@ -481,9 +481,9 @@ class TransactionController extends Controller
         $transaction = json_decode(Transaction::whereId($id)->first());
 
         $customer = json_decode($this->successResponse($this
-        ->serviceCustomer
-        ->getCustomer($transaction->id_customer))
-        ->original,true)["data"];
+            ->serviceCustomer
+            ->getCustomer($transaction->id_customer))
+            ->original, true)["data"];
 
         if ($status == $this->TRANSACTION_CANCEL) {
             $updated = Transaction::whereId($id)->update([
@@ -492,7 +492,7 @@ class TransactionController extends Controller
 
             $dataFcm = [
                 "title" => "Store notification",
-                "content"=>[
+                "content" => [
                     "title" => "pesanan anda dibatalkan",
                     "status" => $status
                 ],
@@ -515,7 +515,7 @@ class TransactionController extends Controller
         }
 
 
-        try{
+        try {
             $reference = $this->databaseFirebase->getReference('DriversData');
             $key = $reference->getChildKeys();
             $dataDriver = [];
@@ -525,8 +525,8 @@ class TransactionController extends Controller
 
 
 
-            $dataDriver  = collect($dataDriver)->filter(function($value,$key){
-                if(isset($value["status"])){
+            $dataDriver  = collect($dataDriver)->filter(function ($value, $key) {
+                if (isset($value["status"])) {
                     return $value["status"] == 0;
                 }
             });
@@ -534,17 +534,17 @@ class TransactionController extends Controller
 
 
             // Ketika driver yang ditemukan sedang menerima orderan
-            if(sizeof($dataDriver) == 0){
+            if (sizeof($dataDriver) == 0) {
                 $dataFcmCustomer = [
                     "title" => "Orderan anda sedang di proses oleh toko",
-                    "content"=>[
+                    "content" => [
                         "title" => "Orderan anda telah diterima oleh toko silahkan menunngu proses pencarian driver",
                         "status" => $status
                     ],
                 ];
                 $dataFcmStore = [
                     "title" => "Driver tidak ditemukan",
-                    "content"=>[
+                    "content" => [
                         "title" => "Driver saat ini sedang tidak tersedia silahkan coba beberapa saat lagi",
                         "status" => $status
                     ],
@@ -553,10 +553,10 @@ class TransactionController extends Controller
                     "status" => $this->TRANSACTION_ACCEPT_STORE
                 ]);
 
-                $store =json_decode($this->successResponse($this
-                ->storeService
-                ->getStore($transaction->id_store))
-                ->original,true)["data"];
+                $store = json_decode($this->successResponse($this
+                    ->storeService
+                    ->getStore($transaction->id_store))
+                    ->original, true)["data"];
                 $this->pushFcm($dataFcmCustomer, $customer["fcm"]);
                 $this->pushFcm($dataFcmStore, $store["fcm"]);
                 return response()->json([
@@ -566,16 +566,16 @@ class TransactionController extends Controller
             }
 
 
-           $driver = $this->searchDriver($transaction->latitude, $transaction->longitude, $dataDriver->toArray());
+            $driver = $this->searchDriver($transaction->latitude, $transaction->longitude, $dataDriver->toArray());
 
-          $driver = json_decode($this->successResponse($this
+            $driver = json_decode($this->successResponse($this
                 ->serviceDriver
                 ->getDriver($driver["id_driver"]))
                 ->original, true)["data"];
 
 
 
-           $this->databaseFirebase->getReference('DriversData/'.$driver["id"])->update(["status"=>2]);
+            $this->databaseFirebase->getReference('DriversData/' . $driver["id"])->update(["status" => 2]);
 
 
             $store = json_decode($this->successResponse($this
@@ -590,7 +590,7 @@ class TransactionController extends Controller
                 ]);
                 $dataFcmCustomer = [
                     "title" => "Store notification",
-                    "content"=>[
+                    "content" => [
                         "title" => "sedang mencari driver",
                         "status" => $status
                     ],
@@ -615,7 +615,7 @@ class TransactionController extends Controller
                         'success' => true,
                         'message' => 'success',
                         'notifDriver' => $notifDriver,
-                        'driver'=> $driver,
+                        'driver' => $driver,
                         'notifCustomer' => $notifCustomer,
 
                     ], 201);
@@ -628,8 +628,7 @@ class TransactionController extends Controller
                     ], 404);
                 }
             }
-
-        }catch(FirebaseException $e){
+        } catch (FirebaseException $e) {
             // Ketika driver tidak ada yang aktif
             $updated = Transaction::whereId($id)->update([
                 "status" => $this->TRANSACTION_ACCEPT_STORE
@@ -644,29 +643,29 @@ class TransactionController extends Controller
                 'message' => 'Tidak ada driver yang aktif saat ini',
             ], 404);
         }
-
     }
 
     public function cancelStatusCustomer(Request $request, $id)
     {
         $cancelTransaction = Transaction::whereId($id)->first();
-        if($cancelTransaction){
+        if ($cancelTransaction) {
             $cancelTransaction->update([
-                'status'=>$this->TRANSACTION_CANCEL
+                'status' => $this->TRANSACTION_CANCEL
             ]);
             return response()->json([
-                "success"=>true,
-                "message"=>"Succes update data"
-            ],200);
-        }else{
+                "success" => true,
+                "message" => "Succes update data"
+            ], 200);
+        } else {
             return response()->json([
-                "success"=>false,
-                "message"=>"failed update data"
-            ],401);
+                "success" => false,
+                "message" => "failed update data"
+            ], 401);
         }
     }
 
-    public function statusFromDriver(Request $request,$id){
+    public function statusFromDriver(Request $request, $id)
+    {
         // return $id;
         $status = $request->input('status');
         $id_driver = $request->input('id_driver');
@@ -677,127 +676,124 @@ class TransactionController extends Controller
         $customer = json_decode($this->successResponse($this
             ->serviceCustomer
             ->getCustomer($transaction->id_customer))
-            ->original,true)["data"];
+            ->original, true)["data"];
 
-        $store =json_decode($this->successResponse($this
+        $store = json_decode($this->successResponse($this
             ->storeService
             ->getStore($transaction->id_store))
-            ->original,true)["data"];
+            ->original, true)["data"];
 
-        $detailTransaction =json_decode($this->successResponse($this
+        $detailTransaction = json_decode($this->successResponse($this
             ->detailTransactionService
-            ->getNotransaksi($transaction->notransaksi,$transaction->id_store))
-            ->original,true)["data"];
+            ->getNotransaksi($transaction->notransaksi, $transaction->id_store))
+            ->original, true)["data"];
 
         $driver = json_decode($this->successResponse($this
-        ->serviceDriver
-        ->getDriver($id_driver))
-        ->original,true);
+            ->serviceDriver
+            ->getDriver($id_driver))
+            ->original, true);
 
 
 
         $filterDetailTransaction = [];
         foreach ($detailTransaction as $key => $value) {
-            array_push($filterDetailTransaction,[
-                "id_product"=>$value["id_product"],
-                "price_product"=>$value["price_product"],
-                "count"=>$value["count"],
-                "name_product"=>$value["name_product"],
-                "category"=>$value["category"],
-                "image1"=>$value["image1"],
-                "image2"=>$value["image2"],
-                "image3"=>$value["image3"],
-                "image4"=>$value["image4"],
-                "description"=>$value["description"]
+            array_push($filterDetailTransaction, [
+                "id_product" => $value["id_product"],
+                "price_product" => $value["price_product"],
+                "count" => $value["count"],
+                "name_product" => $value["name_product"],
+                "category" => $value["category"],
+                "image1" => $value["image1"],
+                "image2" => $value["image2"],
+                "image3" => $value["image3"],
+                "image4" => $value["image4"],
+                "description" => $value["description"]
             ]);
         }
-        if($status == $this->TRANSACTION_DRIVER_FOUND){
+        if ($status == $this->TRANSACTION_DRIVER_FOUND) {
             $updated = Transaction::whereId($id)->update([
-                "status"=>$this->TRANSACTION_DRIVER_FOUND,
-                "id_driver"=>$id_driver
+                "status" => $this->TRANSACTION_DRIVER_FOUND,
+                "id_driver" => $id_driver
             ]);
             $dataFcmCustomer = [
-                "title"=>"Driver ditemukan",
-                "content"=>[
+                "title" => "Driver ditemukan",
+                "content" => [
                     "title" => "Driver ditemukan",
                     "driver" => $driver["data"],
                     "status" => $status
                 ],
             ];
             $dataFcmStore = [
-                "title"=>"Driver ditemukan",
-                "content"=>[
+                "title" => "Driver ditemukan",
+                "content" => [
                     "title" => "Driver ditemukan",
                     "driver" => $driver["data"]
                 ],
             ];
 
-            $notifCustomer = $this->pushFcm($dataFcmCustomer,$customer["fcm"]);
-            $notifStore = $this->pushFcm($dataFcmStore,$store["fcm"]);
+            $notifCustomer = $this->pushFcm($dataFcmCustomer, $customer["fcm"]);
+            $notifStore = $this->pushFcm($dataFcmStore, $store["fcm"]);
 
-            if($updated){
+            if ($updated) {
                 $transaction = json_decode(Transaction::whereId($id)->first());
-                $driver =json_decode($this->successResponse($this
+                $driver = json_decode($this->successResponse($this
                     ->serviceDriver
                     ->statusWork(1, $id_driver))
-                    ->original,true);
-                if($driver) {
+                    ->original, true);
+                if ($driver) {
                     return response()->json([
-                        'success'=>true,
-                        'message'=>'success',
-                        'transaction'=>[
-                            "id"=> $transaction->id,
-                            "notransaksi"=>$transaction->notransaksi,
-                            "total_price"=>$transaction->total_price,
-                            "driver_price"=>$transaction->driver_price,
-                            "address_customer"=>$transaction->alamat_user,
-                            "customer_name"=>$customer["name"],
-                            "customer_phone"=>$customer["phone"],
-                            "status"=>$transaction->status,
-                            "latitude"=>$transaction->latitude,
-                            "longitude"=>$transaction->longitude,
+                        'success' => true,
+                        'message' => 'success',
+                        'transaction' => [
+                            "id" => $transaction->id,
+                            "notransaksi" => $transaction->notransaksi,
+                            "total_price" => $transaction->total_price,
+                            "driver_price" => $transaction->driver_price,
+                            "address_customer" => $transaction->alamat_user,
+                            "customer_name" => $customer["name"],
+                            "customer_phone" => $customer["phone"],
+                            "status" => $transaction->status,
+                            "latitude" => $transaction->latitude,
+                            "longitude" => $transaction->longitude,
                             'created_at' => $transaction->created_at
                         ],
-                        'store'=>[
-                            "id_store"=>$store["id_store"],
-                            "owner_name"=>$store["owner_name"],
-                            "store_name"=>$store["store_name"],
-                            "phone"=>$store["phone"],
-                            "rating"=>$store["rating"],
-                            "photo_store"=>$store["photo_store"],
-                            "latitude"=>$store["latitude"],
-                            "longititude"=>$store["longititude"],
-                            "address"=>$store["address"],
+                        'store' => [
+                            "id_store" => $store["id_store"],
+                            "owner_name" => $store["owner_name"],
+                            "store_name" => $store["store_name"],
+                            "phone" => $store["phone"],
+                            "rating" => $store["rating"],
+                            "photo_store" => $store["photo_store"],
+                            "latitude" => $store["latitude"],
+                            "longititude" => $store["longititude"],
+                            "address" => $store["address"],
                         ],
-                        'detail_transaksi'=>$filterDetailTransaction
+                        'detail_transaksi' => $filterDetailTransaction
 
-                    ],201);
-
+                    ], 201);
                 }
-            }else{
+            } else {
                 return response()->json([
-                    'success'=>false,
-                    'message'=>'Gagal menerima order',
-                ],404);
+                    'success' => false,
+                    'message' => 'Gagal menerima order',
+                ], 404);
             }
-
         }
 
 
-        if($status == $this->TRANSACTION_WAITING_DRIVER){
-            return $this->statusFromStore($request,$id);
+        if ($status == $this->TRANSACTION_WAITING_DRIVER) {
+            return $this->statusFromStore($request, $id);
             // return response()->json([
             //     'success'=>true,
             //     'message'=>'pesanan berhasil ditolak',
             // ],201);
         }
-
     }
 
     public function driverTrans($id)
     {
         // return $id;
-        $transaction = json_decode(Transaction::where('id_driver' ,$id)->where('status','!=',6)->first());
+        $transaction = json_decode(Transaction::where('id_driver', $id)->where('status', '!=', 6)->first());
 
         // return response()->json([
         //     'success'=>true,
@@ -805,81 +801,82 @@ class TransactionController extends Controller
         //     'data' => 'data']);
 
 
-        if($transaction) {
+        if ($transaction) {
             $customer = json_decode($this->successResponse($this
                 ->serviceCustomer
                 ->getCustomer($transaction->id_customer))
-                ->original,true)["data"];
+                ->original, true)["data"];
 
-            $store =json_decode($this->successResponse($this
+            $store = json_decode($this->successResponse($this
                 ->storeService
                 ->getStore($transaction->id_store))
-                ->original,true)["data"];
+                ->original, true)["data"];
 
-            $detailTransaction =json_decode($this->successResponse($this
+            $detailTransaction = json_decode($this->successResponse($this
                 ->detailTransactionService
-                ->getNotransaksi($transaction->notransaksi,$transaction->id_store))
-                ->original,true)["data"];
+                ->getNotransaksi($transaction->notransaksi, $transaction->id_store))
+                ->original, true)["data"];
 
             $filterDetailTransaction = [];
             foreach ($detailTransaction as $key => $value) {
-                array_push($filterDetailTransaction,[
-                    "id_product"=>$value["id_product"],
-                    "price_product"=>$value["price_product"],
-                    "count"=>$value["count"],
-                    "name_product"=>$value["name_product"],
-                    "category"=>$value["category"],
-                    "image1"=>$value["image1"],
-                    "image2"=>$value["image2"],
-                    "image3"=>$value["image3"],
-                    "image4"=>$value["image4"],
-                    "description"=>$value["description"]
+                array_push($filterDetailTransaction, [
+                    "id_product" => $value["id_product"],
+                    "price_product" => $value["price_product"],
+                    "count" => $value["count"],
+                    "name_product" => $value["name_product"],
+                    "category" => $value["category"],
+                    "image1" => $value["image1"],
+                    "image2" => $value["image2"],
+                    "image3" => $value["image3"],
+                    "image4" => $value["image4"],
+                    "description" => $value["description"]
                 ]);
             }
 
 
             return response()->json([
-                'success'=>true,
-                'message'=>'success',
+                'success' => true,
+                'message' => 'success',
                 // 'notifStore'=>$notifStore,
                 // 'notifCustomer'=>$notifCustomer,
-                'transaction'=>[
-                    "id"=> $transaction->id,
-                    "notransaksi"=>$transaction->notransaksi,
-                    "total_price"=>$transaction->total_price,
-                    "driver_price"=>$transaction->driver_price,
-                    "address_customer"=>$transaction->alamat_user,
-                    "customer_name"=>$customer["name"],
-                    "customer_phone"=>$customer["phone"],
-                    'status'=>$transaction->status,
-                    "latitude"=>$transaction->latitude,
-                    "longitude"=>$transaction->longitude,
+                'transaction' => [
+                    "id" => $transaction->id,
+                    "id_customer" => $transaction->id_customer,
+                    "notransaksi" => $transaction->notransaksi,
+                    "total_price" => $transaction->total_price,
+                    "driver_price" => $transaction->driver_price,
+                    "address_customer" => $transaction->alamat_user,
+                    "customer_name" => $customer["name"],
+                    "customer_phone" => $customer["phone"],
+                    'status' => $transaction->status,
+                    "latitude" => $transaction->latitude,
+                    "longitude" => $transaction->longitude,
                     'created_at' => $transaction->created_at
                 ],
-                'store'=>[
-                    "id_store"=>$store["id_store"],
-                    "owner_name"=>$store["owner_name"],
-                    "store_name"=>$store["store_name"],
-                    "phone"=>$store["phone"],
-                    "rating"=>$store["rating"],
-                    "photo_store"=>$store["photo_store"],
-                    "latitude"=>$store["latitude"],
-                    "longititude"=>$store["longititude"],
-                    "address"=>$store["address"],
+                'store' => [
+                    "id_store" => $store["id_store"],
+                    "owner_name" => $store["owner_name"],
+                    "store_name" => $store["store_name"],
+                    "phone" => $store["phone"],
+                    "rating" => $store["rating"],
+                    "photo_store" => $store["photo_store"],
+                    "latitude" => $store["latitude"],
+                    "longititude" => $store["longititude"],
+                    "address" => $store["address"],
                 ],
-                'detail_transaksi'=>$filterDetailTransaction
-            ],200);
-        }else {
+                'detail_transaksi' => $filterDetailTransaction
+            ], 200);
+        } else {
             return response()->json([
-                'success'=>false,
-                'message'=>'Transaksi sudah selesai'],404);
+                'success' => false,
+                'message' => 'Transaksi sudah selesai'
+            ], 404);
         }
-
     }
 
     public function getHistoryDriver($id)
     {
-        $transaction = Transaction::where('id_driver' ,$id)->where('status', 6)->get();
+        $transaction = Transaction::where('id_driver', $id)->where('status', 6)->get();
         if ($transaction) {
             return response()->json([
                 'success' => true,
@@ -894,38 +891,39 @@ class TransactionController extends Controller
         }
     }
 
-    public function validationCodeFromDriver($id,$kode){
+    public function validationCodeFromDriver($id, $kode)
+    {
         $transaction = Transaction::whereId($id)->first();
 
-        $detailTransaction =json_decode($this->successResponse($this
+        $detailTransaction = json_decode($this->successResponse($this
             ->detailTransactionService
-            ->getNotransaksi($transaction->notransaksi,$transaction->id_store))
-            ->original,true)["data"];
+            ->getNotransaksi($transaction->notransaksi, $transaction->id_store))
+            ->original, true)["data"];
 
         // return $detailTransaction;
 
         $filterDetailTransaction = [];
         foreach ($detailTransaction as $key => $value) {
-            array_push($filterDetailTransaction,[
-                "id_product"=>$value["id_product"],
-                "price_product"=>$value["price_product"],
-                "count"=>$value["count"],
-                "name_product"=>$value["name_product"],
-                "category"=>$value["category"],
-                "image1"=>$value["image1"],
-                "image2"=>$value["image2"],
-                "image3"=>$value["image3"],
-                "image4"=>$value["image4"],
-                "description"=>$value["description"]
+            array_push($filterDetailTransaction, [
+                "id_product" => $value["id_product"],
+                "price_product" => $value["price_product"],
+                "count" => $value["count"],
+                "name_product" => $value["name_product"],
+                "category" => $value["category"],
+                "image1" => $value["image1"],
+                "image2" => $value["image2"],
+                "image3" => $value["image3"],
+                "image4" => $value["image4"],
+                "description" => $value["description"]
             ]);
         }
-        if($transaction){
-            if($transaction->kode_validasi == $kode){
+        if ($transaction) {
+            if ($transaction->kode_validasi == $kode) {
 
                 $management = json_decode($this->successResponse($this
-                ->serviceManagement
-                ->getManagement())
-                ->original, true);
+                    ->serviceManagement
+                    ->getManagement())
+                    ->original, true);
 
                 $taxDriver = $management['data']['taxDriver'];
                 $taxStore = $management['data']['taxStore'];
@@ -933,127 +931,127 @@ class TransactionController extends Controller
                 $totalPrice = $transaction["total_price"];
                 $driverPrice = $transaction["driver_price"];
 
-                $taxDriverAdmin = $totalPrice * ($taxDriver/100);
-                $taxStoreAdmin = $driverPrice * ($taxStore/100);
+                $taxDriverAdmin = $totalPrice * ($taxDriver / 100);
+                $taxStoreAdmin = $driverPrice * ($taxStore / 100);
                 $totalBenefit = $taxDriverAdmin + $taxStoreAdmin;
 
                 $data = [
-                    "notransaksi"=>$transaction["notransaksi"],
-                    "totalBenefit"=> $totalBenefit,
-                    "taxStore"=>$taxDriver,
-                    "taxDriver"=>$taxStore,
+                    "notransaksi" => $transaction["notransaksi"],
+                    "totalBenefit" => $totalBenefit,
+                    "taxStore" => $taxDriver,
+                    "taxDriver" => $taxStore,
                 ];
 
 
                 json_decode($this->successResponse($this
-                ->serviceBenefits
-                ->saveBenefit($data))
-                ->original,true);
+                    ->serviceBenefits
+                    ->saveBenefit($data))
+                    ->original, true);
 
-                if($transaction['id_promo'] != null){
+                if ($transaction['id_promo'] != null) {
                     json_decode($this->successResponse($this
-                    ->servicePromo
-                    ->updateStatusPromo($transaction['id_promo']))
-                    ->original,true);
+                        ->servicePromo
+                        ->updateStatusPromo($transaction['id_promo']))
+                        ->original, true);
                 }
 
                 $responseStoreTax = json_decode($this->successResponse($this
                     ->storeService
-                    ->taxStore($transaction['id_store'],$taxStoreAdmin))
-                    ->original,true);
+                    ->taxStore($transaction['id_store'], $taxStoreAdmin))
+                    ->original, true);
 
                 $responseDriverTax = json_decode($this->successResponse($this
-                        ->serviceDriver
-                        ->taxDriver($transaction['id_driver'],$taxDriverAdmin))
-                        ->original,true);
+                    ->serviceDriver
+                    ->taxDriver($transaction['id_driver'], $taxDriverAdmin))
+                    ->original, true);
 
                 $customer = json_decode($this->successResponse($this
                     ->serviceCustomer
                     ->getCustomer($transaction->id_customer))
-                    ->original,true)["data"];
+                    ->original, true)["data"];
                 Transaction::whereId($id)->update([
-                    "status"=>$this->TRANSACTION_DRIVER_IN_STORE
+                    "status" => $this->TRANSACTION_DRIVER_IN_STORE
                 ]);
 
                 $dataFcmCustomer = [
-                    "title"=>"customer notification",
-                    "content"=>[
+                    "title" => "customer notification",
+                    "content" => [
                         "title" => "Driver sudah sampai ditoko",
                         "status" => $this->TRANSACTION_DRIVER_IN_STORE,
                         "id_driver" => $transaction["id_driver"]
                     ],
                 ];
                 $transaction = $transaction = json_decode(Transaction::whereId($id)->first());
-                $notifCustomer = $this->pushFcm($dataFcmCustomer,$customer["fcm"]);
+                $notifCustomer = $this->pushFcm($dataFcmCustomer, $customer["fcm"]);
                 return response()->json([
-                    'success'=>true,
-                    'message'=>'success',
-                    'transaction'=>[
-                        "id"=> $transaction->id,
-                        "notransaksi"=>$transaction->notransaksi,
-                        "total_price"=>$transaction->total_price,
-                        "driver_price"=>$transaction->driver_price,
-                        "address_customer"=>$transaction->alamat_user,
-                        "status"=>$transaction->status,
-                        "customer_phone"=>$customer["phone"],
-                        "customer_name"=>$customer["name"],
-                        "latitude"=>$transaction->latitude,
-                        "longitude"=>$transaction->longitude,
+                    'success' => true,
+                    'message' => 'success',
+                    'transaction' => [
+                        "id" => $transaction->id,
+                        "notransaksi" => $transaction->notransaksi,
+                        "total_price" => $transaction->total_price,
+                        "driver_price" => $transaction->driver_price,
+                        "address_customer" => $transaction->alamat_user,
+                        "status" => $transaction->status,
+                        "customer_phone" => $customer["phone"],
+                        "customer_name" => $customer["name"],
+                        "latitude" => $transaction->latitude,
+                        "longitude" => $transaction->longitude,
                         'created_at' => $transaction->created_at
                     ],
-                    'detail_transaksi'=>$filterDetailTransaction
-                ],200);
-            }else{
+                    'detail_transaksi' => $filterDetailTransaction
+                ], 200);
+            } else {
                 return response()->json([
-                    'success'=>false,
-                    'message'=>'Kode yang anda masukkan salah!',
-                ],404);
+                    'success' => false,
+                    'message' => 'Kode yang anda masukkan salah!',
+                ], 404);
             }
-        }else{
+        } else {
             return response()->json([
-                'success'=>false,
-                'message'=>'Transaksi tidak ditemukan',
-            ],404);
+                'success' => false,
+                'message' => 'Transaksi tidak ditemukan',
+            ], 404);
         }
-
     }
 
-    public function transactionFinish($id){
+    public function transactionFinish($id)
+    {
         $transaction = $transaction = json_decode(Transaction::whereId($id)->first());
 
 
-        if($transaction){
-            $driver =json_decode($this->successResponse($this
+        if ($transaction) {
+            $driver = json_decode($this->successResponse($this
                 ->serviceDriver
                 ->statusWork(0, $transaction->id_driver))
-                ->original,true);
+                ->original, true);
 
             $customer = json_decode($this->successResponse($this
                 ->serviceCustomer
                 ->getCustomer($transaction->id_customer))
-                ->original,true)["data"];
+                ->original, true)["data"];
             Transaction::whereId($id)->update([
-                "status"=>$this->TRANSACTION_DONE
+                "status" => $this->TRANSACTION_DONE
             ]);
 
             $dataFcmCustomer = [
-                "title"=>"customer notification",
-                "content"=>[
+                "title" => "customer notification",
+                "content" => [
                     "title" => "Pesanan anda telah selesai terimakasih telah berbelanja",
-                    "status" =>$this->TRANSACTION_DONE
+                    "status" => $this->TRANSACTION_DONE
                 ]
             ];
-            $notifCustomer = $this->pushFcm($dataFcmCustomer,$customer["fcm"]);
+            $notifCustomer = $this->pushFcm($dataFcmCustomer, $customer["fcm"]);
             return response()->json([
-                'success'=>true,
-                'message'=>'success',
+                'success' => true,
+                'message' => 'success',
                 // 'notif'=>$notifCustomer
-            ],200);
-        }else{
+            ], 200);
+        } else {
             return response()->json([
-                'success'=>false,
-                'message'=>'Transaksi tidak ditemukan!',
-            ],404);
+                'success' => false,
+                'message' => 'Transaksi tidak ditemukan!',
+            ], 404);
         }
     }
 
@@ -1273,7 +1271,7 @@ class TransactionController extends Controller
         ]);
     }
 
-    public function getListTransactionStore(Request $request,$idStore)
+    public function getListTransactionStore(Request $request, $idStore)
     {
         $list = Transaction::whereIdStore($idStore)->get();
 
@@ -1292,7 +1290,7 @@ class TransactionController extends Controller
         }
     }
 
-    public function getListTransactionDriver(Request $request,$idDriver)
+    public function getListTransactionDriver(Request $request, $idDriver)
     {
         $list = Transaction::whereIdDriver($idDriver)->get();
         if ($list) {
@@ -1309,7 +1307,8 @@ class TransactionController extends Controller
         }
     }
 
-    public function getListTransactionAdmin(){
+    public function getListTransactionAdmin()
+    {
         $list = Transaction::all();
         if ($list) {
             return response()->json([
@@ -1327,117 +1326,119 @@ class TransactionController extends Controller
 
     public function getDetailTransaction(Request $request, $notrans)
     {
-        $transaction = json_decode(Transaction::where('notransaksi' ,$notrans)->first());
-        if($transaction) {
+        $transaction = json_decode(Transaction::where('notransaksi', $notrans)->first());
+        if ($transaction) {
             $customer = json_decode($this->successResponse($this
                 ->serviceCustomer
                 ->getCustomer($transaction->id_customer))
-                ->original,true)["data"];
+                ->original, true)["data"];
 
-            $store =json_decode($this->successResponse($this
+            $store = json_decode($this->successResponse($this
                 ->storeService
                 ->getStore($transaction->id_store))
-                ->original,true)["data"];
+                ->original, true)["data"];
 
-            $detailTransaction =json_decode($this->successResponse($this
+            $detailTransaction = json_decode($this->successResponse($this
                 ->detailTransactionService
-                ->getNotransaksi($transaction->notransaksi,$transaction->id_store))
-                ->original,true)["data"];
+                ->getNotransaksi($transaction->notransaksi, $transaction->id_store))
+                ->original, true)["data"];
 
-            if($transaction->id_driver != 0){
-                $driver =json_decode($this->successResponse($this
-                ->serviceDriver
-                ->getDriver($transaction->id_driver))
-                ->original,true)["data"];
+            if ($transaction->id_driver != 0) {
+                $driver = json_decode($this->successResponse($this
+                    ->serviceDriver
+                    ->getDriver($transaction->id_driver))
+                    ->original, true)["data"];
                 $driver = [
-                    "id_driver"=>$driver["id"],
-                    "name"=>$driver["name_driver"],
-                    "plat"=>$driver["plat_kendaraan"],
-                    "phone"=>$driver["phone"],
-                    "image"=>$driver["photo_profile"],
+                    "id_driver" => $driver["id"],
+                    "name" => $driver["name_driver"],
+                    "plat" => $driver["plat_kendaraan"],
+                    "phone" => $driver["phone"],
+                    "image" => $driver["photo_profile"],
                 ];
-            }else{
+            } else {
                 $driver = null;
             }
 
             $filterDetailTransaction = [];
             foreach ($detailTransaction as $key => $value) {
-                array_push($filterDetailTransaction,[
-                    "id_product"=>$value["id_product"],
-                    "price_product"=>$value["price_product"],
-                    "count"=>$value["count"],
-                    "name_product"=>$value["name_product"],
-                    "category"=>$value["category"],
-                    "image1"=>$value["image1"],
-                    "image2"=>$value["image2"],
-                    "image3"=>$value["image3"],
-                    "image4"=>$value["image4"],
-                    "description"=>$value["description"]
+                array_push($filterDetailTransaction, [
+                    "id_product" => $value["id_product"],
+                    "price_product" => $value["price_product"],
+                    "count" => $value["count"],
+                    "name_product" => $value["name_product"],
+                    "category" => $value["category"],
+                    "image1" => $value["image1"],
+                    "image2" => $value["image2"],
+                    "image3" => $value["image3"],
+                    "image4" => $value["image4"],
+                    "description" => $value["description"]
                 ]);
             }
 
             $promo = null;
 
-            if($transaction->id_promo != null){
+            if ($transaction->id_promo != null) {
                 $promo = json_decode($this->successResponse($this
-                ->servicePromo
-                ->getPromoById($transaction->id_promo))
-                ->original, true)["data"];
+                    ->servicePromo
+                    ->getPromoById($transaction->id_promo))
+                    ->original, true)["data"];
             }
 
 
             return response()->json([
-                'success'=>true,
-                'message'=>'success',
+                'success' => true,
+                'message' => 'success',
                 // 'notifStore'=>$notifStore,
                 // 'notifCustomer'=>$notifCustomer,
-                'driver'=>$driver,
-                'transaction'=>[
-                    "id"=> $transaction->id,
-                    "notransaksi"=>$transaction->notransaksi,
-                    "total_price"=>$transaction->total_price,
-                    "driver_price"=>$transaction->driver_price,
-                    "address_customer"=>$transaction->alamat_user,
-                    "customer_name"=>$customer["name"],
-                    "customer_phone"=>$customer["phone"],
-                    'status'=>$transaction->status,
-                    "latitude"=>$transaction->latitude,
-                    "longitude"=>$transaction->longitude,
+                'driver' => $driver,
+                'transaction' => [
+                    "id" => $transaction->id,
+                    "notransaksi" => $transaction->notransaksi,
+                    "total_price" => $transaction->total_price,
+                    "driver_price" => $transaction->driver_price,
+                    "address_customer" => $transaction->alamat_user,
+                    "customer_name" => $customer["name"],
+                    "customer_phone" => $customer["phone"],
+                    'status' => $transaction->status,
+                    "latitude" => $transaction->latitude,
+                    "longitude" => $transaction->longitude,
                     'created_at' => $transaction->created_at
                 ],
-                'store'=>[
-                    "id_store"=>$store["id_store"],
-                    "owner_name"=>$store["owner_name"],
-                    "store_name"=>$store["store_name"],
-                    "phone"=>$store["phone"],
-                    "rating"=>$store["rating"],
-                    "photo_store"=>$store["photo_store"],
-                    "latitude"=>$store["latitude"],
-                    "longititude"=>$store["longititude"],
-                    "address"=>$store["address"],
+                'store' => [
+                    "id_store" => $store["id_store"],
+                    "owner_name" => $store["owner_name"],
+                    "store_name" => $store["store_name"],
+                    "phone" => $store["phone"],
+                    "rating" => $store["rating"],
+                    "photo_store" => $store["photo_store"],
+                    "latitude" => $store["latitude"],
+                    "longititude" => $store["longititude"],
+                    "address" => $store["address"],
                 ],
-                'promo'=>$promo,
-                'detail_transaksi'=>$filterDetailTransaction
-            ],200);
-        }else {
+                'promo' => $promo,
+                'detail_transaksi' => $filterDetailTransaction
+            ], 200);
+        } else {
             return response()->json([
-                'success'=>false,
-                'message'=>'Transaksi tidak ditemukan'],404);
+                'success' => false,
+                'message' => 'Transaksi tidak ditemukan'
+            ], 404);
         }
     }
 
-    public function getListTransactionDone(){
+    public function getListTransactionDone()
+    {
         // $data = DB::select("SELECT  count(created_at) as total,MONTH(created_at) as bulan,SUM(totalBenefit) as price
         // FROM benefit
         // WHERE created_at >='".date('Y')."-01-01' AND created_at   <= ' ".date('Y')."-12-31'
         // GROUP BY  month(created_at)");
         $transaction = DB::table('transactions')
-        ->select(DB::raw('count(*) as total_transaction, id_customer,sum(total_price) as total_price'))
-        ->where('status', '=', 6)
-        ->where('created_at', '>=', date('Y-m').'-01')
-        ->where('created_at', '<=',  date('Y-m').'-28')
-        ->groupBy('id_customer')
-        ->get();
+            ->select(DB::raw('count(*) as total_transaction, id_customer,sum(total_price) as total_price'))
+            ->where('status', '=', 6)
+            ->where('created_at', '>=', date('Y-m') . '-01')
+            ->where('created_at', '<=',  date('Y-m') . '-28')
+            ->groupBy('id_customer')
+            ->get();
 
         if ($transaction) {
             return response()->json([
@@ -1453,7 +1454,8 @@ class TransactionController extends Controller
         }
     }
 
-    public function getListTransactionCustomer($idCustomer){
+    public function getListTransactionCustomer($idCustomer)
+    {
         $list = Transaction::whereIdCustomer($idCustomer)->get();
         if ($list) {
             return response()->json([
@@ -1469,204 +1471,205 @@ class TransactionController extends Controller
         }
     }
 
-    public function getDetaiTransactionCustomer($id){
-        $transaction = Transaction::whereIdCustomer($id)->where('status' ,"<" ,"6")->where('status' ,">" ,"0")->get();
-        if(sizeof($transaction) != 0){
+    public function getDetaiTransactionCustomer($id)
+    {
+        $transaction = Transaction::whereIdCustomer($id)->where('status', "<", "6")->where('status', ">", "0")->get();
+        if (sizeof($transaction) != 0) {
             // return $transaction[sizeof($transaction)-1];
             $customer = json_decode($this->successResponse($this
                 ->serviceCustomer
                 ->getCustomer($id))
-                ->original,true)["data"];
+                ->original, true)["data"];
 
-            $store =json_decode($this->successResponse($this
+            $store = json_decode($this->successResponse($this
                 ->storeService
-                ->getStore($transaction[sizeof($transaction)-1]["id_store"]))
-                ->original,true)["data"];
+                ->getStore($transaction[sizeof($transaction) - 1]["id_store"]))
+                ->original, true)["data"];
 
-         $detailTransaction =json_decode($this->successResponse($this
+            $detailTransaction = json_decode($this->successResponse($this
                 ->detailTransactionService
-                ->getNotransaksi($transaction[sizeof($transaction)-1]["notransaksi"],$transaction[sizeof($transaction)-1]["id_store"]))
-                ->original,true)["data"];
+                ->getNotransaksi($transaction[sizeof($transaction) - 1]["notransaksi"], $transaction[sizeof($transaction) - 1]["id_store"]))
+                ->original, true)["data"];
 
-            if($transaction[sizeof($transaction)-1]["id_driver"] != 0){
-                $driver =json_decode($this->successResponse($this
-                ->serviceDriver
-                ->getDriver($transaction[sizeof($transaction)-1]["id_driver"]))
-                ->original,true)["data"];
+            if ($transaction[sizeof($transaction) - 1]["id_driver"] != 0) {
+                $driver = json_decode($this->successResponse($this
+                    ->serviceDriver
+                    ->getDriver($transaction[sizeof($transaction) - 1]["id_driver"]))
+                    ->original, true)["data"];
                 $driver = [
-                    "id_driver"=>$driver["id"],
-                    "name"=>$driver["name_driver"],
-                    "plat"=>$driver["plat_kendaraan"],
-                    "phone"=>$driver["phone"],
-                    "image"=>$driver["photo_profile"],
+                    "id_driver" => $driver["id"],
+                    "name" => $driver["name_driver"],
+                    "plat" => $driver["plat_kendaraan"],
+                    "phone" => $driver["phone"],
+                    "image" => $driver["photo_profile"],
                 ];
-            }else{
+            } else {
                 $driver = null;
             }
 
             $filterDetailTransaction = [];
             foreach ($detailTransaction as $key => $value) {
-                array_push($filterDetailTransaction,[
-                    "id_product"=>$value["id_product"],
-                    "price_product"=>$value["price_product"],
-                    "count"=>$value["count"],
-                    "name_product"=>$value["name_product"],
-                    "category"=>$value["category"],
-                    "image1"=>$value["image1"],
-                    "image2"=>$value["image2"],
-                    "image3"=>$value["image3"],
-                    "image4"=>$value["image4"],
-                    "description"=>$value["description"]
+                array_push($filterDetailTransaction, [
+                    "id_product" => $value["id_product"],
+                    "price_product" => $value["price_product"],
+                    "count" => $value["count"],
+                    "name_product" => $value["name_product"],
+                    "category" => $value["category"],
+                    "image1" => $value["image1"],
+                    "image2" => $value["image2"],
+                    "image3" => $value["image3"],
+                    "image4" => $value["image4"],
+                    "description" => $value["description"]
                 ]);
             }
 
             $promo = null;
 
-            if($transaction[sizeof($transaction)-1]["id_promo"] != null){
+            if ($transaction[sizeof($transaction) - 1]["id_promo"] != null) {
                 $promo = json_decode($this->successResponse($this
-                ->servicePromo
-                ->getPromoById($transaction[sizeof($transaction)-1]["id_promo"]))
-                ->original, true)["data"];
+                    ->servicePromo
+                    ->getPromoById($transaction[sizeof($transaction) - 1]["id_promo"]))
+                    ->original, true)["data"];
             }
 
 
             return response()->json([
-                'success'=>true,
-                'message'=>'success',
+                'success' => true,
+                'message' => 'success',
                 // 'notifStore'=>$notifStore,
                 // 'notifCustomer'=>$notifCustomer,
-                'driver'=>$driver,
-                'transaction'=>[
-                    "id"=> $transaction[sizeof($transaction)-1]["id"],
-                    "notransaksi"=>$transaction[sizeof($transaction)-1]["notransaksi"],
-                    "total_price"=>$transaction[sizeof($transaction)-1]["total_price"],
-                    "driver_price"=>$transaction[sizeof($transaction)-1]["driver_price"],
-                    "address_customer"=>$transaction[sizeof($transaction)-1]["alamat_user"],
-                    "customer_name"=>$customer["name"],
-                    "customer_phone"=>$customer["phone"],
-                    'status'=>$transaction[sizeof($transaction)-1]["status"],
-                    "latitude"=>$transaction[sizeof($transaction)-1]["latitude"],
-                    "longitude"=>$transaction[sizeof($transaction)-1]["longitude"],
-                    'created_at' => $transaction[sizeof($transaction)-1]["created_at"]
+                'driver' => $driver,
+                'transaction' => [
+                    "id" => $transaction[sizeof($transaction) - 1]["id"],
+                    "notransaksi" => $transaction[sizeof($transaction) - 1]["notransaksi"],
+                    "total_price" => $transaction[sizeof($transaction) - 1]["total_price"],
+                    "driver_price" => $transaction[sizeof($transaction) - 1]["driver_price"],
+                    "address_customer" => $transaction[sizeof($transaction) - 1]["alamat_user"],
+                    "customer_name" => $customer["name"],
+                    "customer_phone" => $customer["phone"],
+                    'status' => $transaction[sizeof($transaction) - 1]["status"],
+                    "latitude" => $transaction[sizeof($transaction) - 1]["latitude"],
+                    "longitude" => $transaction[sizeof($transaction) - 1]["longitude"],
+                    'created_at' => $transaction[sizeof($transaction) - 1]["created_at"]
                 ],
-                'store'=>[
-                    "id_store"=>$store["id_store"],
-                    "owner_name"=>$store["owner_name"],
-                    "store_name"=>$store["store_name"],
-                    "phone"=>$store["phone"],
-                    "rating"=>$store["rating"],
-                    "photo_store"=>$store["photo_store"],
-                    "latitude"=>$store["latitude"],
-                    "longititude"=>$store["longititude"],
-                    "address"=>$store["address"],
+                'store' => [
+                    "id_store" => $store["id_store"],
+                    "owner_name" => $store["owner_name"],
+                    "store_name" => $store["store_name"],
+                    "phone" => $store["phone"],
+                    "rating" => $store["rating"],
+                    "photo_store" => $store["photo_store"],
+                    "latitude" => $store["latitude"],
+                    "longititude" => $store["longititude"],
+                    "address" => $store["address"],
                 ],
-                'promo'=>$promo,
-                'detail_transaksi'=>$filterDetailTransaction
-            ],200);
-        }else{
+                'promo' => $promo,
+                'detail_transaksi' => $filterDetailTransaction
+            ], 200);
+        } else {
             return response()->json([
-                'success'=>false,
-                'message'=>'Transaksi tidak ditemukan'],404);
+                'success' => false,
+                'message' => 'Transaksi tidak ditemukan'
+            ], 404);
         }
 
         // return $data[sizeof($data)-1];
 
     }
 
-    public function getTotalPesanan($id){
+    public function getTotalPesanan($id)
+    {
         $total_pesanan = Transaction::whereIdStore($id)->get();
 
-        if($total_pesanan){
+        if ($total_pesanan) {
             $total_pesanan = $total_pesanan->count();
             return response()->json([
                 "status" => true,
                 "message" => "Success",
                 "total_pesanan" => $total_pesanan
-            ],201);
-        }else{
+            ], 201);
+        } else {
             return response()->json([
                 "status" => false,
                 "message" => "failed get data"
-            ],401);
+            ], 401);
         }
-
-
     }
 
-    public function chartTransaksiByMonth(){
+    public function chartTransaksiByMonth()
+    {
         $data = DB::select("SELECT  count(created_at) as total,MONTH(created_at) as bulan,SUM(total_price) as price FROM transactions
-             WHERE created_at >='".date('Y')."-01-01' AND created_at   <= ' ".date('Y')."-12-31'
+             WHERE created_at >='" . date('Y') . "-01-01' AND created_at   <= ' " . date('Y') . "-12-31'
              GROUP BY  month(created_at)");
 
 
-        if(isset($data)){
-            foreach($data as $key => $value){
+        if (isset($data)) {
+            foreach ($data as $key => $value) {
                 $data[$key]->bulan = $this->convertMonth($value->bulan);
             }
 
             return response()->json([
-                "status"=>true,
-                "message"=>"Success",
-                "data"=>$data
-            ],201);
-        }else{
+                "status" => true,
+                "message" => "Success",
+                "data" => $data
+            ], 201);
+        } else {
             return response()->json([
-                "status"=>false,
-                "message"=>"data not found",
-                "data"=>null
-            ],201);
+                "status" => false,
+                "message" => "data not found",
+                "data" => null
+            ], 201);
         }
     }
 
-    public function convertMonth($month){
-        if($month == 1){
+    public function convertMonth($month)
+    {
+        if ($month == 1) {
             return 'January';
         }
-        if($month == 2){
+        if ($month == 2) {
             return 'February';
         }
-        if($month == 3){
+        if ($month == 3) {
             return 'March';
         }
-        if($month == 4){
+        if ($month == 4) {
             return 'April';
         }
-        if($month == 5){
+        if ($month == 5) {
             return 'May';
         }
-        if($month == 6){
+        if ($month == 6) {
             return 'June';
         }
-        if($month == 7){
+        if ($month == 7) {
             return 'July';
         }
-        if($month == 8){
+        if ($month == 8) {
             return 'August';
         }
-        if($month == 9){
+        if ($month == 9) {
             return 'September';
         }
-        if($month == 10){
+        if ($month == 10) {
             return 'October';
         }
-        if($month == 11){
+        if ($month == 11) {
             return 'November';
         }
-        if($month == 12){
+        if ($month == 12) {
             return 'December';
         }
-
     }
 
-    public function getBenefitDriver($id){
-        $total = Transaction::where('created_at', 'like', '%' . date('Y-m-d') . '%')->where('id_driver', '=',$id )->sum('driver_price');
+    public function getBenefitDriver($id)
+    {
+        $total = Transaction::where('created_at', 'like', '%' . date('Y-m-d') . '%')->where('id_driver', '=', $id)->sum('driver_price');
 
         return response()->json([
-            "status"=>true,
-            "message"=>"sukses",
-            "data"=>$total
-        ],201);
+            "status" => true,
+            "message" => "sukses",
+            "data" => $total
+        ], 201);
     }
-
-
 }
